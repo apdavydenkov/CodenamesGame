@@ -50,7 +50,7 @@ export const generateAIWords = async (topic) => {
 export const getAIGameByKey = async (key) => {
   try {
     console.log(`[ИИ] Поиск игры для ключа ${key}...`);
-    const response = await fetch('/dictionaries/ai_games.json');
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/dictionaries/ai_games.json`);
     
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`);
