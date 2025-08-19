@@ -5,8 +5,10 @@ import dotenv from 'dotenv';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Загружаем переменные окружения
+// Загружаем переменные окружения 
+// Сначала базовый .env, затем перезаписываем production если есть
 dotenv.config();
+dotenv.config({ path: '.env.production', override: true });
 
 const localesPath = path.join(__dirname, '../locales');
 const sitemapsPath = path.join(__dirname, '../../public/sitemaps');
