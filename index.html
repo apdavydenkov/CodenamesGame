@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover" />
+
+  <!-- Базовые мета-теги будут управляться через MetaTags компонент -->
+  <title>Codenames Game - Онлайн игра для компании | Кодовые имена</title>
+
+  <!-- Yandex-specific -->
+  <meta name="yandex-verification" content="verification_token" />
+  <meta property="ya:ovs:rating" content="4.8" />
+  <meta property="ya:ovs:adult" content="false" />
+  <meta property="ya:ovs:free" content="true" />
+
+  <!-- Extended meta -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="/og-image.jpg" />
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:image" content="/og-image.jpg" />
+
+  <!-- Theme Color for Browsers -->
+  <meta name="theme-color" content="#2563eb" />
+
+  <!-- Favicon -->
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" href="/logo192.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+
+  <!-- Web App Manifest -->
+  <link rel="manifest" href="/manifest.json" />
+
+  <!-- Fonts Preconnect -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Robots -->
+  <meta name="robots" content="index, follow" />
+  <meta name="googlebot" content="index, follow" />
+
+  <!-- Yandex.Metrika counter -->
+  <script type="text/javascript">
+    (function (m, e, t, r, i, k, a) {
+      m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments) };
+      m[i].l = 1 * new Date();
+      for (var j = 0; j < document.scripts.length; j++) { if (document.scripts[j].src === r) { return; } }
+      k = e.createElement(t), a = e.getElementsByTagName(t)[0], k.async = 1, k.src = r, a.parentNode.insertBefore(k, a)
+    })
+      (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+    ym(99672845, "init", {
+      clickmap: true,
+      trackLinks: true,
+      accurateTrackBounce: true
+    });
+  </script>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Inter", system-ui, -apple-system, sans-serif !important;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    @font-face {
+      font-family: "Inter";
+      font-display: swap;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Yandex.Metrika -->
+  <noscript>
+    <div><img src="https://mc.yandex.ru/watch/99672845" style="position:absolute; left:-9999px;" alt="" /></div>
+  </noscript>
+
+  <noscript>
+    <div style="padding: 20px; text-align: center" id="noscript-text">
+      Loading...
+    </div>
+  </noscript>
+
+  <!-- SEO Text -->
+  <div aria-hidden="true" id="seo-content"
+    style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;">
+    <h1>Loading...</h1>
+    <p>Loading...</p>
+  </div>
+
+  <div id="root"></div>
+
+  <!-- Web Application Structured Data -->
+  <script type="application/ld+json">
+      {
+        "@context": "http://schema.org",
+        "@type": "WebApplication",
+        "name": "Codenames Game",
+        "description": "Онлайн версия популярной настольной игры Codenames (Кодовые имена)",
+        "url": "https://code-names.ru",
+        "applicationCategory": "Game",
+        "operatingSystem": "Web Browser",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "RUB"
+        }
+      }
+    </script>
+
+  <!-- Yandex Game Markup -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://yandex.ru",
+      "@type": "Game",
+      "name": "Codenames Online",
+      "gameCategory": "Настольная игра",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "reviewCount": "150"
+      },
+      "playMode": ["Мультиплеер"],
+      "gamePlatform": ["Браузер"]
+    }
+    </script>
+
+  <!-- FAQ Structured Data -->
+  <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [{
+          "@type": "Question",
+          "name": "Как играть в Codenames онлайн?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Создайте новую игру, поделитесь ссылкой с друзьями. Выберите капитана команды, который будет давать подсказки остальным игрокам. Команды по очереди пытаются отгадать свои слова по ассоциациям от капитана."
+          }
+        }, {
+          "@type": "Question",
+          "name": "Сколько человек нужно для игры в Codenames?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Минимум 4 человека: два капитана и по одному игроку в каждой команде. Оптимально играть командами по 2-4 человека."
+          }
+        }, {
+          "@type": "Question",
+          "name": "Нужно ли регистрироваться для игры?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Нет, игра полностью бесплатна и не требует регистрации. Просто откройте сайт и начните играть."
+          }
+        }, {
+          "@type": "Question",
+          "name": "Как стать капитаном команды?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Нажмите на кнопку с иконкой глаза в нижнем меню и подтвердите, что хотите стать капитаном. После этого вы будете видеть цвета всех карточек."
+          }
+        }, {
+          "@type": "Question",
+          "name": "Можно ли играть с телефона?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Да, игра полностью адаптирована для мобильных устройств. Просто откройте сайт в браузере вашего телефона или планшета."
+          }
+        }]
+      }
+    </script>
+
+  <!-- Vite entry point -->
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+
+</html>

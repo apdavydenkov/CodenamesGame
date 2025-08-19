@@ -1,0 +1,302 @@
+/* Container and Layout */
+.container {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: 0.375rem;
+}
+
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  gap: 0.375rem;
+  margin-bottom: 0.375rem;
+  width: 100%;
+  height: calc(100vh - 3.5rem);
+  min-height: 0;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+@media screen and (orientation: portrait) {
+  .game-grid {
+    height: auto;
+    aspect-ratio: 0.8;
+    margin: auto 0;
+  }
+}
+
+/* Base Card Styles */
+.game-card {
+  position: relative;
+  cursor: pointer;
+  border-radius: 2vmin;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  user-select: none;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: background-color 0.3s ease-in-out;
+}
+
+/* Background Image Animation */
+.game-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 2vmin;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  z-index: 1;
+}
+
+.card-content {
+  width: calc(100% - 3vmin);
+  height: calc(100% - 3vmin);
+  border: 0.4vmin solid #2d231926;
+  border-radius: 2vmin;
+  background: transparent;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.card-word {
+  font-weight: bold;
+  text-align: center;
+  line-height: 1.2;
+  font-size: 3vmin;
+  z-index: 20;
+  position: relative;
+  padding: 1vmin;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  pointer-events: none;
+  color: white;
+}
+
+/* Color Overlay */
+.game-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 2vmin;
+  z-index: 5;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* Card Flip Animation */
+.card-flipped {
+  transform: rotateY(180deg);
+  transition: transform 1s ease-in-out;
+}
+
+.card-flipped .card-content {
+  opacity: 0;
+  transition: opacity 0.1s ease-in-out 0.4s;
+}
+
+/* Glass Effect for Unrevealed Cards */
+.card-unrevealed .card-content::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+  border-radius: 2vmin;
+  background-image: 
+    linear-gradient(-45deg, transparent 0%, transparent calc(12% - 0.6vmin), rgba(255, 255, 255, 0.216) calc(12% - 0.6vmin), rgba(255, 255, 255, 0.216) calc(12% + 0.6vmin), transparent calc(12% + 0.6vmin), transparent 100%),
+    linear-gradient(-45deg, transparent 0%, transparent calc(40% - 1.4vmin), rgba(255, 255, 255, 0.216) calc(40% - 1.4vmin), rgba(255, 255, 255, 0.216) calc(40% + 1.4vmin), transparent calc(40% + 1.4vmin), transparent 100%),
+    linear-gradient(-45deg, transparent 0%, transparent calc(70% - 0.4vmin), rgba(255, 255, 255, 0.216) calc(70% - 0.4vmin), rgba(255, 255, 255, 0.216) calc(70% + 0.4vmin), transparent calc(70% + 0.4vmin), transparent 100%),
+    linear-gradient(-45deg, transparent 0%, transparent calc(85% - 0.9vmin), rgba(255, 255, 255, 0.216) calc(85% - 0.9vmin), rgba(255, 255, 255, 0.216) calc(85% + 0.9vmin), transparent calc(85% + 0.9vmin), transparent 100%);
+  background-position: -35% 0, -15% 0, -40% 0, -20% 0;
+}
+
+/* Card Color Variants */
+.card-unrevealed {
+  background-color: #E4D6C5;
+}
+
+.card-unrevealed .card-word {
+  color: #39241C;
+}
+
+.card-blue {
+  background-color: #2563eb;
+}
+
+.card-blue::after {
+  background-color: rgba(37, 99, 235, 0.6);
+  opacity: 1;
+}
+
+.card-red {
+  background-color: #dc2626;
+}
+
+.card-red::after {
+  background-color: rgba(220, 38, 38, 0.6);
+  opacity: 1;
+}
+
+.card-black {
+  background-color: #111827;
+}
+
+.card-black::after {
+  background-color: rgba(17, 24, 39, 0.6);
+  opacity: 1;
+}
+
+.card-neutral {
+  background-color: #d1d5db;
+}
+
+.card-neutral::after {
+  background-color: rgba(209, 213, 219, 0.6);
+  opacity: 1;
+}
+
+.card-neutral .card-word {
+  color: #111827;
+}
+
+/* Status Bar and Controls */
+.status-bar {
+  background-color: white;
+  width: 100%;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 0.375rem;
+  width: 100%;
+}
+
+.status-menu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.5rem;
+}
+
+.menu-buttons {
+  display: flex;
+  gap: 0.375rem;
+}
+
+.status-blue,
+.status-red {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.375rem;
+}
+
+.status-blue {
+  background-color: #2563eb;
+}
+
+.status-red {
+  background-color: #dc2626;
+}
+
+.team-score {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: white;
+}
+
+.score-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Button Styles */
+.menu-button,
+.icon-button {
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-button.active {
+  background-color: #f3f4f6;
+  color: #2563eb;
+}
+
+/* Share Components */
+.share-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  justify-content: center;
+}
+
+.share-icons {
+  display: flex;
+  gap: 0.375rem;
+  margin-top: 0.5rem;
+  justify-content: center;
+}
+
+/* Captain Button */
+.captain-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.captain-button .button-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.captain-button .press-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.1);
+  transition: width 50ms linear;
+  z-index: 15;
+}
