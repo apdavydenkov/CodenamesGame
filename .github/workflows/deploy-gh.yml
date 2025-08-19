@@ -27,6 +27,7 @@ jobs:
       - name: Build
         run: npm run build
         env:
+          NODE_ENV: production
           PUBLIC_URL: https://code-names.ru
 
       - name: Setup Pages

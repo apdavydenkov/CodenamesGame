@@ -1,5 +1,3 @@
-// API сервис для работы с ИИ (заглушка)
-
 /**
  * Генерация слов через ИИ по теме
  * @param {string} topic - тема для генерации слов
@@ -9,7 +7,7 @@ export const generateAIWords = async (topic) => {
   try {
     console.log(`[ИИ] Запрос генерации слов для темы: "${topic}"`);
     
-    const response = await fetch('/api/generate-words', {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/generate-words`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
