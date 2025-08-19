@@ -48,7 +48,7 @@ const App = () => {
 
   const loadDictionary = async (filename) => {
     try {
-      const response = await fetch(`/dictionaries/${filename}`);
+      const response = await fetch(`/dictionaries/${filename}`, { method: 'GET' });
       if (!response.ok) return null;
       
       const contentType = response.headers.get('content-type');
@@ -59,7 +59,7 @@ const App = () => {
       const dictionary = await response.json();
       return dictionary;
     } catch (error) {
-      return null; // Тихо игнорируем ошибки - это нормально когда файл не найден
+      return null;
     }
   };
 

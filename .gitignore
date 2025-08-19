@@ -47,3 +47,7 @@ pids
 # Generated sitemaps (будут пересоздаваться при сборке)
 /public/sitemaps/
 
+# Archives
+*.rar
+*.zip
+
