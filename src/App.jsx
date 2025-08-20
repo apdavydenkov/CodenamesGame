@@ -170,11 +170,12 @@ const App = () => {
       }
 
       // Если ключ невалидный или его нет - создаем новую игру
-      const newKey = generateNewKey(dictionary.index);
+      const dictionaryIndex = 0; // Первый словарь
+      const newKey = generateNewKey(dictionaryIndex);
       const gameData = await generateGameFromKey(
         newKey,
         dictionary.words,
-        dictionary.index
+        dictionaryIndex
       );
 
       if (gameData) {

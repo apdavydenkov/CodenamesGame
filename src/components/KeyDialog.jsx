@@ -76,7 +76,10 @@ const KeyDialog = ({
   const handleNewKey = () => {
     // ТОЛЬКО обычные ключи! ИИ-ключи генерируются в MenuDialog
     if (currentDictionary && currentDictionary.id !== "ai_dictionary") {
-      const newKey = generateNewKey(currentDictionary.index);
+      // Находим индекс текущего словаря среди обычных словарей
+      const regularDictionaries = dictionaries.filter(d => d.id !== "ai_dictionary");
+      const dictionaryIndex = regularDictionaries.findIndex(d => d.id === currentDictionary.id);
+      const newKey = generateNewKey(dictionaryIndex);
       setKey(newKey);
       setIsValidInput(true);
       setErrorMessage(""); // Очищаем ошибку
