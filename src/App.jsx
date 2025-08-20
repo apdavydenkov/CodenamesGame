@@ -232,16 +232,16 @@ const App = () => {
       if (isAIKey(key)) {
         keyDictionary = dictionaries.find(d => d.id === "ai_dictionary");
       } else {
-        keyDictionary = dictionaries.find(
-          (d) => d.index === dictionaryIndex
-        );
+        // Берем обычные словари (без ИИ) по индексу
+        const regularDictionaries = dictionaries.filter(d => d.id !== "ai_dictionary");
+        keyDictionary = regularDictionaries[dictionaryIndex];
       }
 
       if (keyDictionary) {
         newGameData = await generateGameFromKey(
           key,
           keyDictionary.words,
-          keyDictionary.index
+          dictionaryIndex
         );
         if (newGameData) {
           gameDictionary = keyDictionary;
@@ -284,11 +284,12 @@ const App = () => {
         }
       } else {
         // Обычная игра
-        gameKey = generateNewKey(gameDictionary.index);
+        const dictionaryIndex = dictionaries.findIndex(d => d.id === gameDictionary.id);
+        gameKey = generateNewKey(dictionaryIndex);
         newGameData = await generateGameFromKey(
           gameKey,
           gameDictionary.words,
-          gameDictionary.index
+          dictionaryIndex
         );
       }
     }
