@@ -14,7 +14,7 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: true,
+    sourcemap: false,
     rollupOptions: {
       external: ['src/utils/syncLocales.js', 'src/utils/generateSitemaps.js']
     }

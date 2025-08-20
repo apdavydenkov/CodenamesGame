@@ -46,39 +46,25 @@ const App = () => {
   const [aiTopic, setAITopic] = useState("");
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
 
-  const loadDictionary = async (filename) => {
+  // Загрузка всех словарей из объединенного файла с кешированием
+  const loadAllDictionaries = async () => {
     try {
-      const response = await fetch(`/dictionaries/${filename}`, { method: 'GET' });
-      if (!response.ok) return null;
+      const cacheKey = 'codenames_dictionaries';
+      const cached = localStorage.getItem(cacheKey);
       
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        return null;
+      if (cached) {
+        return JSON.parse(cached);
       }
       
-      const dictionary = await response.json();
-      return dictionary;
+      const response = await fetch('/dictionaries/dictionaries.json');
+      const data = await response.json();
+      
+      localStorage.setItem(cacheKey, JSON.stringify(data.dictionaries));
+      return data.dictionaries;
     } catch (error) {
-      return null;
+      console.error('Ошибка загрузки словарей:', error);
+      return [];
     }
-  };
-
-  // Функция для автоматического поиска всех JSON словарей
-  const loadAllDictionaries = async () => {
-    const dictionaries = [];
-    let index = 1;
-    
-    while (true) {
-      const filename = `dic-${index}.json`;
-      const dictionary = await loadDictionary(filename);
-      
-      if (!dictionary) break; // Если словарь не найден, останавливаемся
-      
-      dictionaries.push(dictionary);
-      index++;
-    }
-    
-    return dictionaries;
   };
 
   const loadAIDictionary = () => {
@@ -149,16 +135,14 @@ const App = () => {
         if (isAIKey(keyFromUrl)) {
           keyDictionary = aiDictionary;
         } else {
-          keyDictionary = validDictionaries.find(
-            (d) => d.index === dictionaryIndex
-          );
+          keyDictionary = validDictionaries[dictionaryIndex];
         }
 
         if (keyDictionary) {
           const gameData = await generateGameFromKey(
             keyFromUrl,
             keyDictionary.words,
-            keyDictionary.index
+            dictionaryIndex
           );
 
           if (gameData) {
