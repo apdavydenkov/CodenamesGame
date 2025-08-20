@@ -134,6 +134,13 @@ export default {
     officialDictionary: "Официальный словарь GaGa Games"
   },
 
+  // Диалог выбора языка
+  languageDialog: {
+    title: "Выбор языка",
+    selectLanguage: "Выберите язык интерфейса:",
+    close: "Закрыть"
+  },
+
   // Информационный диалог
   info: {
     title: "О приложении",

@@ -143,5 +143,10 @@ export default {
     "paste": "Einfügen",
     "clear": "Löschen",
     "close": "Schließen"
+  },
+  "languageDialog": {
+    "title": "Sprachauswahl",
+    "selectLanguage": "Sprache der Benutzeroberfläche auswählen:",
+    "close": "Schließen"
   }
 };

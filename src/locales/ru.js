@@ -143,5 +143,10 @@ export default {
     "paste": "Вставить",
     "clear": "Очистить",
     "close": "Закрыть"
+  },
+  "languageDialog": {
+    "title": "",
+    "selectLanguage": "",
+    "close": ""
   }
 };

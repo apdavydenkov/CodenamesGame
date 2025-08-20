@@ -143,5 +143,10 @@ export default {
     "paste": "Vložit",
     "clear": "Vymazat",
     "close": "Zavřít"
+  },
+  "languageDialog": {
+    "title": "Výběr jazyka",
+    "selectLanguage": "Vyberte jazyk rozhraní:",
+    "close": "Zavřít"
   }
 };

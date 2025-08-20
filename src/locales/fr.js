@@ -143,5 +143,10 @@ export default {
     "paste": "Coller",
     "clear": "Effacer",
     "close": "Fermer"
+  },
+  "languageDialog": {
+    "title": "Sélection de langue",
+    "selectLanguage": "Sélectionner la langue de l'interface :",
+    "close": "Fermer"
   }
 };
