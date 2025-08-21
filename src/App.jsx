@@ -19,7 +19,7 @@ import { useTranslation } from "./hooks/useTranslation";
 import "./styles/game.css";
 
 const App = () => {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [gameState, setGameState] = useState({
     words: [],
     colors: [],
@@ -46,23 +46,64 @@ const App = () => {
   const [aiTopic, setAITopic] = useState("");
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
 
-  // Загрузка всех словарей из объединенного файла с кешированием
-  const loadAllDictionaries = async () => {
+  // Загрузка словарей для текущей локали с умным кешированием
+  const loadAllDictionaries = async (language) => {
+    console.log(`[Dictionary] Loading dictionaries for language: ${language}`);
     try {
-      const cacheKey = 'codenames_dictionaries';
+      const cacheKey = `codenames_dictionaries_${language}`;
       const cached = localStorage.getItem(cacheKey);
+      const url = `/dictionaries/dictionaries_${language}.json`;
       
+      // Проверяем кеш и Last-Modified
       if (cached) {
-        return JSON.parse(cached);
+        try {
+          const cachedData = JSON.parse(cached);
+          
+          // Если есть данные но нет lastModified (старый формат) - обновляем
+          if (cachedData.data && cachedData.lastModified) {
+            console.log(`[Dictionary] Checking if ${language} dictionaries need update...`);
+            
+            // Делаем HEAD запрос для проверки Last-Modified
+            const headResponse = await fetch(url, { method: 'HEAD' });
+            const serverLastModified = headResponse.headers.get('Last-Modified');
+            
+            if (serverLastModified === cachedData.lastModified) {
+              console.log(`[Dictionary] Using cached dictionaries for ${language} (up to date)`);
+              console.log(`[Dictionary] Cached dictionaries count: ${cachedData.data.length}`);
+              return cachedData.data;
+            }
+            
+            console.log(`[Dictionary] Cache outdated for ${language}, reloading...`);
+          } else {
+            console.log(`[Dictionary] Old cache format for ${language}, updating...`);
+          }
+        } catch (e) {
+          console.log(`[Dictionary] Invalid cache for ${language}, reloading...`);
+        }
       }
       
-      const response = await fetch('/dictionaries/dictionaries.json');
-      const data = await response.json();
+      // Загружаем с сервера
+      console.log(`[Dictionary] Fetching dictionaries from ${url}`);
+      const response = await fetch(url);
       
-      localStorage.setItem(cacheKey, JSON.stringify(data.dictionaries));
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      const lastModified = response.headers.get('Last-Modified');
+      console.log(`[Dictionary] Loaded ${data.dictionaries.length} dictionaries for ${language}`);
+      
+      // Сохраняем в новом формате с метаданными
+      const cacheData = {
+        data: data.dictionaries,
+        lastModified: lastModified
+      };
+      localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+      
       return data.dictionaries;
     } catch (error) {
-      console.error('Ошибка загрузки словарей:', error);
+      console.error(`[Dictionary] Error loading dictionaries for ${language}:`, error);
       return [];
     }
   };
@@ -71,7 +112,7 @@ const App = () => {
     // Виртуальный ИИ-словарь
     return {
       id: "ai_dictionary", 
-      index: 3,
+      index: 99,
       title: t('dictionaries.aiDictionary'),
       words: [], // Слова будут загружаться динамически
     };
@@ -113,19 +154,23 @@ const App = () => {
 
   useEffect(() => {
     const init = async () => {
-      // Автоматически загружаем все JSON словари
-      const validDictionaries = await loadAllDictionaries();
+      // Автоматически загружаем JSON словари для текущей локали
+      console.log(`[App] Initializing with language: ${language}`);
+      const validDictionaries = await loadAllDictionaries(language);
+      console.log(`[App] Valid dictionaries loaded:`, validDictionaries.length);
       
       // Добавляем ИИ-словарь
       const aiDictionary = loadAIDictionary();
       const allDictionaries = [...validDictionaries, aiDictionary];
       setDictionaries(allDictionaries);
+      
 
-      const urlParams = new URLSearchParams(window.location.search);
-      const keyFromUrl = urlParams.get("key");
       const dictionary = validDictionaries[0];
 
       if (!dictionary) return;
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const keyFromUrl = urlParams.get("key");
 
       if (keyFromUrl) {
         const dictionaryIndex = getDictionaryIndexFromKey(keyFromUrl);
@@ -202,10 +247,61 @@ const App = () => {
 
         gameSocket.startNewGame(newKey, gameData.words, gameData.colors);
       }
+      
     };
 
     init();
   }, []);
+
+  // Отдельный useEffect для смены языка - создает новую игру
+  useEffect(() => {
+    const changeLanguage = async () => {
+      console.log(`[App] Language changed to: ${language}`);
+      const validDictionaries = await loadAllDictionaries(language);
+      
+      if (validDictionaries.length === 0) return;
+      
+      // Создаем новую игру с первым словарем новой локали
+      const dictionary = validDictionaries[0];
+      const aiDictionary = loadAIDictionary();
+      const allDictionaries = [...validDictionaries, aiDictionary];
+      setDictionaries(allDictionaries);
+      
+      const dictionaryIndex = 0;
+      const newKey = generateNewKey(dictionaryIndex);
+      const gameData = await generateGameFromKey(newKey, dictionary.words, dictionaryIndex);
+      
+      if (gameData) {
+        setCurrentDictionary(dictionary);
+        setAvailableWords(dictionary.words);
+        setCurrentKey(newKey);
+        
+        const url = new URL(window.location);
+        url.searchParams.set("key", newKey);
+        window.history.pushState({}, "", url.toString());
+        
+        setGameState({
+          words: gameData.words,
+          colors: gameData.colors,
+          revealed: Array(25).fill(false),
+          currentTeam: gameData.startingTeam,
+          remainingCards: {
+            blue: gameData.colors.filter((c) => c === "blue").length,
+            red: gameData.colors.filter((c) => c === "red").length,
+          },
+          gameOver: false,
+          winner: null,
+        });
+        
+        gameSocket.startNewGame(newKey, gameData.words, gameData.colors);
+      }
+    };
+    
+    // Запускаем только если это не первая загрузка (словари уже инициализированы)
+    if (dictionaries.length > 0) {
+      changeLanguage();
+    }
+  }, [language]);
 
   const handleDictionaryChange = (dictionary) => {
     setCurrentDictionary(dictionary);

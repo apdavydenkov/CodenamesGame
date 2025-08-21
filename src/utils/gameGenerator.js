@@ -61,7 +61,7 @@ export function isValidKeyFormat(key) {
   if (lastLetter === 'Н') return true;
   
   // Для обычных словарей - проверяем есть ли буква среди первых N букв массива CONSONANTS
-  const maxDictionaryIndex = 2; // Так как у нас 3 обычных словаря (индексы 0, 1, 2)
+  const maxDictionaryIndex = 7; // максимум 8 словарей до буквы Н
   return CONSONANTS.slice(0, maxDictionaryIndex + 1).includes(lastLetter);
 }
 

@@ -25,7 +25,8 @@
     "generate-sitemaps": "node src/utils/generateSitemaps.js",
     "sync-locales": "node src/utils/syncLocales.js",
     "generate-locale-folders": "node src/utils/generateLocaleFolders.js",
-    "prebuild": "npm run sync-locales && npm run generate-sitemaps",
+    "generate-locale-dictionaries": "node src/utils/generateLocaleDictionaries.js",
+    "prebuild": "npm run sync-locales && npm run generate-sitemaps && npm run generate-locale-dictionaries",
     "postbuild": "npm run generate-locale-folders"
   }
 }
