@@ -33,8 +33,9 @@ async function generateLocaleFolders() {
     : [];
 
   // Удаляем папки локалей, которых больше нет в src/locales
+  // Проверяем только папки длиной 2 символа (коды локалей)
   for (const dir of existingLocaleDirs) {
-    if (!locales.includes(dir) && dir !== 'assets' && dir !== 'static') {
+    if (dir.length === 2 && !locales.includes(dir)) {
       console.log(`Removing unused locale folder: ${dir}`);
       await fs.rm(path.join(distDir, dir), { recursive: true, force: true });
     }
