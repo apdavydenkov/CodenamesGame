@@ -1,6 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /api/
-Disallow: /socket.io/
 
-Clean-param: key
+Sitemap: https://code-names.ru/sitemaps/sitemap.xml
