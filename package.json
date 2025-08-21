@@ -24,6 +24,8 @@
     "clean": "rm -rf dist node_modules",
     "generate-sitemaps": "node src/utils/generateSitemaps.js",
     "sync-locales": "node src/utils/syncLocales.js",
-    "prebuild": "npm run sync-locales && npm run generate-sitemaps"
+    "generate-locale-folders": "node src/utils/generateLocaleFolders.js",
+    "prebuild": "npm run sync-locales && npm run generate-sitemaps",
+    "postbuild": "npm run generate-locale-folders"
   }
 }
