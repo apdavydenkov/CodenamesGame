@@ -89,7 +89,8 @@ export default {
     "cards": "枚",
     "captainHelper": "リーダーヘルパー",
     "menu": "メニュー",
-    "fullscreen": "フルスクリーン"
+    "fullscreen": "フルスクリーン",
+    "chat": ""
   },
   "notifications": {
     "linkCopied": "リンクをコピーしました！",
@@ -148,5 +149,46 @@ export default {
     "paste": "貼り付け",
     "clear": "クリア",
     "close": "閉じる"
+  },
+  "chat": {
+    "title": "",
+    "noMessages": "",
+    "typeMessage": "",
+    "enterName": "",
+    "messageTooLong": "",
+    "tabGame": "",
+    "tabGlobal": "",
+    "loggedInAs": "",
+    "logout": "",
+    "pinCopied": "",
+    "hello": "",
+    "changeNamePrompt": "",
+    "changeNameHint": "",
+    "nameChanged": "",
+    "nameChangeError": ""
+  },
+  "auth": {
+    "title": "",
+    "enterName": "",
+    "namePlaceholder": "",
+    "nameLength": "",
+    "userExists": "",
+    "isYourAccount": "",
+    "enterPin": "",
+    "pinPlaceholder": "",
+    "wrongPin": "",
+    "welcome": "",
+    "pinGenerated": "",
+    "savePinWarning": "",
+    "continueBtn": "",
+    "cancelBtn": "",
+    "loginBtn": "",
+    "backBtn": "",
+    "checkError": "",
+    "registerError": "",
+    "verifyError": "",
+    "nameHint": "",
+    "testWarning": "",
+    "userExistsEnd": ""
   }
 };

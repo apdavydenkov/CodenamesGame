@@ -89,7 +89,8 @@ export default {
     "cards": "cartas",
     "captainHelper": "Assistente do capitão",
     "menu": "Menu",
-    "fullscreen": "Tela cheia"
+    "fullscreen": "Tela cheia",
+    "chat": ""
   },
   "notifications": {
     "linkCopied": "Link copiado!",
@@ -148,5 +149,46 @@ export default {
     "paste": "Colar",
     "clear": "Limpar",
     "close": "Fechar"
+  },
+  "chat": {
+    "title": "",
+    "noMessages": "",
+    "typeMessage": "",
+    "enterName": "",
+    "messageTooLong": "",
+    "tabGame": "",
+    "tabGlobal": "",
+    "loggedInAs": "",
+    "logout": "",
+    "pinCopied": "",
+    "hello": "",
+    "changeNamePrompt": "",
+    "changeNameHint": "",
+    "nameChanged": "",
+    "nameChangeError": ""
+  },
+  "auth": {
+    "title": "",
+    "enterName": "",
+    "namePlaceholder": "",
+    "nameLength": "",
+    "userExists": "",
+    "isYourAccount": "",
+    "enterPin": "",
+    "pinPlaceholder": "",
+    "wrongPin": "",
+    "welcome": "",
+    "pinGenerated": "",
+    "savePinWarning": "",
+    "continueBtn": "",
+    "cancelBtn": "",
+    "loginBtn": "",
+    "backBtn": "",
+    "checkError": "",
+    "registerError": "",
+    "verifyError": "",
+    "nameHint": "",
+    "testWarning": "",
+    "userExistsEnd": ""
   }
 };

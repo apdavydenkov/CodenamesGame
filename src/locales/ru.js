@@ -89,7 +89,8 @@ export default {
     "cards": "карт",
     "captainHelper": "Помощник капитана",
     "menu": "Меню",
-    "fullscreen": "Полный экран"
+    "fullscreen": "Полный экран",
+    "chat": ""
   },
   "notifications": {
     "linkCopied": "Ссылка скопирована!",
@@ -148,5 +149,46 @@ export default {
     "title": "",
     "selectLanguage": "",
     "close": ""
+  },
+  "chat": {
+    "title": "",
+    "noMessages": "",
+    "typeMessage": "",
+    "enterName": "",
+    "messageTooLong": "",
+    "tabGame": "",
+    "tabGlobal": "",
+    "loggedInAs": "",
+    "logout": "",
+    "pinCopied": "",
+    "hello": "",
+    "changeNamePrompt": "",
+    "changeNameHint": "",
+    "nameChanged": "",
+    "nameChangeError": ""
+  },
+  "auth": {
+    "title": "",
+    "enterName": "",
+    "namePlaceholder": "",
+    "nameLength": "",
+    "userExists": "",
+    "isYourAccount": "",
+    "enterPin": "",
+    "pinPlaceholder": "",
+    "wrongPin": "",
+    "welcome": "",
+    "pinGenerated": "",
+    "savePinWarning": "",
+    "continueBtn": "",
+    "cancelBtn": "",
+    "loginBtn": "",
+    "backBtn": "",
+    "checkError": "",
+    "registerError": "",
+    "verifyError": "",
+    "nameHint": "",
+    "testWarning": "",
+    "userExistsEnd": ""
   }
 };

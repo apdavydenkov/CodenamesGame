@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import GameCard from "./components/GameCard";
 import GameStatus from "./components/GameStatus";
 import WinDialog from "./components/WinDialog";
 import KeyDialog from "./components/KeyDialog";
 import MenuDialog from "./components/MenuDialog";
 import CaptainDialog from "./components/CaptainDialog";
+import ChatDialog from "./components/ChatDialog";
+import AuthDialog from "./components/AuthDialog";
+import DebugLogger from "./components/DebugLogger";
 import MetaTags from "./components/MetaTags";
 import LanguageSwitcher from "./components/LanguageSwitcher";
 import {
@@ -37,8 +40,27 @@ const App = () => {
   const [showKeyDialog, setShowKeyDialog] = useState(false);
   const [showMenuDialog, setShowMenuDialog] = useState(false);
   const [showCaptainDialog, setShowCaptainDialog] = useState(false);
+  const [showChatDialog, setShowChatDialog] = useState(false);
+  const [activeChatTab, setActiveChatTab] = useState('game'); // 'game' или 'global'
+  const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [currentKey, setCurrentKey] = useState("");
   const [isServerConnected, setIsServerConnected] = useState(false);
+
+  // Состояние авторизации
+  const [userAuth, setUserAuth] = useState({
+    userId: localStorage.getItem('codenames-user-id') || null,
+    username: localStorage.getItem('codenames-username') || ''
+  });
+
+  // Счётчики непрочитанных сообщений (с загрузкой из localStorage)
+  const [unreadCounts, setUnreadCounts] = useState(() => {
+    try {
+      const saved = localStorage.getItem('codenames-unread-counts');
+      return saved ? JSON.parse(saved) : { game: 0, global: 0 };
+    } catch {
+      return { game: 0, global: 0 };
+    }
+  });
 
   const [availableWords, setAvailableWords] = useState([]);
   const [dictionaries, setDictionaries] = useState([]);
@@ -303,15 +325,65 @@ const App = () => {
     }
   }, [language]);
 
+  // Отслеживание новых сообщений для счётчиков непрочитанных
+  useEffect(() => {
+    if (!gameSocket.socket) return;
+
+    const handleNewMessage = (message) => {
+      const chatKey = message.gameKey === 'GLOBAL_CHAT' ? 'global' : 'game';
+
+      console.log(`[Unread] NEW_MESSAGE: ${message.author} → ${chatKey} (gameKey: ${message.gameKey})`);
+
+      // Игнорируем свои сообщения
+      if (message.userId === userAuth.userId) {
+        console.log('[Unread] ❌ Own message');
+        return;
+      }
+
+      // Не увеличиваем счётчик если чат открыт И это активная вкладка
+      if (showChatDialog && activeChatTab === chatKey) {
+        console.log(`[Unread] ❌ Chat open on ${chatKey} tab`);
+        return;
+      }
+
+      // Увеличиваем счётчик
+      setUnreadCounts(prev => {
+        const newCounts = { ...prev, [chatKey]: prev[chatKey] + 1 };
+        console.log(`[Unread] ✅ ${chatKey}: ${newCounts[chatKey]}`);
+        return newCounts;
+      });
+    };
+
+    gameSocket.socket.on('NEW_MESSAGE', handleNewMessage);
+
+    return () => {
+      gameSocket.socket.off('NEW_MESSAGE', handleNewMessage);
+    };
+  }, [gameSocket.socket, userAuth.userId, showChatDialog, activeChatTab]);
+
   const handleDictionaryChange = (dictionary) => {
     setCurrentDictionary(dictionary);
     setAvailableWords(dictionary.words);
-    
+
     // Очищаем тему при смене словаря
     if (dictionary.id !== "ai_dictionary") {
       setAITopic("");
     }
   };
+
+  // Сохранение счётчиков в localStorage при изменении
+  useEffect(() => {
+    localStorage.setItem('codenames-unread-counts', JSON.stringify(unreadCounts));
+  }, [unreadCounts]);
+
+  // Обнуление счётчиков при открытии чата
+  const handleMarkAsRead = useCallback((chatKey) => {
+    console.log('[Unread] Marking as read:', chatKey);
+    setUnreadCounts(prev => ({
+      ...prev,
+      [chatKey]: 0
+    }));
+  }, []);
 
   const startNewGame = async (key = null) => {
     if (!currentDictionary) return;
@@ -492,10 +564,25 @@ const App = () => {
       <GameStatus
         remainingCards={gameState.remainingCards}
         onMenuClick={() => setShowMenuDialog(true)}
+        onChatClick={() => {
+          console.log('[Chat] Button clicked');
+          console.log('[Auth] User auth:', userAuth);
+
+          // Если не авторизован - показываем диалог авторизации
+          if (!userAuth.username || !userAuth.userId) {
+            console.log('[Auth] User not authorized, showing auth dialog');
+            setShowAuthDialog(true);
+          } else {
+            console.log('[Auth] User authorized, opening chat');
+            setShowChatDialog(true);
+          }
+        }}
         isCaptain={isCaptain}
         isCaptainConfirmed={isCaptainConfirmed}
         onCaptainModeToggle={handleCaptainModeToggle}
         onCaptainHelperClick={handleCaptainHelperClick}
+        unreadCount={unreadCounts.game + unreadCounts.global}
+        isUserAuthorized={!!(userAuth.userId && userAuth.username)}
       />
 
       <WinDialog
@@ -544,6 +631,39 @@ const App = () => {
         isCaptainConfirmed={isCaptainConfirmed}
         gameState={gameState}
       />
+
+      <ChatDialog
+        isOpen={showChatDialog}
+        onClose={() => setShowChatDialog(false)}
+        gameKey={currentKey}
+        socket={gameSocket.socket}
+        userId={userAuth.userId}
+        username={userAuth.username}
+        unreadCounts={unreadCounts}
+        onMarkAsRead={handleMarkAsRead}
+        activeTab={activeChatTab}
+        onTabChange={setActiveChatTab}
+        onLogout={() => {
+          console.log('[Auth] Logging out');
+          localStorage.removeItem('codenames-user-id');
+          localStorage.removeItem('codenames-username');
+          setUserAuth({ userId: null, username: '' });
+          setShowChatDialog(false);
+        }}
+      />
+
+      <AuthDialog
+        isOpen={showAuthDialog}
+        onClose={() => setShowAuthDialog(false)}
+        onSuccess={(authData) => {
+          console.log('[Auth] Success:', authData);
+          setUserAuth(authData);
+          setShowAuthDialog(false);
+          setShowChatDialog(true);
+        }}
+      />
+
+      <DebugLogger />
     </div>
   );
 };

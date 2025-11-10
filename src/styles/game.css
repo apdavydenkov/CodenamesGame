@@ -261,6 +261,21 @@
   color: #2563eb;
 }
 
+.menu-button.chat-button {
+  position: relative;
+}
+
+.unread-badge {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #8b5cf6;
+  font-size: 14px;
+  font-weight: bold;
+  pointer-events: none;
+}
+
 /* Share Components */
 .share-button {
   display: flex;

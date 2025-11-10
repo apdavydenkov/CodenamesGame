@@ -89,7 +89,8 @@ export default {
     "cards": "thẻ",
     "captainHelper": "Trợ lý đội trưởng",
     "menu": "Menu",
-    "fullscreen": "Toàn màn hình"
+    "fullscreen": "Toàn màn hình",
+    "chat": ""
   },
   "notifications": {
     "linkCopied": "Đã sao chép liên kết!",
@@ -148,5 +149,46 @@ export default {
     "paste": "Dán",
     "clear": "Xóa",
     "close": "Đóng"
+  },
+  "chat": {
+    "title": "",
+    "noMessages": "",
+    "typeMessage": "",
+    "enterName": "",
+    "messageTooLong": "",
+    "tabGame": "",
+    "tabGlobal": "",
+    "loggedInAs": "",
+    "logout": "",
+    "pinCopied": "",
+    "hello": "",
+    "changeNamePrompt": "",
+    "changeNameHint": "",
+    "nameChanged": "",
+    "nameChangeError": ""
+  },
+  "auth": {
+    "title": "",
+    "enterName": "",
+    "namePlaceholder": "",
+    "nameLength": "",
+    "userExists": "",
+    "isYourAccount": "",
+    "enterPin": "",
+    "pinPlaceholder": "",
+    "wrongPin": "",
+    "welcome": "",
+    "pinGenerated": "",
+    "savePinWarning": "",
+    "continueBtn": "",
+    "cancelBtn": "",
+    "loginBtn": "",
+    "backBtn": "",
+    "checkError": "",
+    "registerError": "",
+    "verifyError": "",
+    "nameHint": "",
+    "testWarning": "",
+    "userExistsEnd": ""
   }
 };

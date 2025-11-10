@@ -89,7 +89,8 @@ export default {
     "cards": "Karten",
     "captainHelper": "Kapitänshelfer",
     "menu": "Menü",
-    "fullscreen": "Vollbild"
+    "fullscreen": "Vollbild",
+    "chat": ""
   },
   "notifications": {
     "linkCopied": "Link kopiert!",
@@ -148,5 +149,46 @@ export default {
     "title": "Sprachauswahl",
     "selectLanguage": "Sprache der Benutzeroberfläche auswählen:",
     "close": "Schließen"
+  },
+  "chat": {
+    "title": "",
+    "noMessages": "",
+    "typeMessage": "",
+    "enterName": "",
+    "messageTooLong": "",
+    "tabGame": "",
+    "tabGlobal": "",
+    "loggedInAs": "",
+    "logout": "",
+    "pinCopied": "",
+    "hello": "",
+    "changeNamePrompt": "",
+    "changeNameHint": "",
+    "nameChanged": "",
+    "nameChangeError": ""
+  },
+  "auth": {
+    "title": "",
+    "enterName": "",
+    "namePlaceholder": "",
+    "nameLength": "",
+    "userExists": "",
+    "isYourAccount": "",
+    "enterPin": "",
+    "pinPlaceholder": "",
+    "wrongPin": "",
+    "welcome": "",
+    "pinGenerated": "",
+    "savePinWarning": "",
+    "continueBtn": "",
+    "cancelBtn": "",
+    "loginBtn": "",
+    "backBtn": "",
+    "checkError": "",
+    "registerError": "",
+    "verifyError": "",
+    "nameHint": "",
+    "testWarning": "",
+    "userExistsEnd": ""
   }
 };
