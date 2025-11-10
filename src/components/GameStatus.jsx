@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "./Button";
-import { FiMenu, FiMaximize, FiEye } from "react-icons/fi";
+import { FiMenu, FiMaximize, FiEye, FiUserPlus, FiMessageCircle } from "react-icons/fi";
 import { useTranslation } from "../hooks/useTranslation";
 
 const PRESS_DURATION = 1000;
@@ -9,10 +9,13 @@ const PROGRESS_INTERVAL = 50;
 const GameStatus = ({
   remainingCards,
   onMenuClick,
+  onChatClick,
   isCaptain,
   isCaptainConfirmed,
   onCaptainModeToggle,
   onCaptainHelperClick,
+  unreadCount = 0,
+  isUserAuthorized = false,
 }) => {
   const { t } = useTranslation();
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -134,6 +137,21 @@ const GameStatus = ({
                 title={t('status.menu')}
               >
                 <FiMenu size={24} />
+              </Button>
+              <Button
+                variant="outline"
+                onClick={onChatClick}
+                className="menu-button chat-button"
+                title={t('status.chat')}
+              >
+                {isUserAuthorized ? (
+                  <FiMessageCircle size={24} />
+                ) : (
+                  <FiUserPlus size={24} />
+                )}
+                {unreadCount > 0 && (
+                  <span className="unread-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
+                )}
               </Button>
               <Button
                 variant="outline"

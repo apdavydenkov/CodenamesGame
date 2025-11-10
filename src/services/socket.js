@@ -90,6 +90,11 @@ class GameSocket {
           remainingCards: this.remainingCards,
         },
       });
+
+      // Автоматически присоединяемся к комнатам чата
+      console.log('[Socket] Auto-joining chat rooms');
+      this.socket.emit("JOIN_CHAT", { gameKey: gameKey });
+      this.socket.emit("JOIN_CHAT", { gameKey: "GLOBAL_CHAT" });
     }
   }
 

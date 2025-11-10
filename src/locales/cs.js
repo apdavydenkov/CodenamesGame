@@ -89,7 +89,8 @@ export default {
     "cards": "karet",
     "captainHelper": "Pomocník kapitána",
     "menu": "Menu",
-    "fullscreen": "Celá obrazovka"
+    "fullscreen": "Celá obrazovka",
+    "chat": ""
   },
   "notifications": {
     "linkCopied": "Odkaz zkopírován!",
@@ -148,5 +149,46 @@ export default {
     "title": "Výběr jazyka",
     "selectLanguage": "Vyberte jazyk rozhraní:",
     "close": "Zavřít"
+  },
+  "chat": {
+    "title": "",
+    "noMessages": "",
+    "typeMessage": "",
+    "enterName": "",
+    "messageTooLong": "",
+    "tabGame": "",
+    "tabGlobal": "",
+    "loggedInAs": "",
+    "logout": "",
+    "pinCopied": "",
+    "hello": "",
+    "changeNamePrompt": "",
+    "changeNameHint": "",
+    "nameChanged": "",
+    "nameChangeError": ""
+  },
+  "auth": {
+    "title": "",
+    "enterName": "",
+    "namePlaceholder": "",
+    "nameLength": "",
+    "userExists": "",
+    "isYourAccount": "",
+    "enterPin": "",
+    "pinPlaceholder": "",
+    "wrongPin": "",
+    "welcome": "",
+    "pinGenerated": "",
+    "savePinWarning": "",
+    "continueBtn": "",
+    "cancelBtn": "",
+    "loginBtn": "",
+    "backBtn": "",
+    "checkError": "",
+    "registerError": "",
+    "verifyError": "",
+    "nameHint": "",
+    "testWarning": "",
+    "userExistsEnd": ""
   }
 };
