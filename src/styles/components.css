@@ -154,7 +154,7 @@
 
 .menu-footer-left {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.125rem;
 }
 
 .button.ghost {
@@ -376,4 +376,9 @@
 .status-text {
   font-size: 0.75rem;
   color: #6b7280;
+}
+
+/* Telegram button hover */
+.button.telegram-button:hover {
+  color: #24A1DE;
 }

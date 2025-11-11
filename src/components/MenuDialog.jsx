@@ -205,6 +205,14 @@ const MenuDialog = ({
                 >
                   <FiHelpCircle size={20} />
                 </Button>
+                <Button
+                  variant="ghost"
+                  className="icon-button telegram-button"
+                  onClick={() => window.open('https://t.me/codenamesru_game', '_blank')}
+                  title="Сообщество в Телеграм"
+                >
+                  <FaTelegram size={20} />
+                </Button>
                 <div
                   className="server-status"
                   title={serverStatus ? t('menu.serverOnline') : t('menu.serverStarting')}
