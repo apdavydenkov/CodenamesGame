@@ -20,7 +20,6 @@ class GameSocket {
     });
 
     this.socket.on("connect", () => {
-      console.log("Connected to game server");
       if (this.gameKey) {
         this.joinGame(this.gameKey, this.words, this.colors, {
           words: this.words,
@@ -33,7 +32,6 @@ class GameSocket {
     });
 
     this.socket.on("disconnect", () => {
-      console.log("Disconnected from game server");
     });
 
     this.socket.on("connect_error", (error) => {
@@ -90,11 +88,6 @@ class GameSocket {
           remainingCards: this.remainingCards,
         },
       });
-
-      // Автоматически присоединяемся к комнатам чата
-      console.log('[Socket] Auto-joining chat rooms');
-      this.socket.emit("JOIN_CHAT", { gameKey: gameKey });
-      this.socket.emit("JOIN_CHAT", { gameKey: "GLOBAL_CHAT" });
     }
   }
 

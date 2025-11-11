@@ -189,8 +189,8 @@
 
 .input:focus {
   outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 1px #2563eb;
+  border-color: #000;
+  box-shadow: 0 0 0 1px #000;
 }
 
 .input::placeholder {
@@ -348,8 +348,8 @@
 
 .select:focus {
   outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 1px #2563eb;
+  border-color: #000;
+  box-shadow: 0 0 0 1px #000;
 }
 
 .server-status {

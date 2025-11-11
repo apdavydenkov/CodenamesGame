@@ -7,7 +7,6 @@ import MenuDialog from "./components/MenuDialog";
 import CaptainDialog from "./components/CaptainDialog";
 import ChatDialog from "./components/ChatDialog";
 import AuthDialog from "./components/AuthDialog";
-import DebugLogger from "./components/DebugLogger";
 import MetaTags from "./components/MetaTags";
 import LanguageSwitcher from "./components/LanguageSwitcher";
 import {
@@ -70,7 +69,6 @@ const App = () => {
 
   // Загрузка словарей для текущей локали с умным кешированием
   const loadAllDictionaries = async (language) => {
-    console.log(`[Dictionary] Loading dictionaries for language: ${language}`);
     try {
       const cacheKey = `codenames_dictionaries_${language}`;
       const cached = localStorage.getItem(cacheKey);
@@ -83,29 +81,22 @@ const App = () => {
           
           // Если есть данные но нет lastModified (старый формат) - обновляем
           if (cachedData.data && cachedData.lastModified) {
-            console.log(`[Dictionary] Checking if ${language} dictionaries need update...`);
             
             // Делаем HEAD запрос для проверки Last-Modified
             const headResponse = await fetch(url, { method: 'HEAD' });
             const serverLastModified = headResponse.headers.get('Last-Modified');
             
             if (serverLastModified === cachedData.lastModified) {
-              console.log(`[Dictionary] Using cached dictionaries for ${language} (up to date)`);
-              console.log(`[Dictionary] Cached dictionaries count: ${cachedData.data.length}`);
               return cachedData.data;
             }
             
-            console.log(`[Dictionary] Cache outdated for ${language}, reloading...`);
           } else {
-            console.log(`[Dictionary] Old cache format for ${language}, updating...`);
           }
         } catch (e) {
-          console.log(`[Dictionary] Invalid cache for ${language}, reloading...`);
         }
       }
       
       // Загружаем с сервера
-      console.log(`[Dictionary] Fetching dictionaries from ${url}`);
       const response = await fetch(url);
       
       if (!response.ok) {
@@ -114,7 +105,6 @@ const App = () => {
       
       const data = await response.json();
       const lastModified = response.headers.get('Last-Modified');
-      console.log(`[Dictionary] Loaded ${data.dictionaries.length} dictionaries for ${language}`);
       
       // Сохраняем в новом формате с метаданными
       const cacheData = {
@@ -177,9 +167,7 @@ const App = () => {
   useEffect(() => {
     const init = async () => {
       // Автоматически загружаем JSON словари для текущей локали
-      console.log(`[App] Initializing with language: ${language}`);
       const validDictionaries = await loadAllDictionaries(language);
-      console.log(`[App] Valid dictionaries loaded:`, validDictionaries.length);
       
       // Добавляем ИИ-словарь
       const aiDictionary = loadAIDictionary();
@@ -278,7 +266,6 @@ const App = () => {
   // Отдельный useEffect для смены языка - создает новую игру
   useEffect(() => {
     const changeLanguage = async () => {
-      console.log(`[App] Language changed to: ${language}`);
       const validDictionaries = await loadAllDictionaries(language);
       
       if (validDictionaries.length === 0) return;
@@ -325,31 +312,52 @@ const App = () => {
     }
   }, [language]);
 
+  // Автоматическое присоединение к чатам при авторизации
+  useEffect(() => {
+    if (!gameSocket.socket || !userAuth.userId || !currentKey) return;
+
+    const joinChats = () => {
+
+      // Присоединяемся к игровому чату
+      gameSocket.socket.emit("JOIN_CHAT", { gameKey: currentKey });
+
+      // Присоединяемся к глобальному чату
+      gameSocket.socket.emit("JOIN_CHAT", { gameKey: "GLOBAL_CHAT" });
+    };
+
+    // Присоединяемся сразу при монтировании
+    joinChats();
+
+    // Переподключаемся при восстановлении соединения (для мобильных)
+    gameSocket.socket.on('connect', joinChats);
+
+    return () => {
+      gameSocket.socket.off('connect', joinChats);
+    };
+  }, [gameSocket.socket, userAuth.userId, currentKey]);
+
   // Отслеживание новых сообщений для счётчиков непрочитанных
   useEffect(() => {
     if (!gameSocket.socket) return;
 
+
     const handleNewMessage = (message) => {
       const chatKey = message.gameKey === 'GLOBAL_CHAT' ? 'global' : 'game';
 
-      console.log(`[Unread] NEW_MESSAGE: ${message.author} → ${chatKey} (gameKey: ${message.gameKey})`);
 
       // Игнорируем свои сообщения
       if (message.userId === userAuth.userId) {
-        console.log('[Unread] ❌ Own message');
         return;
       }
 
       // Не увеличиваем счётчик если чат открыт И это активная вкладка
       if (showChatDialog && activeChatTab === chatKey) {
-        console.log(`[Unread] ❌ Chat open on ${chatKey} tab`);
         return;
       }
 
       // Увеличиваем счётчик
       setUnreadCounts(prev => {
         const newCounts = { ...prev, [chatKey]: prev[chatKey] + 1 };
-        console.log(`[Unread] ✅ ${chatKey}: ${newCounts[chatKey]}`);
         return newCounts;
       });
     };
@@ -378,7 +386,6 @@ const App = () => {
 
   // Обнуление счётчиков при открытии чата
   const handleMarkAsRead = useCallback((chatKey) => {
-    console.log('[Unread] Marking as read:', chatKey);
     setUnreadCounts(prev => ({
       ...prev,
       [chatKey]: 0
@@ -430,7 +437,6 @@ const App = () => {
         
         try {
           setIsGeneratingAI(true);
-          console.log(`[ИИ] Начало генерации для темы: "${aiTopic}"`);
           
           // Генерируем слова через ИИ и получаем ключ
           const result = await generateAIWords(aiTopic);
@@ -565,15 +571,11 @@ const App = () => {
         remainingCards={gameState.remainingCards}
         onMenuClick={() => setShowMenuDialog(true)}
         onChatClick={() => {
-          console.log('[Chat] Button clicked');
-          console.log('[Auth] User auth:', userAuth);
 
           // Если не авторизован - показываем диалог авторизации
           if (!userAuth.username || !userAuth.userId) {
-            console.log('[Auth] User not authorized, showing auth dialog');
             setShowAuthDialog(true);
           } else {
-            console.log('[Auth] User authorized, opening chat');
             setShowChatDialog(true);
           }
         }}
@@ -644,7 +646,6 @@ const App = () => {
         activeTab={activeChatTab}
         onTabChange={setActiveChatTab}
         onLogout={() => {
-          console.log('[Auth] Logging out');
           localStorage.removeItem('codenames-user-id');
           localStorage.removeItem('codenames-username');
           setUserAuth({ userId: null, username: '' });
@@ -656,14 +657,12 @@ const App = () => {
         isOpen={showAuthDialog}
         onClose={() => setShowAuthDialog(false)}
         onSuccess={(authData) => {
-          console.log('[Auth] Success:', authData);
           setUserAuth(authData);
           setShowAuthDialog(false);
           setShowChatDialog(true);
         }}
       />
 
-      <DebugLogger />
     </div>
   );
 };

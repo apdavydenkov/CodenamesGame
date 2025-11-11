@@ -21,7 +21,7 @@ export default {
     "title": "Game Menu",
     "captainMode": "Captain Mode",
     "dictionary": "Dictionary:",
-    "aiTopic": "Topic (or several) and desired language (or several... yes-yes several languages):",
+    "aiTopic": "Topic (or several) and desired language (or several... yes-yes several languages). Generation takes ~15 sec:",
     "aiTopicPlaceholder": "For example: food in English, Harry Potter in Korean",
     "newGame": "New Game",
     "gameKey": "Game Key",

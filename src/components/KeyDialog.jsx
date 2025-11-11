@@ -93,7 +93,6 @@ const KeyDialog = ({
       return;
     }
 
-    console.log(`[KeyDialog] Создание игры по ключу: ${key}`);
     
     try {
       await onKeySubmit(key);
