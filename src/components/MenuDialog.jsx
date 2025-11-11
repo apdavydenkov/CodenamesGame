@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -60,8 +60,8 @@ const MenuDialog = ({
         try {
           await navigator.clipboard.writeText(url.toString());
           setShowNotification(true);
-        } catch (err) {
-          console.error("Failed to copy link:", err);
+        } catch {
+          // Clipboard API may fail
         }
         return;
     }

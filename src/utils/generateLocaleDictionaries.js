@@ -30,7 +30,7 @@ async function generateLocaleDictionaries() {
       // Проверяем существование файла
       await fs.access(dictionaryFile);
       console.log(`✓ Dictionary file exists: dictionaries_${locale}.json`);
-    } catch (error) {
+    } catch {
       // Файл не существует - создаем пустой
       await fs.writeFile(dictionaryFile, JSON.stringify(emptyDictionaries, null, 2));
       console.log(`+ Created empty dictionary: dictionaries_${locale}.json`);

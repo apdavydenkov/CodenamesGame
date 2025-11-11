@@ -1,5 +1,4 @@
 import { getAIGameByKey } from '../services/aiService';
-import { VALID_KEY_CONSONANTS, VALID_KEY_VOWELS } from './gameGenerator';
 
 // Функция для создания детерминированного рандома на основе сида
 function mulberry32(a) {
@@ -31,51 +30,28 @@ export function isAIKey(key) {
 }
 
 /**
- * Генерация нового ИИ-ключа
- * @returns {string} - новый ключ формата СГСГСГН
- */
-export function generateNewAIKey() {
-  const key = [];
-  
-  // Генерируем СГСГСГ паттерн
-  for (let i = 0; i < 6; i++) {
-    const isVowel = i % 2 === 1;
-    const letters = isVowel ? VALID_KEY_VOWELS : VALID_KEY_CONSONANTS;
-    key.push(letters[Math.floor(Math.random() * letters.length)]);
-  }
-  
-  // Добавляем букву ИИ-словаря
-  key.push('Н');
-  
-  return key.join('');
-}
-
-/**
  * Генерация игры на основе ИИ-ключа
  * @param {string} key - ИИ-ключ
  * @returns {Promise<{words: string[], colors: string[], startingTeam: string} | null>}
  */
 export async function generateAIGameFromKey(key) {
   if (!isAIKey(key)) {
-    console.error('[ИИ] Неверный формат ИИ-ключа:', key);
     return null;
   }
-  
+
   // Загружаем слова из файла
   const aiGame = await getAIGameByKey(key);
   if (!aiGame) {
-    console.error('[ИИ] ИИ-игра не найдена для ключа:', key);
     return null;
   }
-  
+
   if (!aiGame.words || aiGame.words.length < 25) {
-    console.error('[ИИ] Недостаточно слов в ИИ-игре:', aiGame.words?.length);
     return null;
   }
-  
+
   // Берем первые 25 слов
   const gameWords = aiGame.words.slice(0, 25);
-  
+
   // Создаем сид на основе первых 6 букв ключа (как в обычных играх)
   const seed = key
     .slice(0, 6)
@@ -85,10 +61,10 @@ export async function generateAIGameFromKey(key) {
     }, 0);
 
   const random = mulberry32(seed);
-  
+
   // Определяем начинающую команду на основе первой буквы
   const firstTeamBlue = key.charCodeAt(0) % 2 === 0;
-  
+
   // Создаем базовый набор цветов
   const colors = [
     ...Array(9).fill(firstTeamBlue ? "blue" : "red"),
@@ -96,12 +72,10 @@ export async function generateAIGameFromKey(key) {
     ...Array(7).fill("neutral"),
     "black",
   ];
-  
+
   // Перемешиваем цвета с тем же генератором
   shuffleArray(colors, random);
-  
-  console.log(`[ИИ] Сгенерирована игра для ключа ${key}, тема: "${aiGame.topic}"`);
-  
+
   return {
     words: gameWords,
     colors: colors,

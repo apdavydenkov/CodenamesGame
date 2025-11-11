@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import {
   Dialog,
   DialogContent,
@@ -26,7 +26,6 @@ const ChatDialog = ({ isOpen, onClose, gameKey, socket, userId, username, unread
     // Получаем PIN из localStorage
     const pin = localStorage.getItem('codenames-pin');
     if (!pin) {
-      console.error('[Auth] ❌ PIN not found');
       alert('Ошибка: PIN-код не найден. Перезайдите в чат.');
       return;
     }
@@ -47,11 +46,9 @@ const ChatDialog = ({ isOpen, onClose, gameKey, socket, userId, username, unread
         alert(t('chat.nameChanged'));
         window.location.reload(); // Перезагрузка для обновления username
       } else {
-        console.error(`[Auth] ❌ Name change failed:`, result.error);
         alert(result.error || t('chat.nameChangeError'));
       }
-    } catch (error) {
-      console.error(`[Auth] ❌ Exception:`, error);
+    } catch {
       alert(t('chat.nameChangeError'));
     }
   }, [userId, username, t]);
@@ -137,7 +134,6 @@ const ChatDialog = ({ isOpen, onClose, gameKey, socket, userId, username, unread
 
     // Слушаем ошибки
     const handleChatError = ({ message: errorMessage }) => {
-      console.error(`[Chat] ❌ ERROR: ${errorMessage}`);
       alert(errorMessage);
     };
 
@@ -167,7 +163,6 @@ const ChatDialog = ({ isOpen, onClose, gameKey, socket, userId, username, unread
     // Получаем PIN из localStorage
     const pin = localStorage.getItem('codenames-pin');
     if (!pin) {
-      console.error('[Chat] ❌ PIN not found');
       alert('Ошибка: PIN-код не найден. Перезайдите в чат.');
       setIsSending(false);
       return;

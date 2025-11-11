@@ -146,6 +146,3 @@ export function getDictionaryIndexFromKey(key) {
   return CONSONANTS.indexOf(key[6]);
 }
 
-// Экспортируем константы для использования в других модулях
-export const VALID_KEY_CONSONANTS = CONSONANTS;
-export const VALID_KEY_VOWELS = VOWELS;

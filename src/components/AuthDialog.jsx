@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -7,7 +7,6 @@ import {
 } from "./Dialog";
 import { Button } from "./Button";
 import { Input } from "./Input";
-import { FiAlertCircle, FiKey } from "react-icons/fi";
 import { useTranslation } from "../hooks/useTranslation";
 
 const API_URL = import.meta.env.VITE_API_URL || "https://server.code-names.ru";
@@ -65,8 +64,7 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }) => {
         // Имя свободно - зарегистрировать
         await handleRegister();
       }
-    } catch (err) {
-      console.error('[AuthDialog] Error checking username:', err);
+    } catch {
       setError(t('auth.checkError'));
     } finally {
       setIsLoading(false);
@@ -107,8 +105,7 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }) => {
       } else {
         setError(data.error || t('auth.registerError'));
       }
-    } catch (err) {
-      console.error('[AuthDialog] Error registering:', err);
+    } catch {
       setError(t('auth.registerError'));
     } finally {
       setIsLoading(false);
@@ -153,8 +150,7 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }) => {
       } else {
         setError(data.error || t('auth.wrongPin'));
       }
-    } catch (err) {
-      console.error('[AuthDialog] Error verifying PIN:', err);
+    } catch {
       setError(t('auth.verifyError'));
     } finally {
       setIsLoading(false);
@@ -175,8 +171,8 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }) => {
       await navigator.clipboard.writeText(generatedPin);
       setPinCopied(true);
       setTimeout(() => setPinCopied(false), 2000);
-    } catch (err) {
-      console.error('[Auth] Failed to copy PIN:', err);
+    } catch {
+      // Clipboard API may fail, silently ignore
     }
   };
 
