@@ -28,8 +28,8 @@ export default {
     "shareGame": "Поделиться этой игрой",
     "close": "Закрыть",
     "generating": "Генерирую игру...",
-    "serverOnline": "Режим онлайн",
-    "serverStarting": "Запуск онлайна...",
+    "serverOnline": "Онлайн",
+    "serverStarting": "Офлайн",
     "information": "Информация"
   },
   "share": {

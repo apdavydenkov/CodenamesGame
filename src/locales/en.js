@@ -28,8 +28,8 @@ export default {
     "shareGame": "Share this game",
     "close": "Close",
     "generating": "Generating game...",
-    "serverOnline": "Online Mode",
-    "serverStarting": "Starting online...",
+    "serverOnline": "Online",
+    "serverStarting": "Offline",
     "information": "Information"
   },
   "share": {

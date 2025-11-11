@@ -275,9 +275,9 @@
      6. Common Button Styles
      ========================================================================== */
 .icon-button {
-  padding: 0.5rem;
-  min-width: 2.5rem;
-  height: 2.5rem;
+  padding: 0.25rem;
+  min-width: auto;
+  height: auto;
   display: flex;
   align-items: center;
   justify-content: center;
