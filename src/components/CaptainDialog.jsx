@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   Dialog,
   DialogContent,
@@ -107,7 +107,7 @@ const CaptainDialog = ({
   const dragItem = useRef(null);
   const dragOverItem = useRef(null);
 
-  const getTeamWords = (team) => {
+  const getTeamWords = useCallback((team) => {
     if (!gameState?.words) return [];
 
     const words = gameState.words
@@ -134,7 +134,7 @@ const CaptainDialog = ({
     }
 
     return [...unrevealed, ...revealed];
-  };
+  }, [gameState, unrevealedOrders]);
 
   const dragHandlers = {
     start: (e, item) => {
@@ -195,7 +195,7 @@ const CaptainDialog = ({
         return newOrders;
       });
     }
-  }, [gameState]);
+  }, [gameState, getTeamWords]);
 
   const handleClose = () => {
     setPhrase("");

@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from '../hooks/useTranslation';
 import LanguageDialog from './LanguageDialog';
 
 const LanguageSwitcher = () => {
-  const { language, setLanguage, availableLanguages, translations } = useTranslation();
+  const { language, setLanguage, translations } = useTranslation();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleLanguageChange = (newLanguage) => {

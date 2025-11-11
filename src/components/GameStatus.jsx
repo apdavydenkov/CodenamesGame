@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "./Button";
 import { FiMenu, FiMaximize, FiEye, FiUserPlus, FiMessageCircle } from "react-icons/fi";
 import { useTranslation } from "../hooks/useTranslation";
@@ -43,8 +43,8 @@ const GameStatus = ({
       } else {
         await document.exitFullscreen();
       }
-    } catch (err) {
-      console.error("Error toggling fullscreen:", err);
+    } catch {
+      // Fullscreen API may not be available
     }
   };
 

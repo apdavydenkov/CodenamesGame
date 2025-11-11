@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import GameCard from "./components/GameCard";
 import GameStatus from "./components/GameStatus";
 import WinDialog from "./components/WinDialog";
@@ -61,7 +61,6 @@ const App = () => {
     }
   });
 
-  const [availableWords, setAvailableWords] = useState([]);
   const [dictionaries, setDictionaries] = useState([]);
   const [currentDictionary, setCurrentDictionary] = useState(null);
   const [aiTopic, setAITopic] = useState("");
@@ -81,18 +80,17 @@ const App = () => {
           
           // Если есть данные но нет lastModified (старый формат) - обновляем
           if (cachedData.data && cachedData.lastModified) {
-            
+
             // Делаем HEAD запрос для проверки Last-Modified
             const headResponse = await fetch(url, { method: 'HEAD' });
             const serverLastModified = headResponse.headers.get('Last-Modified');
-            
+
             if (serverLastModified === cachedData.lastModified) {
               return cachedData.data;
             }
-            
-          } else {
           }
-        } catch (e) {
+        } catch {
+          // Ignore cache errors, will fetch fresh data
         }
       }
       
@@ -202,7 +200,6 @@ const App = () => {
 
           if (gameData) {
             setCurrentDictionary(keyDictionary);
-            setAvailableWords(keyDictionary.words);
             setCurrentKey(keyFromUrl);
 
             setGameState({
@@ -235,7 +232,6 @@ const App = () => {
 
       if (gameData) {
         setCurrentDictionary(dictionary);
-        setAvailableWords(dictionary.words);
         setCurrentKey(newKey);
 
         const url = new URL(window.location);
@@ -261,7 +257,8 @@ const App = () => {
     };
 
     init();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run once on mount - intentionally empty deps
 
   // Отдельный useEffect для смены языка - создает новую игру
   useEffect(() => {
@@ -282,7 +279,6 @@ const App = () => {
       
       if (gameData) {
         setCurrentDictionary(dictionary);
-        setAvailableWords(dictionary.words);
         setCurrentKey(newKey);
         
         const url = new URL(window.location);
@@ -310,7 +306,8 @@ const App = () => {
     if (dictionaries.length > 0) {
       changeLanguage();
     }
-  }, [language]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [language]); // dictionaries.length is guard, not dependency
 
   // Автоматическое присоединение к чатам при авторизации
   useEffect(() => {
@@ -334,7 +331,7 @@ const App = () => {
     return () => {
       gameSocket.socket.off('connect', joinChats);
     };
-  }, [gameSocket.socket, userAuth.userId, currentKey]);
+  }, [userAuth.userId, currentKey]);
 
   // Отслеживание новых сообщений для счётчиков непрочитанных
   useEffect(() => {
@@ -367,11 +364,10 @@ const App = () => {
     return () => {
       gameSocket.socket.off('NEW_MESSAGE', handleNewMessage);
     };
-  }, [gameSocket.socket, userAuth.userId, showChatDialog, activeChatTab]);
+  }, [userAuth.userId, showChatDialog, activeChatTab]);
 
   const handleDictionaryChange = (dictionary) => {
     setCurrentDictionary(dictionary);
-    setAvailableWords(dictionary.words);
 
     // Очищаем тему при смене словаря
     if (dictionary.id !== "ai_dictionary") {
@@ -451,8 +447,7 @@ const App = () => {
           url.searchParams.set("key", gameKey);
           window.location.href = url.toString();
           return;
-        } catch (error) {
-          console.error('[ИИ] Ошибка генерации:', error);
+        } catch {
           alert(t('errors.aiGenerationError'));
         } finally {
           setIsGeneratingAI(false);
@@ -480,7 +475,6 @@ const App = () => {
 
       // Для обычной новой игры (без ключа) - обновляем состояние локально
       setCurrentDictionary(gameDictionary);
-      setAvailableWords(gameDictionary.words);
       setCurrentKey(gameKey);
       setWasWinDialogShown(false);
       setIsCaptain(false);
@@ -604,6 +598,7 @@ const App = () => {
           setShowMenuDialog(true);
         }}
         currentDictionary={currentDictionary}
+        dictionaries={dictionaries}
       />
 
       <MenuDialog

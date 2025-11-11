@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -22,6 +22,7 @@ const KeyDialog = ({
   currentKey,
   onBack,
   currentDictionary,
+  dictionaries,
 }) => {
   const { t } = useTranslation();
   const [key, setKey] = useState(currentKey || "");
@@ -47,8 +48,8 @@ const KeyDialog = ({
     try {
       await navigator.clipboard.writeText(key);
       setShowNotification(true);
-    } catch (err) {
-      console.error("Failed to copy:", err);
+    } catch {
+      // Clipboard API may fail
     }
   };
 
@@ -63,8 +64,8 @@ const KeyDialog = ({
       setIsValidInput(
         formattedText.length !== 7 || isValidKeyFormat(formattedText)
       );
-    } catch (err) {
-      console.error("Failed to paste:", err);
+    } catch {
+      // Clipboard API may fail
     }
   };
 

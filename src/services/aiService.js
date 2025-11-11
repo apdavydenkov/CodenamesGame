@@ -24,15 +24,13 @@ export const generateAIWords = async (topic) => {
         topic: result.topic
       };
     } else {
-      console.error(`[ИИ] Ошибка генерации: ${result.message}`);
       return {
         success: false,
         message: result.message
       };
     }
     
-  } catch (error) {
-    console.error('[ИИ] Ошибка запроса:', error);
+  } catch {
     return {
       success: false,
       message: "Connection error"
@@ -64,8 +62,7 @@ export const getAIGameByKey = async (key) => {
     }
     
     return null;
-  } catch (error) {
-    console.error(`[ИИ] Ошибка загрузки игры для ключа ${key}:`, error);
+  } catch {
     return null;
   }
 };

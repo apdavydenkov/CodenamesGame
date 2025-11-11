@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Notification from "./Notification";
 import { useTranslation } from "../hooks/useTranslation";
 import { getBackNumber } from "../utils/cardBacks";
