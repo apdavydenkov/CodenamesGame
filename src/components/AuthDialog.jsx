@@ -24,7 +24,6 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }) => {
 
   useEffect(() => {
     if (isOpen) {
-      console.log('[AuthDialog] Opened');
       setStep('name');
       setUsername('');
       setPin('');
@@ -50,7 +49,6 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }) => {
     setError('');
 
     try {
-      console.log('[AuthDialog] Checking username:', username.trim());
 
       const response = await fetch(`${API_URL}/api/auth/check-user`, {
         method: 'POST',
@@ -59,7 +57,6 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }) => {
       });
 
       const data = await response.json();
-      console.log('[AuthDialog] Check result:', data);
 
       if (data.exists) {
         // Имя занято - спросить "это ваш аккаунт?"
@@ -88,7 +85,6 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }) => {
         localStorage.setItem('codenames-user-id', userId);
       }
 
-      console.log('[AuthDialog] Registering user:', { userId, username: username.trim() });
 
       const response = await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
@@ -100,7 +96,6 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }) => {
       });
 
       const data = await response.json();
-      console.log('[AuthDialog] Register result:', data);
 
       if (data.success) {
         setGeneratedPin(data.pin);
@@ -132,7 +127,6 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }) => {
     setError('');
 
     try {
-      console.log('[AuthDialog] Verifying PIN for user:', username.trim());
 
       const response = await fetch(`${API_URL}/api/auth/verify-pin`, {
         method: 'POST',
@@ -144,7 +138,6 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }) => {
       });
 
       const data = await response.json();
-      console.log('[AuthDialog] Verify result:', data);
 
       if (data.success) {
         // Успешная авторизация
@@ -152,7 +145,6 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }) => {
         localStorage.setItem('codenames-username', data.username);
         localStorage.setItem('codenames-pin', pin.trim()); // Сохраняем PIN
 
-        console.log('[AuthDialog] Login successful:', { userId: data.user_id, username: data.username });
 
         onSuccess({
           userId: data.user_id,
@@ -171,7 +163,6 @@ const AuthDialog = ({ isOpen, onClose, onSuccess }) => {
 
   const handleRegistrationComplete = () => {
     const userId = localStorage.getItem('codenames-user-id');
-    console.log('[AuthDialog] Registration complete:', { userId, username: username.trim() });
 
     onSuccess({
       userId: userId,

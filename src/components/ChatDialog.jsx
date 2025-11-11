@@ -43,7 +43,6 @@ const ChatDialog = ({ isOpen, onClose, gameKey, socket, userId, username, unread
       const result = await response.json();
 
       if (result.success) {
-        console.log(`[Auth] ✅ Name changed: ${username} -> ${result.newUsername}`);
         localStorage.setItem('codenames-username', result.newUsername);
         alert(t('chat.nameChanged'));
         window.location.reload(); // Перезагрузка для обновления username
@@ -72,28 +71,6 @@ const ChatDialog = ({ isOpen, onClose, gameKey, socket, userId, username, unread
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, activeTab]);
 
-  // Загрузка истории обоих чатов при первом открытии
-  const loadedChatsRef = useRef(new Set());
-
-  useEffect(() => {
-    if (isOpen && socket && gameKey) {
-      // Загружаем историю игрового чата если её нет
-      if (!loadedChatsRef.current.has(gameKey)) {
-        socket.emit("JOIN_CHAT", { gameKey: gameKey });
-        loadedChatsRef.current.add(gameKey);
-      }
-
-      // Загружаем историю глобального чата если её нет
-      if (!loadedChatsRef.current.has('GLOBAL_CHAT')) {
-        socket.emit("JOIN_CHAT", { gameKey: "GLOBAL_CHAT" });
-        loadedChatsRef.current.add('GLOBAL_CHAT');
-      }
-    } else if (!isOpen) {
-      // Сбрасываем флаги загрузки при закрытии чата
-      loadedChatsRef.current.clear();
-    }
-  }, [isOpen, socket, gameKey]);
-
   // Подключение к чату и обработка сообщений (всегда активно, не зависит от isOpen)
   useEffect(() => {
     if (!socket) return;
@@ -101,17 +78,14 @@ const ChatDialog = ({ isOpen, onClose, gameKey, socket, userId, username, unread
 
     // Слушаем историю чата
     const handleChatHistory = ({ gameKey: historyGameKey, messages: historyMessages }) => {
-      console.log(`[Chat] 📜 HISTORY received for ${historyGameKey}: ${historyMessages.length} msgs`);
 
       setMessagesCache(prev => {
         const cachedMessages = prev[historyGameKey] || [];
         const cachedCount = cachedMessages.length;
 
-        console.log(`[Chat] 💾 Current cache for ${historyGameKey}: ${cachedCount} msgs`);
 
         // Если кеш пустой - просто записываем историю
         if (cachedCount === 0) {
-          console.log(`[Chat] ✅ Empty cache - setting ${historyMessages.length} messages`);
           return {
             ...prev,
             [historyGameKey]: historyMessages
@@ -123,12 +97,10 @@ const ChatDialog = ({ isOpen, onClose, gameKey, socket, userId, username, unread
         const newMessages = historyMessages.filter(m => !cachedIds.has(m.id));
 
         if (newMessages.length > 0) {
-          console.log(`[Chat] 🔄 MERGING ${newMessages.length} new messages | cached: ${cachedCount}, history: ${historyMessages.length}`);
 
           // Триггерим NEW_MESSAGE события для каждого нового сообщения
           // Это активирует существующую логику подсчёта в App.jsx
           newMessages.forEach(message => {
-            console.log(`[Chat] 🔔 Triggering NEW_MESSAGE for: ${message.author}`);
             // Вызываем все обработчики NEW_MESSAGE вручную через socket._callbacks
             const callbacks = socket._callbacks?.$NEW_MESSAGE || [];
             callbacks.forEach(cb => cb(message));
@@ -139,7 +111,6 @@ const ChatDialog = ({ isOpen, onClose, gameKey, socket, userId, username, unread
             [historyGameKey]: [...cachedMessages, ...newMessages]
           };
         } else {
-          console.log(`[Chat] ⚠️ No new messages (history: ${historyMessages.length}, cached: ${cachedCount})`);
           return prev;
         }
       });
@@ -148,18 +119,15 @@ const ChatDialog = ({ isOpen, onClose, gameKey, socket, userId, username, unread
     // Слушаем новые сообщения
     const handleNewMessage = (message) => {
       const targetChatKey = message.gameKey;
-      console.log(`[Chat] ✉️ NEW MESSAGE: ${message.author} → ${targetChatKey}`);
 
       setMessagesCache(prev => {
         const chatMessages = prev[targetChatKey] || [];
 
         // Избегаем дубликатов
         if (chatMessages.some((m) => m.id === message.id)) {
-          console.log(`[Chat] ⚠️ Duplicate message skipped: ${message.id}`);
           return prev;
         }
 
-        console.log(`[Chat] ✅ Adding to cache: ${targetChatKey} (total: ${chatMessages.length + 1})`);
         return {
           ...prev,
           [targetChatKey]: [...chatMessages, message]
@@ -173,35 +141,14 @@ const ChatDialog = ({ isOpen, onClose, gameKey, socket, userId, username, unread
       alert(errorMessage);
     };
 
-    // Обработка отключения сокета
-    const handleDisconnect = (reason) => {
-      console.log(`[Socket] ❌ DISCONNECTED: ${reason} | Loaded chats:`, loadedChatsRef.current);
-    };
-
-    // Обработка переподключения (когда телефон восстанавливает соединение)
-    const handleReconnect = () => {
-      console.log(`[Socket] 🔄 RECONNECTED - rejoining ${loadedChatsRef.current.length} chats`);
-
-      // Повторно присоединяемся к загруженным чатам
-      loadedChatsRef.current.forEach(chatKey => {
-        console.log(`[Socket] 🔄 Rejoining: ${chatKey}`);
-        socket.emit("JOIN_CHAT", { gameKey: chatKey });
-      });
-    };
-
     socket.on("CHAT_HISTORY", handleChatHistory);
     socket.on("NEW_MESSAGE", handleNewMessage);
     socket.on("CHAT_ERROR", handleChatError);
-    socket.on("disconnect", handleDisconnect);
-    socket.on("connect", handleReconnect);
 
     return () => {
-      console.log('[Socket] 🗑️ Removing all listeners');
       socket.off("CHAT_HISTORY", handleChatHistory);
       socket.off("NEW_MESSAGE", handleNewMessage);
       socket.off("CHAT_ERROR", handleChatError);
-      socket.off("disconnect", handleDisconnect);
-      socket.off("connect", handleReconnect);
     };
   }, [socket]);
 
@@ -234,7 +181,6 @@ const ChatDialog = ({ isOpen, onClose, gameKey, socket, userId, username, unread
       pin: pin,
     };
 
-    console.log(`[Chat] ✅ SEND → ${currentChatKey}`);
 
     socket.emit("SEND_MESSAGE", messageData);
 

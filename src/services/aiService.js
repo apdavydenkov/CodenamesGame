@@ -5,7 +5,6 @@
  */
 export const generateAIWords = async (topic) => {
   try {
-    console.log(`[ИИ] Запрос генерации слов для темы: "${topic}"`);
     
     const response = await fetch(`${import.meta.env.VITE_API_URL}/api/generate-words`, {
       method: 'POST',
@@ -18,7 +17,6 @@ export const generateAIWords = async (topic) => {
     const result = await response.json();
     
     if (result.success) {
-      console.log(`[ИИ] Успешно сгенерирована игра с ключом: ${result.key}`);
       return {
         success: true,
         key: result.key,
@@ -49,7 +47,6 @@ export const generateAIWords = async (topic) => {
  */
 export const getAIGameByKey = async (key) => {
   try {
-    console.log(`[ИИ] Поиск игры для ключа ${key}...`);
     const response = await fetch(`${import.meta.env.VITE_API_URL}/dictionaries/ai_games.json`);
     
     if (!response.ok) {
@@ -60,14 +57,12 @@ export const getAIGameByKey = async (key) => {
     const game = games[key];
     
     if (game) {
-      console.log(`[ИИ] Найдена игра для ключа ${key}, тема: "${game.topic}"`);
       return {
         words: game.words,
         topic: game.topic
       };
     }
     
-    console.log(`[ИИ] Игра с ключом ${key} не найдена`);
     return null;
   } catch (error) {
     console.error(`[ИИ] Ошибка загрузки игры для ключа ${key}:`, error);
