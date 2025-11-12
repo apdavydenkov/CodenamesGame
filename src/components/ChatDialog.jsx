@@ -7,14 +7,29 @@ import {
 } from "./Dialog";
 import { Button } from "./Button";
 import { Input } from "./Input";
-import { FiSend, FiX } from "react-icons/fi";
+import { FiSend, FiX, FiSettings } from "react-icons/fi";
 import { useTranslation } from "../hooks/useTranslation";
 
-const ChatDialog = ({ isOpen, onClose, gameKey, socket, userId, username, unreadCounts, onMarkAsRead, activeTab, onTabChange, onLogout }) => {
+const ChatDialog = ({
+  isOpen,
+  onClose,
+  gameKey,
+  socket,
+  userId,
+  username,
+  unreadCounts,
+  lastReadMessageIds,
+  onMarkAsRead,
+  onUpdateUnreadCount,
+  activeTab,
+  onTabChange,
+  onLogout
+}) => {
   const { t } = useTranslation();
   const [messagesCache, setMessagesCache] = useState({}); // Кеш сообщений по ключам
   const [inputText, setInputText] = useState("");
   const [isSending, setIsSending] = useState(false);
+  const [showSettingsPopup, setShowSettingsPopup] = useState(false);
 
   const handleChangeName = useCallback(async () => {
     const newName = prompt(t('chat.changeNamePrompt'), username);
@@ -59,14 +74,17 @@ const ChatDialog = ({ isOpen, onClose, gameKey, socket, userId, username, unread
 
   const messages = messagesCache[currentChatKey] || [];
 
-  // Обнуление счётчика при открытии или переключении вкладки
+  // Обновление lastReadMessageId при открытии или переключении вкладки
   useEffect(() => {
-    if (isOpen && onMarkAsRead) {
+    if (isOpen && onMarkAsRead && messages.length > 0) {
       const chatKey = activeTab === 'global' ? 'global' : 'game';
-      onMarkAsRead(chatKey);
+      const lastMessage = messages[messages.length - 1];
+
+      // Обновляем lastReadMessageId на ID последнего сообщения
+      onMarkAsRead(chatKey, lastMessage.id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, activeTab]);
+  }, [isOpen, activeTab, messages.length]);
 
   // Подключение к чату и обработка сообщений (всегда активно, не зависит от isOpen)
   useEffect(() => {
@@ -80,9 +98,43 @@ const ChatDialog = ({ isOpen, onClose, gameKey, socket, userId, username, unread
         const cachedMessages = prev[historyGameKey] || [];
         const cachedCount = cachedMessages.length;
 
+        // Определяем chatKey для lastReadMessageIds
+        const chatKey = historyGameKey === 'GLOBAL_CHAT' ? 'global' : 'game';
+        const lastReadId = lastReadMessageIds?.[chatKey];
 
         // Если кеш пустой - просто записываем историю
         if (cachedCount === 0) {
+          // Подсчитываем непрочитанные на основе lastReadMessageId
+          if (lastReadId && historyMessages.length > 0) {
+            const lastReadIndex = historyMessages.findIndex(m => m.id === lastReadId);
+
+            if (lastReadIndex !== -1) {
+              // Считаем все сообщения ПОСЛЕ lastReadId как непрочитанные
+              const unreadCount = historyMessages.length - lastReadIndex - 1;
+
+              if (unreadCount > 0) {
+                // Обновляем счётчик непрочитанных
+                onUpdateUnreadCount(prevCounts => ({
+                  ...prevCounts,
+                  [chatKey]: unreadCount
+                }));
+              }
+            } else {
+              // lastReadId не найден в истории (старое сообщение удалено)
+              // Считаем все сообщения непрочитанными
+              onUpdateUnreadCount(prevCounts => ({
+                ...prevCounts,
+                [chatKey]: historyMessages.length
+              }));
+            }
+          } else if (!lastReadId && historyMessages.length > 0) {
+            // Первый визит - все сообщения непрочитанные
+            onUpdateUnreadCount(prevCounts => ({
+              ...prevCounts,
+              [chatKey]: historyMessages.length
+            }));
+          }
+
           return {
             ...prev,
             [historyGameKey]: historyMessages
@@ -94,7 +146,6 @@ const ChatDialog = ({ isOpen, onClose, gameKey, socket, userId, username, unread
         const newMessages = historyMessages.filter(m => !cachedIds.has(m.id));
 
         if (newMessages.length > 0) {
-
           // Триггерим NEW_MESSAGE события для каждого нового сообщения
           // Это активирует существующую логику подсчёта в App.jsx
           newMessages.forEach(message => {
@@ -146,7 +197,7 @@ const ChatDialog = ({ isOpen, onClose, gameKey, socket, userId, username, unread
       socket.off("NEW_MESSAGE", handleNewMessage);
       socket.off("CHAT_ERROR", handleChatError);
     };
-  }, [socket]);
+  }, [socket, lastReadMessageIds, onUpdateUnreadCount]);
 
   const handleSendMessage = useCallback((e) => {
     e.preventDefault();
@@ -179,7 +230,6 @@ const ChatDialog = ({ isOpen, onClose, gameKey, socket, userId, username, unread
 
     socket.emit("SEND_MESSAGE", messageData);
 
-    // Очищаем поле ввода
     setInputText("");
     setIsSending(false);
   }, [currentChatKey, userId, username, inputText, socket, t]);
@@ -192,47 +242,59 @@ const ChatDialog = ({ isOpen, onClose, gameKey, socket, userId, username, unread
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="chat-dialog-content">
-        <DialogHeader>
-          <div className="chat-header-content">
-            <DialogTitle>{t('chat.title')}</DialogTitle>
-            <div className="chat-header-user">
-              <span className="chat-greeting">
-                {t('chat.hello')}, <strong onClick={handleChangeName} style={{cursor: 'pointer'}} title={t('chat.changeNameHint')}>{username}</strong>
-              </span>
-              <button onClick={onLogout} className="chat-logout-btn-header">
-                {t('chat.logout')}
-              </button>
+        {/* Шапка (фиксированная) */}
+        <div className="chat-header-fixed">
+          <DialogHeader>
+            <div className="chat-header-content">
+              <DialogTitle className="chat-title-greeting">
+                {t('chat.hello')}, <span className="chat-username" onClick={() => setShowSettingsPopup(!showSettingsPopup)} style={{cursor: 'pointer'}}>{username}</span>
+                <button onClick={() => setShowSettingsPopup(!showSettingsPopup)} className="chat-settings-button" aria-label="Settings">
+                  <FiSettings size={18} />
+                </button>
+              </DialogTitle>
               <button onClick={onClose} className="chat-close-button" aria-label="Close">
                 <FiX size={20} />
               </button>
             </div>
+
+            {/* Settings Popup */}
+            {showSettingsPopup && (
+              <div className="chat-settings-popup">
+                <button onClick={() => { handleChangeName(); setShowSettingsPopup(false); }} className="chat-settings-option">
+                  {t('chat.changeName')}
+                </button>
+                <button onClick={() => { onLogout(); setShowSettingsPopup(false); }} className="chat-settings-option">
+                  {t('chat.logout')}
+                </button>
+              </div>
+            )}
+          </DialogHeader>
+
+          {/* Вкладки */}
+          <div className="chat-tabs">
+            <button
+              className={`chat-tab ${activeTab === 'game' ? 'active' : ''}`}
+              onClick={() => onTabChange('game')}
+            >
+              {t('chat.tabGame')}
+              {unreadCounts && unreadCounts.game > 0 && (
+                <span className="tab-badge">+{unreadCounts.game}</span>
+              )}
+            </button>
+            <button
+              className={`chat-tab ${activeTab === 'global' ? 'active' : ''}`}
+              onClick={() => onTabChange('global')}
+            >
+              {t('chat.tabGlobal')}
+              {unreadCounts && unreadCounts.global > 0 && (
+                <span className="tab-badge">+{unreadCounts.global}</span>
+              )}
+            </button>
           </div>
-        </DialogHeader>
-        <div className="chat-container">
-        {/* Вкладки */}
-        <div className="chat-tabs">
-          <button
-            className={`chat-tab ${activeTab === 'game' ? 'active' : ''}`}
-            onClick={() => onTabChange('game')}
-          >
-            {t('chat.tabGame')}
-            {unreadCounts && unreadCounts.game > 0 && (
-              <span className="tab-badge">+{unreadCounts.game}</span>
-            )}
-          </button>
-          <button
-            className={`chat-tab ${activeTab === 'global' ? 'active' : ''}`}
-            onClick={() => onTabChange('global')}
-          >
-            {t('chat.tabGlobal')}
-            {unreadCounts && unreadCounts.global > 0 && (
-              <span className="tab-badge">+{unreadCounts.global}</span>
-            )}
-          </button>
         </div>
 
-        {/* История сообщений */}
-        <div className="chat-messages">
+        {/* История сообщений (прокручивается)  */}
+        <div className="chat-messages-scrollable">
           {messages.length === 0 ? (
             <div className="chat-empty">{t('chat.noMessages')}</div>
           ) : (
@@ -259,26 +321,57 @@ const ChatDialog = ({ isOpen, onClose, gameKey, socket, userId, username, unread
           )}
         </div>
 
-        {/* Форма отправки */}
-        <form className="chat-input-form" onSubmit={handleSendMessage}>
-          <Input
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            placeholder={t('chat.typeMessage')}
-            maxLength={500}
-            disabled={isSending}
-          />
-          <Button
-            type="submit"
-            disabled={!inputText.trim() || isSending}
-            className="chat-send-button"
-          >
-            <FiSend size={20} />
-          </Button>
-        </form>
-      </div>
+        {/* Форма ввода (фиксированная внизу) */}
+        <div className="chat-input-fixed">
+          <form className="chat-input-form" onSubmit={handleSendMessage}>
+            <Input
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              placeholder={t('chat.typeMessage')}
+              maxLength={500}
+              disabled={isSending}
+            />
+            <Button
+              type="submit"
+              disabled={!inputText.trim() || isSending}
+              className="chat-send-button"
+              onMouseDown={(e) => e.preventDefault()}
+            >
+              <FiSend size={20} />
+            </Button>
+          </form>
+        </div>
 
       <style>{`
+        /* Базовая структура чата */
+        .chat-dialog-content {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+          overflow: hidden;
+        }
+
+        .chat-header-fixed {
+          flex-shrink: 0;
+          background: white;
+          z-index: 10;
+        }
+
+        .chat-messages-scrollable {
+          flex: 1;
+          overflow-y: auto;
+          overflow-x: hidden;
+          padding: 0.75rem;
+          display: flex;
+          flex-direction: column-reverse;
+        }
+
+        .chat-input-fixed {
+          flex-shrink: 0;
+          background: white;
+          z-index: 10;
+        }
+
         /* Мобильные стили для диалога */
         @media (max-width: 768px) {
           .dialog-overlay {
@@ -297,35 +390,21 @@ const ChatDialog = ({ isOpen, onClose, gameKey, socket, userId, username, unread
           .chat-dialog-content {
             padding: 0 !important;
             height: 100dvh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-          }
-
-          .chat-dialog-content > * {
-            padding-bottom: 0 !important;
           }
 
           .dialog-header {
+            padding: 0.5rem 0.75rem 0 0.75rem !important;
             margin-bottom: 0 !important;
-            flex-shrink: 0;
-            padding: 0.5rem 0.75rem !important;
-          }
-
-          .chat-container {
-            padding: 0 !important;
-            flex: 1;
-            min-height: 0;
+            position: relative;
           }
 
           .chat-tabs {
-            margin-left: 0;
-            margin-right: 0;
+            margin: 0;
+            padding: 0 0.75rem;
           }
 
-          .chat-messages {
-            margin-left: 0;
-            margin-right: 0;
+          .chat-messages-scrollable {
+            padding: 0.75rem;
           }
 
           .chat-input-form {
@@ -339,56 +418,79 @@ const ChatDialog = ({ isOpen, onClose, gameKey, socket, userId, username, unread
           display: flex;
           align-items: center;
           justify-content: space-between;
-          gap: 1rem;
+          gap: 0.5rem;
           position: relative;
         }
 
-        .chat-header-user {
+        .chat-title-greeting {
+          flex: 1;
+          min-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          font-size: inherit;
+          font-weight: inherit;
           display: flex;
           align-items: center;
-          gap: 0.5rem;
-          font-size: 0.85rem;
         }
 
-        @media (max-width: 768px) {
-          .chat-header-user {
-            font-size: 0.75rem;
-            gap: 0.4rem;
-          }
+        .chat-username {
+          color: inherit;
+          font-weight: inherit;
         }
 
-        .chat-greeting {
-          color: var(--text-secondary, #666);
-          white-space: nowrap;
-        }
-
-        .chat-greeting strong {
-          color: #8b5cf6;
-          font-weight: 600;
-        }
-
-        .chat-logout-btn-header {
-          padding: 0.25rem 0.5rem;
+        .chat-settings-button {
           background: transparent;
-          border: 1px solid #000;
-          border-radius: 4px;
-          color: #000;
-          font-size: 0.75rem;
+          border: none;
           cursor: pointer;
-          transition: all 0.2s;
-          white-space: nowrap;
+          color: inherit;
+          padding: 0;
+          margin-left: 0.5rem;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          transition: opacity 0.2s;
         }
 
-        .chat-logout-btn-header:hover {
-          background: #000;
-          color: white;
+        .chat-settings-button:hover {
+          opacity: 0.7;
         }
 
-        @media (max-width: 768px) {
-          .chat-logout-btn-header {
-            padding: 0.2rem 0.4rem;
-            font-size: 0.7rem;
-          }
+        .chat-settings-popup {
+          position: absolute;
+          top: 100%;
+          left: 0.75rem;
+          margin-top: 0.5rem;
+          background: white;
+          border: 1px solid #ddd;
+          border-radius: 8px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+          z-index: 100;
+          min-width: 150px;
+        }
+
+        .chat-settings-option {
+          display: block;
+          width: 100%;
+          padding: 0.75rem 1rem;
+          background: transparent;
+          border: none;
+          text-align: left;
+          cursor: pointer;
+          font-size: 0.9rem;
+          transition: background 0.2s;
+        }
+
+        .chat-settings-option:first-child {
+          border-radius: 8px 8px 0 0;
+        }
+
+        .chat-settings-option:last-child {
+          border-radius: 0 0 8px 8px;
+        }
+
+        .chat-settings-option:hover {
+          background: #f3f4f6;
         }
 
         .chat-close-button {
@@ -407,27 +509,11 @@ const ChatDialog = ({ isOpen, onClose, gameKey, socket, userId, username, unread
           color: var(--text-primary, #333);
         }
 
-        .chat-container {
-          display: flex;
-          flex-direction: column;
-          height: 500px;
-          max-height: 70vh;
-        }
-
-        @media (max-width: 768px) {
-          .chat-container {
-            height: 100%;
-            max-height: 100%;
-            flex: 1;
-          }
-        }
-
         .chat-tabs {
           display: flex;
           gap: 0.5rem;
-          margin-bottom: 0.75rem;
+          padding: 0 0.75rem;
           border-bottom: 2px solid var(--border-color, #ddd);
-          flex-shrink: 0;
         }
 
         .chat-tab {
@@ -469,23 +555,19 @@ const ChatDialog = ({ isOpen, onClose, gameKey, socket, userId, username, unread
         }
 
         .chat-messages {
-          flex: 1;
-          overflow-y: auto;
           border: 1px solid var(--border-color, #ddd);
           border-radius: 8px;
-          padding: 0.75rem;
-          margin-bottom: 0.75rem;
           background: var(--bg-secondary, #f9f9f9);
           display: flex;
           flex-direction: column-reverse;
+          min-height: 0;
         }
 
         @media (max-width: 768px) {
           .chat-messages {
-            padding: 0.5rem;
-            margin-bottom: 0;
             border-radius: 0;
-            min-height: 0;
+            border-left: none;
+            border-right: none;
           }
         }
 
@@ -606,16 +688,6 @@ const ChatDialog = ({ isOpen, onClose, gameKey, socket, userId, username, unread
         .chat-input-form {
           display: flex;
           gap: 0;
-          margin-top: 0.5rem;
-          margin-bottom: 0.5rem;
-        }
-
-        @media (max-width: 768px) {
-          .chat-input-form {
-            margin-top: 0;
-            margin-bottom: 0;
-            flex-shrink: 0;
-          }
         }
 
         .chat-input-form input {
@@ -629,13 +701,12 @@ const ChatDialog = ({ isOpen, onClose, gameKey, socket, userId, username, unread
         .chat-input-form input:focus {
           outline: none;
           border-color: #000;
-          box-shadow: 0 0 0 1px #000;
+          box-shadow: none;
         }
 
         @media (max-width: 768px) {
           .chat-input-form input {
-            border-top-left-radius: 0;
-            border-bottom-left-radius: 0;
+            border-radius: 0;
           }
         }
 
