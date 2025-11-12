@@ -136,7 +136,7 @@ const GameStatus = ({
                 className="menu-button"
                 title={t('status.menu')}
               >
-                <FiMenu size={24} />
+                <FiMenu size={28} />
               </Button>
               <Button
                 variant="outline"
@@ -145,12 +145,19 @@ const GameStatus = ({
                 title={t('status.chat')}
               >
                 {isUserAuthorized ? (
-                  <FiMessageCircle size={24} />
+                  <FiMessageCircle size={28} />
                 ) : (
-                  <FiUserPlus size={24} />
+                  <FiUserPlus size={28} />
                 )}
                 {unreadCount > 0 && (
-                  <span className="unread-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
+                  <span
+                    className="unread-badge"
+                    style={{
+                      fontSize: unreadCount <= 9 ? '11px' : unreadCount <= 99 ? '9px' : '8px'
+                    }}
+                  >
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </span>
                 )}
               </Button>
               <Button
@@ -159,7 +166,7 @@ const GameStatus = ({
                 className={`menu-button ${isFullscreen ? "active" : ""}`}
                 title={t('status.fullscreen')}
               >
-                <FiMaximize size={24} />
+                <FiMaximize size={28} />
               </Button>
             </div>
           </div>
