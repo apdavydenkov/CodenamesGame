@@ -11,6 +11,7 @@ class GameSocket {
     this.remainingCards = null;
     this.gameStateCallback = null;
     this.offlineRevealed = new Set();
+    this.userId = null;
   }
 
   connect(serverUrl = import.meta.env.VITE_API_URL) {
@@ -21,13 +22,15 @@ class GameSocket {
 
     this.socket.on("connect", () => {
       if (this.gameKey) {
+        // При reconnect используем сохранённый userId или берём из localStorage
+        const userId = this.userId || localStorage.getItem('codenames-user-id');
         this.joinGame(this.gameKey, this.words, this.colors, {
           words: this.words,
           colors: this.colors,
           revealed: this.mergeRevealedStates(),
           currentTeam: this.currentTeam,
           remainingCards: this.remainingCards,
-        });
+        }, userId);
       }
     });
 
@@ -59,8 +62,9 @@ class GameSocket {
     }
   }
 
-  joinGame(gameKey, words, colors, gameState = null) {
+  joinGame(gameKey, words, colors, gameState = null, userId = null) {
     this.gameKey = gameKey;
+    this.userId = userId;
 
     if (words?.length) this.words = words;
     if (colors?.length) this.colors = colors;
@@ -80,6 +84,7 @@ class GameSocket {
         gameKey,
         words: this.words,
         colors: this.colors,
+        userId,
         gameState: {
           words: this.words,
           colors: this.colors,
@@ -168,13 +173,14 @@ class GameSocket {
     };
   }
 
-  startNewGame(gameKey, words, colors) {
+  startNewGame(gameKey, words, colors, userId = null, makeOwner = false) {
     if (!words || !colors || words.length !== 25 || colors.length !== 25) {
       console.error('Invalid game setup');
       return;
     }
 
     this.gameKey = gameKey;
+    this.userId = userId;
     this.words = [...words];
     this.colors = [...colors];
     this.revealed = Array(25).fill(false);
@@ -186,11 +192,21 @@ class GameSocket {
     this.offlineRevealed.clear();
 
     if (this.socket?.connected) {
-      this.socket.emit("NEW_GAME", { 
-        gameKey, 
-        words: this.words, 
-        colors: this.colors 
+      console.log('[Socket] Emitting NEW_GAME:', {
+        gameKey,
+        userId,
+        makeOwner,
+        connected: this.socket.connected
       });
+      this.socket.emit("NEW_GAME", {
+        gameKey,
+        words: this.words,
+        colors: this.colors,
+        userId,
+        makeOwner
+      });
+    } else {
+      console.warn('[Socket] Cannot emit NEW_GAME - not connected');
     }
   }
 

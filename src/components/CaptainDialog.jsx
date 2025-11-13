@@ -9,7 +9,7 @@ import {
 } from "./Dialog";
 import { Button } from "./Button";
 import { Input } from "./Input";
-import { FiEye, FiXCircle, FiChevronDown } from "react-icons/fi";
+import { FiEye, FiXCircle, FiChevronDown, FiStar, FiX } from "react-icons/fi";
 import TeamSwitch from "./TeamSwitch";
 import { useTranslation } from "../hooks/useTranslation";
 import "../styles/dialogs.css";
@@ -271,14 +271,17 @@ const CaptainDialog = ({
 
   const HelperContent = (
     <>
-      <DialogHeader>
+      <div className="dialog-header-with-close">
         <DialogTitle>{t('captainDialog.helperTitle')}</DialogTitle>
-      </DialogHeader>
+        <button className="close-button" onClick={onClose}>
+          <FiX size={20} />
+        </button>
+      </div>
 
 		<div className="helper-tip">
 		  {t('captainDialog.helperTip')} {" "}
 		  <span className="eye-icon">
-			<FiEye size={16} />
+			<FiStar size={16} />
 		  </span>{" "}
 		  {t('captainDialog.helperInstructions')}
 		</div>

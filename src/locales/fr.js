@@ -90,7 +90,9 @@ export default {
     "enterPhrase": "Entrez la phrase pour confirmer :",
     "phrasePlaceholder": "Phrase",
     "assassinWord": "Mot de l'assassin",
-    "confirmationPhrase": "CAPITAINE"
+    "confirmationPhrase": "CAPITAINE",
+    "myWords": "",
+    "opponentWords": ""
   },
   "winDialog": {
     "title": "Jeu terminé !",
@@ -109,7 +111,8 @@ export default {
     "captainHelper": "Assistant du capitaine",
     "menu": "Menu",
     "fullscreen": "Plein écran",
-    "chat": "Chat"
+    "chat": "Chat",
+    "iosFullscreenInstructions": ""
   },
   "notifications": {
     "linkCopied": "Lien copié !",
@@ -118,7 +121,14 @@ export default {
     "chooseTeam": "",
     "spectatorsCannotPlay": "",
     "notYourTurn": "",
-    "captainsCannotPlay": ""
+    "captainsCannotPlay": "",
+    "captainsRequired": "",
+    "teamsLocked": "",
+    "teamsUnlocked": "",
+    "gamePrivate": "",
+    "gamePublic": "",
+    "privateGameTitle": "",
+    "privateGameMessage": ""
   },
   "errors": {
     "enterTopic": "Entrez un sujet pour créer un jeu IA",

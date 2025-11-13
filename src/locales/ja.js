@@ -90,7 +90,9 @@ export default {
     "enterPhrase": "確認フレーズを入力：",
     "phrasePlaceholder": "フレーズ",
     "assassinWord": "暗殺者の単語",
-    "confirmationPhrase": "リーダー"
+    "confirmationPhrase": "リーダー",
+    "myWords": "",
+    "opponentWords": ""
   },
   "winDialog": {
     "title": "ゲーム終了！",
@@ -109,7 +111,8 @@ export default {
     "captainHelper": "リーダーヘルパー",
     "menu": "メニュー",
     "fullscreen": "フルスクリーン",
-    "chat": "チャット"
+    "chat": "チャット",
+    "iosFullscreenInstructions": ""
   },
   "notifications": {
     "linkCopied": "リンクをコピーしました！",
@@ -118,7 +121,14 @@ export default {
     "chooseTeam": "",
     "spectatorsCannotPlay": "",
     "notYourTurn": "",
-    "captainsCannotPlay": ""
+    "captainsCannotPlay": "",
+    "captainsRequired": "",
+    "teamsLocked": "",
+    "teamsUnlocked": "",
+    "gamePrivate": "",
+    "gamePublic": "",
+    "privateGameTitle": "",
+    "privateGameMessage": ""
   },
   "errors": {
     "enterTopic": "AIゲームを作成するにはテーマを入力してください",

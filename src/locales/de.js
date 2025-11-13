@@ -90,7 +90,9 @@ export default {
     "enterPhrase": "Phrase zur Bestätigung eingeben:",
     "phrasePlaceholder": "Phrase",
     "assassinWord": "Attentäterwort",
-    "confirmationPhrase": "KAPITÄN"
+    "confirmationPhrase": "KAPITÄN",
+    "myWords": "",
+    "opponentWords": ""
   },
   "winDialog": {
     "title": "Spiel beendet!",
@@ -109,7 +111,8 @@ export default {
     "captainHelper": "Kapitänshelfer",
     "menu": "Menü",
     "fullscreen": "Vollbild",
-    "chat": "Chat"
+    "chat": "Chat",
+    "iosFullscreenInstructions": ""
   },
   "notifications": {
     "linkCopied": "Link kopiert!",
@@ -118,7 +121,14 @@ export default {
     "chooseTeam": "",
     "spectatorsCannotPlay": "",
     "notYourTurn": "",
-    "captainsCannotPlay": ""
+    "captainsCannotPlay": "",
+    "captainsRequired": "",
+    "teamsLocked": "",
+    "teamsUnlocked": "",
+    "gamePrivate": "",
+    "gamePublic": "",
+    "privateGameTitle": "",
+    "privateGameMessage": ""
   },
   "errors": {
     "enterTopic": "Thema für KI-Spiel eingeben",

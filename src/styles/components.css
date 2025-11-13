@@ -10,7 +10,7 @@
   line-height: 1.25rem;
   transition: all 0.2s;
   cursor: pointer;
-  border: none;
+  border: 1px solid transparent;
   color: white;
 }
 

@@ -62,7 +62,10 @@ const App = () => {
   const [ownerId, setOwnerId] = useState(null);
   const [teamsLocked, setTeamsLocked] = useState(false);
   const [isPrivate, setIsPrivate] = useState(false);
+  const [canAccessGame, setCanAccessGame] = useState(true);
+  const [isGameStateReceived, setIsGameStateReceived] = useState(false);
   const [gameError, setGameError] = useState(null);
+  const [notificationDuration, setNotificationDuration] = useState(5000);
   const [highlightMenuIcon, setHighlightMenuIcon] = useState(false);
   const [highlightCaptainIcon, setHighlightCaptainIcon] = useState(false);
 
@@ -216,7 +219,8 @@ const App = () => {
 
     gameSocket.socket.emit('LOCK_TEAMS', {
       gameKey: currentKey,
-      userId: userAuth.userId
+      userId: userAuth.userId,
+      username: userAuth.username
     });
   };
 
@@ -226,6 +230,7 @@ const App = () => {
     gameSocket.socket.emit('SET_PRIVATE', {
       gameKey: currentKey,
       userId: userAuth.userId,
+      username: userAuth.username,
       isPrivate
     });
   };
@@ -237,6 +242,7 @@ const App = () => {
     const handleDisconnect = () => setIsServerConnected(false);
 
     const handleGameState = (newState) => {
+      setIsGameStateReceived(true);
       setGameState((prevState) => ({
         ...prevState,
         words: newState.words || prevState.words,
@@ -263,6 +269,15 @@ const App = () => {
       if (newState.ownerId !== undefined) setOwnerId(newState.ownerId);
       if (newState.teamsLocked !== undefined) setTeamsLocked(newState.teamsLocked);
       if (newState.isPrivate !== undefined) setIsPrivate(newState.isPrivate);
+      if (newState.canAccessGame !== undefined) {
+        console.log('[Access Control] Client received canAccessGame:', {
+          canAccessGame: newState.canAccessGame,
+          isPrivate: newState.isPrivate,
+          ownerId: newState.ownerId,
+          wordsLength: newState.words?.length || 0
+        });
+        setCanAccessGame(newState.canAccessGame);
+      }
 
       // Показываем диалог победы только один раз
       if (newState.gameOver && newState.winner && !wasWinDialogShownRef.current) {
@@ -383,7 +398,7 @@ const App = () => {
               winner: null,
             });
 
-            gameSocket.joinGame(keyFromUrl, gameData.words, gameData.colors);
+            gameSocket.joinGame(keyFromUrl, gameData.words, gameData.colors, null, userAuth.userId);
             return;
           }
         }
@@ -419,7 +434,14 @@ const App = () => {
           winner: null,
         });
 
-        gameSocket.startNewGame(newKey, gameData.words, gameData.colors);
+        // Автозагрузка без ключа - НЕ делаем владельцем
+        console.log('[Init] Auto-creating game:', {
+          userId: userAuth.userId,
+          username: userAuth.username,
+          hasUserId: !!userAuth.userId,
+          fromLocalStorage: localStorage.getItem('codenames-user-id')
+        });
+        gameSocket.startNewGame(newKey, gameData.words, gameData.colors, userAuth.userId, false);
       }
       
     };
@@ -436,7 +458,8 @@ const App = () => {
     // 3. Еще не в команде
     // 4. Команды загружены (teams !== null)
     // 5. Socket подключен
-    if (userAuth.userId && userAuth.username && currentKey && myTeam === null && teams !== null && gameSocket.socket?.connected) {
+    // 6. Игра НЕ приватная (для приватной владелец добавляет участников вручную)
+    if (userAuth.userId && userAuth.username && currentKey && myTeam === null && teams !== null && gameSocket.socket?.connected && !isPrivate) {
       gameSocket.socket.emit('JOIN_TEAM', {
         gameKey: currentKey,
         team: 'spectator',
@@ -445,7 +468,7 @@ const App = () => {
         username: userAuth.username
       });
     }
-  }, [userAuth.userId, userAuth.username, currentKey, myTeam, teams]);
+  }, [userAuth.userId, userAuth.username, currentKey, myTeam, teams, isPrivate]);
 
   // Отдельный useEffect для смены языка - создает новую игру
   useEffect(() => {
@@ -484,8 +507,15 @@ const App = () => {
           gameOver: false,
           winner: null,
         });
-        
-        gameSocket.startNewGame(newKey, gameData.words, gameData.colors);
+
+        // Автозагрузка без ключа - НЕ делаем владельцем
+        console.log('[Init] Auto-creating game:', {
+          userId: userAuth.userId,
+          username: userAuth.username,
+          hasUserId: !!userAuth.userId,
+          fromLocalStorage: localStorage.getItem('codenames-user-id')
+        });
+        gameSocket.startNewGame(newKey, gameData.words, gameData.colors, userAuth.userId, false);
       }
     };
     
@@ -497,29 +527,27 @@ const App = () => {
   }, [language]); // dictionaries.length is guard, not dependency
 
   // Автоматическое присоединение к чатам при авторизации
-  const joinChats = useCallback(() => {
-    if (!gameSocket.socket || !currentKey) return;
-
-    // Присоединяемся к игровому чату
-    gameSocket.socket.emit("JOIN_CHAT", { gameKey: currentKey });
-
-    // Присоединяемся к глобальному чату
-    gameSocket.socket.emit("JOIN_CHAT", { gameKey: "GLOBAL_CHAT" });
-  }, [currentKey]);
-
   useEffect(() => {
-    if (!userAuth.userId) return;
+    if (!userAuth.userId || !currentKey) return;
 
-    // Присоединяемся сразу при монтировании
-    joinChats();
+    // Присоединяемся к чатам
+    gameSocket.socket.emit("JOIN_CHAT", { gameKey: currentKey, userId: userAuth.userId });
+    gameSocket.socket.emit("JOIN_CHAT", { gameKey: "GLOBAL_CHAT", userId: userAuth.userId });
 
     // Переподключаемся при восстановлении соединения (для мобильных)
-    gameSocket.socket.on('connect', joinChats);
+    const handleReconnect = () => {
+      if (userAuth.userId && currentKey) {
+        gameSocket.socket.emit("JOIN_CHAT", { gameKey: currentKey, userId: userAuth.userId });
+        gameSocket.socket.emit("JOIN_CHAT", { gameKey: "GLOBAL_CHAT", userId: userAuth.userId });
+      }
+    };
+
+    gameSocket.socket.on('connect', handleReconnect);
 
     return () => {
-      gameSocket.socket.off('connect', joinChats);
+      gameSocket.socket.off('connect', handleReconnect);
     };
-  }, [userAuth.userId, joinChats]);
+  }, [userAuth.userId, currentKey]);
 
   // Refs для отслеживания текущего состояния без пересоздания listeners
   const showChatDialogRef = useRef(showChatDialog);
@@ -714,9 +742,10 @@ const App = () => {
       });
 
       if (key) {
-        gameSocket.joinGame(gameKey);
+        gameSocket.joinGame(gameKey, null, null, null, userAuth.userId);
       } else {
-        gameSocket.startNewGame(gameKey, newGameData.words, newGameData.colors);
+        // Явное нажатие "Новая игра" - делаем владельцем
+        gameSocket.startNewGame(gameKey, newGameData.words, newGameData.colors, userAuth.userId, true);
       }
     }
 
@@ -787,6 +816,11 @@ const App = () => {
     }
   }, []);
 
+  const handleShowNotification = useCallback((message, duration = 5000) => {
+    setGameError(message);
+    setNotificationDuration(duration);
+  }, []);
+
   const handleCardClick = useCallback((index) => {
     if (gameState.revealed[index] || isCaptain) return;
 
@@ -805,27 +839,37 @@ const App = () => {
     <div className="container">
       <MetaTags />
       <LanguageSwitcher />
-      <div className="game-grid">
-        {gameState.words.map((word, index) => (
-          <GameCard
-            key={`${currentKey}-${index}`}
-            word={word}
-            color={gameState.colors[index]}
-            revealed={gameState.revealed[index]}
-            onConfirm={handleCardClick}
-            isCaptain={isCaptain}
-            gameKey={currentKey}
-            position={index}
-            myTeam={myTeam}
-            myRole={myRole}
-            isAuthenticated={!!userAuth.userId}
-            onAuthRequired={() => setShowAuthDialog(true)}
-            currentTeam={gameState.currentTeam}
-            teams={teams}
-            onHighlightIcon={handleHighlightIcon}
-          />
-        ))}
-      </div>
+      {!isGameStateReceived ? (
+        <div className="game-grid"></div>
+      ) : canAccessGame ? (
+        <div className="game-grid">
+          {gameState.words.map((word, index) => (
+            <GameCard
+              key={`${currentKey}-${index}`}
+              word={word}
+              color={gameState.colors[index]}
+              revealed={gameState.revealed[index]}
+              onConfirm={handleCardClick}
+              isCaptain={isCaptain}
+              gameKey={currentKey}
+              position={index}
+              myTeam={myTeam}
+              myRole={myRole}
+              isAuthenticated={!!userAuth.userId}
+              onAuthRequired={handleChatClick}
+              currentTeam={gameState.currentTeam}
+              teams={teams}
+              onHighlightIcon={handleHighlightIcon}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="private-game-message">
+          <div className="private-game-icon">🔒</div>
+          <h2>{t('notifications.privateGameTitle')}</h2>
+          <p>{t('notifications.privateGameMessage')}</p>
+        </div>
+      )}
 
       <GameStatus
         remainingCards={gameState.remainingCards}
@@ -840,6 +884,7 @@ const App = () => {
         currentTeam={gameState.currentTeam}
         highlightMenuIcon={highlightMenuIcon}
         highlightCaptainIcon={highlightCaptainIcon}
+        onShowNotification={handleShowNotification}
       />
 
       <WinDialog
@@ -887,6 +932,7 @@ const App = () => {
         userId={userAuth.userId}
         teamsLocked={teamsLocked}
         isPrivate={isPrivate}
+        canAccessGame={canAccessGame}
         onJoinTeam={handleJoinTeam}
         onBecomeCaptain={handleBecomeCaptain}
         onLeaveCaptain={handleLeaveCaptain}
@@ -920,6 +966,7 @@ const App = () => {
         onUpdateUnreadCount={setUnreadCounts}
         activeTab={activeChatTab}
         onTabChange={setActiveChatTab}
+        canAccessGame={canAccessGame}
         onLogout={() => {
           // Очищаем все данные авторизации
           localStorage.removeItem('codenames-user-id');
@@ -953,6 +1000,7 @@ const App = () => {
         <Notification
           message={gameError}
           isVisible={true}
+          duration={notificationDuration}
           onClose={() => setGameError(null)}
         />
       )}

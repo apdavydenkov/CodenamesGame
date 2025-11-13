@@ -19,6 +19,7 @@ const GameStatus = ({
   currentTeam = "blue",
   highlightMenuIcon = false,
   highlightCaptainIcon = false,
+  onShowNotification,
 }) => {
   const { t } = useTranslation();
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -27,6 +28,16 @@ const GameStatus = ({
   const pressTimer = useRef(null);
   const progressTimer = useRef(null);
   const wasLongPress = useRef(false);
+
+  // Fullscreen button hide state
+  const [isFullscreenButtonHidden, setIsFullscreenButtonHidden] = useState(
+    () => localStorage.getItem('fullscreen-button-hidden') === 'true'
+  );
+  const [pressingFullscreen, setPressingFullscreen] = useState(false);
+  const [progressFullscreen, setProgressFullscreen] = useState(0);
+  const pressFullscreenTimer = useRef(null);
+  const progressFullscreenTimer = useRef(null);
+  const wasFullscreenLongPress = useRef(false);
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -40,6 +51,45 @@ const GameStatus = ({
   }, []);
 
   const toggleFullscreen = async () => {
+    // Определяем iOS (включая iPad на iPadOS 13+)
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+    if (isIOS && onShowNotification) {
+      // На iOS показываем инструкцию с иконкой Share
+      const ShareIcon = () => (
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style={{ display: 'inline-block', verticalAlign: 'middle', margin: '0 3px' }}>
+          <path d="M9 2L9 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+          <path d="M6 5L9 2L12 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M3 10L3 14C3 14.5523 3.44772 15 4 15L14 15C14.5523 15 15 14.5523 15 14L15 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+        </svg>
+      );
+
+      const PlusIcon = () => (
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style={{ display: 'inline-block', verticalAlign: 'middle', margin: '0 3px' }}>
+          <rect x="2" y="2" width="14" height="14" rx="2" stroke="currentColor" strokeWidth="1.5"/>
+          <path d="M9 5L9 13M5 9L13 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+        </svg>
+      );
+
+      const message = (
+        <span>
+          Для полноэкранного режима: нажмите <ShareIcon /> потом <PlusIcon /> "На экран Домой"
+          <br /><br />
+          Удерживайте эту кнопку чтобы скрыть её
+        </span>
+      );
+
+      onShowNotification(message, 7000); // iOS: 7 секунд
+      return;
+    }
+
+    // Android/Desktop - показываем уведомление про скрытие
+    if (onShowNotification) {
+      onShowNotification('Удерживайте кнопку чтобы скрыть её', 5000); // Android: 5 секунд
+    }
+
+    // Обычный fullscreen для Android/Desktop
     try {
       if (!document.fullscreenElement) {
         await document.documentElement.requestFullscreen();
@@ -49,6 +99,48 @@ const GameStatus = ({
     } catch {
       // Fullscreen API may not be available
     }
+  };
+
+  const startFullscreenPress = (e) => {
+    e.preventDefault();
+    wasFullscreenLongPress.current = false;
+    setPressingFullscreen(true);
+    setProgressFullscreen(0);
+
+    pressFullscreenTimer.current = setTimeout(() => {
+      wasFullscreenLongPress.current = true;
+      setPressingFullscreen(false);
+      setProgressFullscreen(0);
+      // Скрываем кнопку и сохраняем в localStorage
+      localStorage.setItem('fullscreen-button-hidden', 'true');
+      setIsFullscreenButtonHidden(true);
+    }, PRESS_DURATION);
+
+    let currentProgress = 0;
+    progressFullscreenTimer.current = setInterval(() => {
+      currentProgress += (100 * PROGRESS_INTERVAL) / PRESS_DURATION;
+      if (currentProgress >= 100) {
+        clearInterval(progressFullscreenTimer.current);
+      } else {
+        setProgressFullscreen(currentProgress);
+      }
+    }, PROGRESS_INTERVAL);
+  };
+
+  const endFullscreenPress = () => {
+    if (pressFullscreenTimer.current) {
+      clearTimeout(pressFullscreenTimer.current);
+      clearInterval(progressFullscreenTimer.current);
+      setPressingFullscreen(false);
+      setProgressFullscreen(0);
+    }
+  };
+
+  const handleFullscreenClick = () => {
+    if (!pressingFullscreen && !wasFullscreenLongPress.current) {
+      toggleFullscreen();
+    }
+    wasFullscreenLongPress.current = false;
   };
 
   const startCaptainPress = (e) => {
@@ -95,6 +187,8 @@ const GameStatus = ({
     return () => {
       if (pressTimer.current) clearTimeout(pressTimer.current);
       if (progressTimer.current) clearInterval(progressTimer.current);
+      if (pressFullscreenTimer.current) clearTimeout(pressFullscreenTimer.current);
+      if (progressFullscreenTimer.current) clearInterval(progressFullscreenTimer.current);
     };
   }, []);
 
@@ -166,14 +260,27 @@ const GameStatus = ({
                   </span>
                 )}
               </Button>
-              <Button
-                variant="outline"
-                onClick={toggleFullscreen}
-                className={`menu-button ${isFullscreen ? "active" : ""}`}
-                title={t('status.fullscreen')}
-              >
-                <FiMaximize size={28} />
-              </Button>
+              {!isFullscreenButtonHidden && (
+                <Button
+                  variant="outline"
+                  onClick={handleFullscreenClick}
+                  onPointerDown={startFullscreenPress}
+                  onPointerUp={endFullscreenPress}
+                  onPointerLeave={endFullscreenPress}
+                  className={`menu-button captain-button ${isFullscreen ? "active" : ""}`}
+                  title={t('status.fullscreen')}
+                >
+                  <div className="button-content">
+                    <FiMaximize size={28} />
+                    {pressingFullscreen && (
+                      <div
+                        className="press-progress"
+                        style={{ width: `${progressFullscreen}%` }}
+                      />
+                    )}
+                  </div>
+                </Button>
+              )}
             </div>
           </div>
 

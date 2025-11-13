@@ -90,7 +90,9 @@ export default {
     "enterPhrase": "확인 구문 입력:",
     "phrasePlaceholder": "구문",
     "assassinWord": "암살자 단어",
-    "confirmationPhrase": "팀장"
+    "confirmationPhrase": "팀장",
+    "myWords": "",
+    "opponentWords": ""
   },
   "winDialog": {
     "title": "게임 종료!",
@@ -109,7 +111,8 @@ export default {
     "captainHelper": "팀장 도우미",
     "menu": "메뉴",
     "fullscreen": "전체화면",
-    "chat": "채팅"
+    "chat": "채팅",
+    "iosFullscreenInstructions": ""
   },
   "notifications": {
     "linkCopied": "링크가 복사되었습니다!",
@@ -118,7 +121,14 @@ export default {
     "chooseTeam": "",
     "spectatorsCannotPlay": "",
     "notYourTurn": "",
-    "captainsCannotPlay": ""
+    "captainsCannotPlay": "",
+    "captainsRequired": "",
+    "teamsLocked": "",
+    "teamsUnlocked": "",
+    "gamePrivate": "",
+    "gamePublic": "",
+    "privateGameTitle": "",
+    "privateGameMessage": ""
   },
   "errors": {
     "enterTopic": "AI 게임을 생성하려면 주제를 입력하세요",

@@ -90,7 +90,9 @@ export default {
     "enterPhrase": "Введите фразу для подтверждения:",
     "phrasePlaceholder": "Фраза",
     "assassinWord": "Слово убийцы",
-    "confirmationPhrase": "КАПИТАН"
+    "confirmationPhrase": "КАПИТАН",
+    "myWords": "",
+    "opponentWords": ""
   },
   "winDialog": {
     "title": "Игра окончена!",
@@ -109,7 +111,8 @@ export default {
     "captainHelper": "Помощник капитана",
     "menu": "Меню",
     "fullscreen": "Полный экран",
-    "chat": "Чат"
+    "chat": "Чат",
+    "iosFullscreenInstructions": ""
   },
   "notifications": {
     "linkCopied": "Ссылка скопирована!",
@@ -118,7 +121,14 @@ export default {
     "chooseTeam": "",
     "spectatorsCannotPlay": "",
     "notYourTurn": "",
-    "captainsCannotPlay": ""
+    "captainsCannotPlay": "",
+    "captainsRequired": "",
+    "teamsLocked": "",
+    "teamsUnlocked": "",
+    "gamePrivate": "",
+    "gamePublic": "",
+    "privateGameTitle": "",
+    "privateGameMessage": ""
   },
   "errors": {
     "enterTopic": "Введите тему для создания ИИ-игры",
@@ -206,8 +216,8 @@ export default {
     "backToGame": "К игре"
   },
   "auth": {
-    "title": "Вход в чат",
-    "enterName": "Введите ваше имя для входа в чат:",
+    "title": "Вход в игру",
+    "enterName": "Введите ваше имя для входа в игру:",
     "namePlaceholder": "Ваше имя",
     "nameLength": "Имя должно быть от 2 до 30 символов",
     "userExists": "Пользователь с именем",
