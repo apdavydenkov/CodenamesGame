@@ -30,7 +30,26 @@ export default {
     "generating": "生成游戏中...",
     "serverOnline": "Online",
     "serverStarting": "Offline",
-    "information": "信息"
+    "information": "信息",
+    "teamSelection": "",
+    "blueTeam": "",
+    "redTeam": "",
+    "spectator": "",
+    "becomeCaptain": "",
+    "leaveCaptain": "",
+    "yourTeam": "",
+    "yourRole": "",
+    "rolePlayer": "",
+    "roleCaptain": "",
+    "roleSpectator": "",
+    "noTeam": "",
+    "ownerActions": "",
+    "lockTeams": "",
+    "unlockTeams": "",
+    "makePrivate": "",
+    "makePublic": "",
+    "notSelected": "",
+    "andCaptain": ""
   },
   "share": {
     "copyLink": "复制链接",
@@ -95,7 +114,11 @@ export default {
   "notifications": {
     "linkCopied": "链接已复制！",
     "keyCopied": "密钥已复制",
-    "pressAndHold": "长按卡片打开"
+    "pressAndHold": "长按卡片打开",
+    "chooseTeam": "",
+    "spectatorsCannotPlay": "",
+    "notYourTurn": "",
+    "captainsCannotPlay": ""
   },
   "errors": {
     "enterTopic": "请输入主题以创建AI游戏",

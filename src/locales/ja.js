@@ -30,7 +30,26 @@ export default {
     "generating": "ゲーム生成中...",
     "serverOnline": "Online",
     "serverStarting": "Offline",
-    "information": "情報"
+    "information": "情報",
+    "teamSelection": "",
+    "blueTeam": "",
+    "redTeam": "",
+    "spectator": "",
+    "becomeCaptain": "",
+    "leaveCaptain": "",
+    "yourTeam": "",
+    "yourRole": "",
+    "rolePlayer": "",
+    "roleCaptain": "",
+    "roleSpectator": "",
+    "noTeam": "",
+    "ownerActions": "",
+    "lockTeams": "",
+    "unlockTeams": "",
+    "makePrivate": "",
+    "makePublic": "",
+    "notSelected": "",
+    "andCaptain": ""
   },
   "share": {
     "copyLink": "リンクをコピー",
@@ -95,7 +114,11 @@ export default {
   "notifications": {
     "linkCopied": "リンクをコピーしました！",
     "keyCopied": "キーをコピーしました",
-    "pressAndHold": "カードを長押しして開く"
+    "pressAndHold": "カードを長押しして開く",
+    "chooseTeam": "",
+    "spectatorsCannotPlay": "",
+    "notYourTurn": "",
+    "captainsCannotPlay": ""
   },
   "errors": {
     "enterTopic": "AIゲームを作成するにはテーマを入力してください",

@@ -8,11 +8,27 @@ const PRESS_DURATION = 1500;
 const PROGRESS_INTERVAL = 50;
 const FLIP_DELAY = 2000;
 
-const GameCard = ({ word, color, revealed, onConfirm, isCaptain, gameKey, position }) => {
+const GameCard = ({
+  word,
+  color,
+  revealed,
+  onConfirm,
+  isCaptain,
+  gameKey,
+  position,
+  myTeam = null,
+  myRole = null,
+  isAuthenticated = false,
+  onAuthRequired,
+  currentTeam = "blue",
+  teams = null,
+  onHighlightIcon
+}) => {
   const { t } = useTranslation();
   const [pressing, setPressing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [showNotification, setShowNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState('');
   const [flipped, setFlipped] = useState(false);
 
   // flip при загрузке/смене состояния
@@ -42,14 +58,65 @@ const GameCard = ({ word, color, revealed, onConfirm, isCaptain, gameKey, positi
     return base + flip + colorClass + backClass;
   };
 
-  const handleClick = () => {
-    if (!revealed && !isCaptain && !pressing) {
-      setShowNotification(true);
-    }
-  };
-
   const startPress = (e) => {
-    if (isCaptain || revealed) return;
+    if (revealed) return;
+
+    // Проверка наличия капитанов в обеих командах
+    const hasBlueCaptain = teams?.blue?.captain !== null;
+    const hasRedCaptain = teams?.red?.captain !== null;
+
+    if (!hasBlueCaptain || !hasRedCaptain) {
+      e.preventDefault();
+      setNotificationMessage(t('notifications.captainsRequired'));
+      setShowNotification(true);
+      onHighlightIcon?.('menu');
+      return;
+    }
+
+    // Капитаны не могут открывать карточки
+    if (isCaptain || myRole === 'captain') {
+      e.preventDefault();
+      setNotificationMessage(t('notifications.captainsCannotPlay'));
+      setShowNotification(true);
+      onHighlightIcon?.('captain');
+      return;
+    }
+
+    // Проверка авторизации и команды
+    if (!isAuthenticated) {
+      e.preventDefault();
+      if (onAuthRequired) {
+        onAuthRequired();
+      }
+      return;
+    }
+
+    // Проверка что выбрана команда
+    if (!myTeam) {
+      e.preventDefault();
+      setNotificationMessage(t('notifications.chooseTeam'));
+      setShowNotification(true);
+      onHighlightIcon?.('menu');
+      return;
+    }
+
+    // Наблюдатели не могут открывать карточки
+    if (myTeam === 'spectator') {
+      e.preventDefault();
+      setNotificationMessage(t('notifications.spectatorsCannotPlay'));
+      setShowNotification(true);
+      onHighlightIcon?.('menu');
+      return;
+    }
+
+    // Проверка что сейчас ход команды игрока
+    if (myTeam !== currentTeam) {
+      e.preventDefault();
+      setNotificationMessage(t('notifications.notYourTurn'));
+      setShowNotification(true);
+      return;
+    }
+
     e.preventDefault();
     setPressing(true);
     setProgress(0);
@@ -57,7 +124,7 @@ const GameCard = ({ word, color, revealed, onConfirm, isCaptain, gameKey, positi
     const pressTimeout = setTimeout(() => {
       setPressing(false);
       setProgress(0);
-      onConfirm();
+      onConfirm(position);
       setTimeout(() => setFlipped(true), FLIP_DELAY);
     }, PRESS_DURATION);
 
@@ -87,7 +154,6 @@ const GameCard = ({ word, color, revealed, onConfirm, isCaptain, gameKey, positi
       <div
         className={getCardStyle()}
         onPointerDown={startPress}
-        onClick={handleClick}
         style={{
           animationDelay: `${position * 0.03}s` // Задержка 30ms между карточками (25 карточек = 750ms всего)
         }}
@@ -110,7 +176,7 @@ const GameCard = ({ word, color, revealed, onConfirm, isCaptain, gameKey, positi
         </div>
       </div>
       <Notification
-        message={t('notifications.pressAndHold')}
+        message={notificationMessage}
         isVisible={showNotification}
         onClose={() => setShowNotification(false)}
       />
@@ -126,6 +192,9 @@ export default memo(GameCard, (prevProps, nextProps) => {
     prevProps.revealed === nextProps.revealed &&
     prevProps.isCaptain === nextProps.isCaptain &&
     prevProps.gameKey === nextProps.gameKey &&
-    prevProps.position === nextProps.position
+    prevProps.position === nextProps.position &&
+    prevProps.myTeam === nextProps.myTeam &&
+    prevProps.isAuthenticated === nextProps.isAuthenticated &&
+    prevProps.currentTeam === nextProps.currentTeam
   );
 });

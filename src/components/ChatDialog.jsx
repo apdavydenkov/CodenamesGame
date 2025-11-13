@@ -7,7 +7,7 @@ import {
 } from "./Dialog";
 import { Button } from "./Button";
 import { Input } from "./Input";
-import { FiSend, FiX, FiSettings } from "react-icons/fi";
+import { FiSend, FiX, FiSettings, FiStar } from "react-icons/fi";
 import { useTranslation } from "../hooks/useTranslation";
 import SettingsDialog from "./SettingsDialog";
 
@@ -37,7 +37,9 @@ const ChatDialog = ({
     return activeTab === 'global' ? 'GLOBAL_CHAT' : gameKey;
   }, [activeTab, gameKey]);
 
-  const messages = messagesCache[currentChatKey] || [];
+  const messages = Array.isArray(messagesCache[currentChatKey])
+    ? messagesCache[currentChatKey]
+    : [];
 
   // Обновление lastReadMessageId при открытии или переключении вкладки
   useEffect(() => {
@@ -58,48 +60,53 @@ const ChatDialog = ({
 
     // Слушаем историю чата
     const handleChatHistory = ({ gameKey: historyGameKey, messages: historyMessages }) => {
+      console.log('[ChatDialog] CHAT_HISTORY received:', {
+        gameKey: historyGameKey,
+        messagesCount: Array.isArray(historyMessages) ? historyMessages.length : 'NOT_ARRAY',
+        messagesType: typeof historyMessages,
+        firstMessage: Array.isArray(historyMessages) && historyMessages[0]
+      });
 
+      // Защита от невалидных данных
+      if (!Array.isArray(historyMessages)) {
+        console.error('[ChatDialog] historyMessages is not an array!', historyMessages);
+        return;
+      }
+
+      // Определяем chatKey для lastReadMessageIds
+      const chatKey = historyGameKey === 'GLOBAL_CHAT' ? 'global' : 'game';
+      const lastReadId = lastReadMessageIds?.[chatKey];
+      const cachedMessages = messagesCache[historyGameKey] || [];
+      const cachedCount = cachedMessages.length;
+
+      // Вычисляем счётчик непрочитанных ДО обновления кеша
+      let unreadCountToSet = null;
+
+      // Если кеш пустой - подсчитываем непрочитанные на основе lastReadMessageId
+      if (cachedCount === 0) {
+        if (lastReadId && historyMessages.length > 0) {
+          const lastReadIndex = historyMessages.findIndex(m => m.id === lastReadId);
+
+          if (lastReadIndex !== -1) {
+            // Считаем все сообщения ПОСЛЕ lastReadId как непрочитанные
+            unreadCountToSet = historyMessages.length - lastReadIndex - 1;
+          } else {
+            // lastReadId не найден в истории (старое сообщение удалено)
+            // Считаем все сообщения непрочитанными
+            unreadCountToSet = historyMessages.length;
+          }
+        } else if (!lastReadId && historyMessages.length > 0) {
+          // Первый визит - все сообщения непрочитанные
+          unreadCountToSet = historyMessages.length;
+        }
+      }
+
+      // Обновляем кеш (БЕЗ вызовов setState внутри)
       setMessagesCache(prev => {
         const cachedMessages = prev[historyGameKey] || [];
-        const cachedCount = cachedMessages.length;
-
-        // Определяем chatKey для lastReadMessageIds
-        const chatKey = historyGameKey === 'GLOBAL_CHAT' ? 'global' : 'game';
-        const lastReadId = lastReadMessageIds?.[chatKey];
 
         // Если кеш пустой - просто записываем историю
-        if (cachedCount === 0) {
-          // Подсчитываем непрочитанные на основе lastReadMessageId
-          if (lastReadId && historyMessages.length > 0) {
-            const lastReadIndex = historyMessages.findIndex(m => m.id === lastReadId);
-
-            if (lastReadIndex !== -1) {
-              // Считаем все сообщения ПОСЛЕ lastReadId как непрочитанные
-              const unreadCount = historyMessages.length - lastReadIndex - 1;
-
-              if (unreadCount > 0) {
-                // Обновляем счётчик непрочитанных
-                onUpdateUnreadCount(prevCounts => ({
-                  ...prevCounts,
-                  [chatKey]: unreadCount
-                }));
-              }
-            } else {
-              // lastReadId не найден в истории (старое сообщение удалено)
-              // Считаем все сообщения непрочитанными
-              onUpdateUnreadCount(prevCounts => ({
-                ...prevCounts,
-                [chatKey]: historyMessages.length
-              }));
-            }
-          } else if (!lastReadId && historyMessages.length > 0) {
-            // Первый визит - все сообщения непрочитанные
-            onUpdateUnreadCount(prevCounts => ({
-              ...prevCounts,
-              [chatKey]: historyMessages.length
-            }));
-          }
-
+        if (cachedMessages.length === 0) {
           return {
             ...prev,
             [historyGameKey]: historyMessages
@@ -127,14 +134,31 @@ const ChatDialog = ({
           return prev;
         }
       });
+
+      // Обновляем счётчик ПОСЛЕ обновления кеша
+      if (unreadCountToSet !== null && unreadCountToSet > 0) {
+        onUpdateUnreadCount(prevCounts => ({
+          ...prevCounts,
+          [chatKey]: unreadCountToSet
+        }));
+      }
     };
 
     // Слушаем новые сообщения
     const handleNewMessage = (message) => {
+      console.log('[ChatDialog] NEW_MESSAGE received:', {
+        gameKey: message.gameKey,
+        author: message.author,
+        team: message.team,
+        role: message.role,
+        text: message.text?.substring(0, 30)
+      });
+
       const targetChatKey = message.gameKey;
 
       setMessagesCache(prev => {
         const chatMessages = prev[targetChatKey] || [];
+        console.log('[ChatDialog] Current cache for', targetChatKey, ':', chatMessages.length, 'messages');
 
         // Избегаем дубликатов
         if (chatMessages.some((m) => m.id === message.id)) {
@@ -253,14 +277,20 @@ const ChatDialog = ({
           ) : (
             [...messages].reverse().map((message) => {
               const isOwnMessage = message.userId === userId;
+              const teamClass = message.team ? `team-${message.team}` : '';
               return (
                 <div
                   key={message.id}
-                  className={`chat-message ${isOwnMessage ? 'own-message' : 'other-message'}`}
+                  className={`chat-message ${isOwnMessage ? 'own-message' : 'other-message'} ${teamClass}`}
                 >
                   <div className="chat-message-content">
                     {!isOwnMessage && (
-                      <span className="chat-message-author">{message.author}:</span>
+                      <span className="chat-message-author">
+                        {message.role === 'captain' && (
+                          <FiStar height="16" width="16" style={{ marginRight: '4px', marginBottom: '2px', verticalAlign: 'middle' }} />
+                        )}
+                        {message.author}:
+                      </span>
                     )}
                     {!isOwnMessage && ' '}
                     <span className="chat-message-text">{message.text}</span>
@@ -569,14 +599,13 @@ const ChatDialog = ({
           background: #8b5cf6;
           color: white;
           margin-left: auto;
-          border-bottom-right-radius: 0;
           position: relative;
         }
 
         .own-message::after {
           content: '';
           position: absolute;
-          bottom: 0;
+          bottom: 10px;
           right: -8px;
           width: 0;
           height: 0;
@@ -586,31 +615,17 @@ const ChatDialog = ({
         }
 
         .other-message {
-          background: white;
+          background: #e0e0e0;
           color: var(--text-primary, #333);
           margin-right: auto;
-          border-bottom-left-radius: 0;
           position: relative;
-          border: 1px solid #e0e0e0;
-        }
-
-        .other-message::after {
-          content: '';
-          position: absolute;
-          bottom: 0;
-          left: -7px;
-          width: 0;
-          height: 0;
-          border-style: solid;
-          border-width: 6px 7px 6px 0;
-          border-color: transparent white transparent transparent;
         }
 
         .other-message::before {
           content: '';
           position: absolute;
-          bottom: -1px;
-          left: -9px;
+          bottom: 10px;
+          left: -8px;
           width: 0;
           height: 0;
           border-style: solid;
@@ -634,6 +649,55 @@ const ChatDialog = ({
 
         .other-message .chat-message-text {
           color: var(--text-primary, #333);
+        }
+
+        /* Цвета команд для сообщений - окрашиваем пузырь */
+        .other-message.team-blue {
+          background-color: #2563eb;
+        }
+
+        .other-message.team-blue .chat-message-author,
+        .other-message.team-blue .chat-message-text {
+          color: white;
+        }
+
+        .other-message.team-blue::before {
+          border-color: transparent #2563eb transparent transparent;
+        }
+
+        .other-message.team-red {
+          background-color: #dc2626;
+        }
+
+        .other-message.team-red .chat-message-author,
+        .other-message.team-red .chat-message-text {
+          color: white;
+        }
+
+        .other-message.team-red::before {
+          border-color: transparent #dc2626 transparent transparent;
+        }
+
+        .other-message.team-spectator {
+          background-color: #e4d6c5;
+        }
+
+        .other-message.team-spectator .chat-message-author,
+        .other-message.team-spectator .chat-message-text {
+          color: #374151;
+        }
+
+        .other-message.team-spectator::before {
+          border-color: transparent #e4d6c5 transparent transparent;
+        }
+
+        .other-message.team-blue .chat-message-time,
+        .other-message.team-red .chat-message-time {
+          color: rgba(255, 255, 255, 0.7);
+        }
+
+        .other-message.team-spectator .chat-message-time {
+          color: rgba(55, 65, 81, 0.6);
         }
 
         .chat-message-time {

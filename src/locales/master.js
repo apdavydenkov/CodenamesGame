@@ -35,7 +35,26 @@ export default {
     generating: "Генерирую игру...",
     serverOnline: "Онлайн",
     serverStarting: "Офлайн",
-    information: "Информация"
+    information: "Информация",
+    teamSelection: "Выбор команды",
+    blueTeam: "Синяя",
+    redTeam: "Красная",
+    spectator: "Наблюдатель",
+    becomeCaptain: "Стать капитаном",
+    leaveCaptain: "Снять капитанство",
+    yourTeam: "Ваша команда",
+    yourRole: "Ваша роль:",
+    rolePlayer: "Игрок",
+    roleCaptain: "Капитан",
+    roleSpectator: "Наблюдатель",
+    noTeam: "Не выбрана",
+    notSelected: "не выбрана",
+    andCaptain: "и вы её капитан",
+    ownerActions: "Действия владельца",
+    lockTeams: "Закрыть набор",
+    unlockTeams: "Открыть набор",
+    makePrivate: "Сделать приватной",
+    makePublic: "Сделать публичной"
   },
 
   // Социальные сети и шаринг
@@ -74,13 +93,15 @@ export default {
     currentTeam: "Текущая команда:",
     blueTeam: "Синие",
     redTeam: "Красные",
+    myWords: "Мои слова",
+    opponentWords: "Чужие слова",
     remaining: "Осталось",
     cards: "карт",
     helperTitle: "Помощник капитана",
     helperTip: "Удерживайте кнопку",
     helperInstructions: "в течение 1 секунды для переключения режима игрового поля. Команду противника можно свернуть, слова можно перетаскивать, переключатель может изменить команду.",
     enterPhrase: "Введите фразу для подтверждения:",
-    phrasePlaceholder: "Фраза", 
+    phrasePlaceholder: "Фраза",
     assassinWord: "Слово убийцы",
     confirmationPhrase: "КАПИТАН"
   },
@@ -144,8 +165,8 @@ export default {
 
   // Авторизация
   auth: {
-    title: "Вход в чат",
-    enterName: "Введите ваше имя для входа в чат:",
+    title: "Вход в игру",
+    enterName: "Введите ваше имя для входа в игру:",
     namePlaceholder: "Ваше имя",
     nameLength: "Имя должно быть от 2 до 30 символов",
     nameHint: "После регистрации вы получите PIN-код для восстановления доступа. К вашему профилю будет привязана вся игровая статистика и история сообщений.",
@@ -172,7 +193,12 @@ export default {
   notifications: {
     linkCopied: "Ссылка скопирована!",
     keyCopied: "Ключ скопирован",
-    pressAndHold: "Удерживайте карточку для открытия"
+    pressAndHold: "Удерживайте карточку для открытия",
+    chooseTeam: "Выберите команду в меню для участия в игре",
+    spectatorsCannotPlay: "Наблюдатели могут только следить за игрой. Присоединитесь к команде, чтобы играть!",
+    notYourTurn: "Сейчас ход другой команды. Подождите своей очереди.",
+    captainsCannotPlay: "Капитаны не могут открывать карточки. Используйте режим капитана для просмотра.",
+    captainsRequired: "Игра начнётся когда обе команды выберут капитанов."
   },
 
   // Ошибки и предупреждения

@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, memo } from "react";
 import { Button } from "./Button";
-import { FiMenu, FiMaximize, FiEye, FiUserPlus, FiMessageCircle } from "react-icons/fi";
+import { FiMenu, FiMaximize, FiUserPlus, FiMessageCircle, FiStar } from "react-icons/fi";
 import { useTranslation } from "../hooks/useTranslation";
 
 const PRESS_DURATION = 1000;
@@ -16,6 +16,9 @@ const GameStatus = ({
   onCaptainHelperClick,
   unreadCount = 0,
   isUserAuthorized = false,
+  currentTeam = "blue",
+  highlightMenuIcon = false,
+  highlightCaptainIcon = false,
 }) => {
   const { t } = useTranslation();
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -99,7 +102,10 @@ const GameStatus = ({
     <div className="status-bar">
       <div className="status-container">
         <div className="status-grid">
-          <div className="status-blue">
+          <div
+            className="status-blue"
+            style={{ opacity: currentTeam === "blue" ? 1 : 0.4 }}
+          >
             <div className="team-score">
               <span className="score-value">{remainingCards.blue}</span>
             </div>
@@ -112,7 +118,7 @@ const GameStatus = ({
                   variant="outline"
                   className={`menu-button captain-button ${
                     isCaptain ? "active" : ""
-                  }`}
+                  } ${highlightCaptainIcon ? "highlight" : ""}`}
                   onClick={handleCaptainClick}
                   onPointerDown={startCaptainPress}
                   onPointerUp={endCaptainPress}
@@ -120,7 +126,7 @@ const GameStatus = ({
                   title={t('status.captainHelper')}
                 >
                   <div className="button-content">
-                    <FiEye size={24} />
+                    <FiStar size={24} />
                     {pressing && (
                       <div
                         className="press-progress"
@@ -133,7 +139,7 @@ const GameStatus = ({
               <Button
                 variant="outline"
                 onClick={onMenuClick}
-                className="menu-button"
+                className={`menu-button ${highlightMenuIcon ? "highlight" : ""}`}
                 title={t('status.menu')}
               >
                 <FiMenu size={28} />
@@ -171,7 +177,10 @@ const GameStatus = ({
             </div>
           </div>
 
-          <div className="status-red">
+          <div
+            className="status-red"
+            style={{ opacity: currentTeam === "red" ? 1 : 0.4 }}
+          >
             <div className="team-score">
               <span className="score-value">{remainingCards.red}</span>
             </div>
@@ -182,4 +191,4 @@ const GameStatus = ({
   );
 };
 
-export default GameStatus;
+export default memo(GameStatus);

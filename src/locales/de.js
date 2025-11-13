@@ -30,7 +30,26 @@ export default {
     "generating": "Generiere Spiel...",
     "serverOnline": "Online",
     "serverStarting": "Offline",
-    "information": "Information"
+    "information": "Information",
+    "teamSelection": "",
+    "blueTeam": "",
+    "redTeam": "",
+    "spectator": "",
+    "becomeCaptain": "",
+    "leaveCaptain": "",
+    "yourTeam": "",
+    "yourRole": "",
+    "rolePlayer": "",
+    "roleCaptain": "",
+    "roleSpectator": "",
+    "noTeam": "",
+    "ownerActions": "",
+    "lockTeams": "",
+    "unlockTeams": "",
+    "makePrivate": "",
+    "makePublic": "",
+    "notSelected": "",
+    "andCaptain": ""
   },
   "share": {
     "copyLink": "Link kopieren",
@@ -95,7 +114,11 @@ export default {
   "notifications": {
     "linkCopied": "Link kopiert!",
     "keyCopied": "Schlüssel kopiert",
-    "pressAndHold": "Karte gedrückt halten zum Aufdecken"
+    "pressAndHold": "Karte gedrückt halten zum Aufdecken",
+    "chooseTeam": "",
+    "spectatorsCannotPlay": "",
+    "notYourTurn": "",
+    "captainsCannotPlay": ""
   },
   "errors": {
     "enterTopic": "Thema für KI-Spiel eingeben",

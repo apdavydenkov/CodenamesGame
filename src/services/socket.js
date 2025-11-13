@@ -98,9 +98,14 @@ class GameSocket {
     }
 
     if (this.socket?.connected) {
+      const userId = localStorage.getItem('codenames-user-id');
+      const username = localStorage.getItem('codenames-username') || 'Аноним';
+
       this.socket.emit("REVEAL_CARD", {
         gameKey: this.gameKey,
         cardIndex,
+        userId,
+        username,
       });
     } else if (this.gameStateCallback) {
       this.offlineRevealed.add(cardIndex);

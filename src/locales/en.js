@@ -30,7 +30,26 @@ export default {
     "generating": "Generating game...",
     "serverOnline": "Online",
     "serverStarting": "Offline",
-    "information": "Information"
+    "information": "Information",
+    "teamSelection": "",
+    "blueTeam": "",
+    "redTeam": "",
+    "spectator": "",
+    "becomeCaptain": "",
+    "leaveCaptain": "",
+    "yourTeam": "",
+    "yourRole": "",
+    "rolePlayer": "",
+    "roleCaptain": "",
+    "roleSpectator": "",
+    "noTeam": "",
+    "ownerActions": "",
+    "lockTeams": "",
+    "unlockTeams": "",
+    "makePrivate": "",
+    "makePublic": "",
+    "notSelected": "",
+    "andCaptain": ""
   },
   "share": {
     "copyLink": "Copy link",
@@ -95,7 +114,11 @@ export default {
   "notifications": {
     "linkCopied": "Link copied!",
     "keyCopied": "Key copied",
-    "pressAndHold": "Hold card to reveal"
+    "pressAndHold": "Hold card to reveal",
+    "chooseTeam": "",
+    "spectatorsCannotPlay": "",
+    "notYourTurn": "",
+    "captainsCannotPlay": ""
   },
   "errors": {
     "enterTopic": "Enter topic to create AI game",

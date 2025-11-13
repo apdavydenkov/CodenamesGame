@@ -305,6 +305,23 @@
   color: #2563eb;
 }
 
+.menu-button.highlight {
+  animation: buttonHighlight 3s ease-in-out;
+}
+
+@keyframes buttonHighlight {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.4);
+    background-color: rgba(37, 99, 235, 0.1);
+  }
+  20%, 40%, 60%, 80% {
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+  }
+}
+
 .menu-button.chat-button {
   position: relative;
 }

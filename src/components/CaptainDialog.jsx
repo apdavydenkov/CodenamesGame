@@ -95,10 +95,12 @@ const CaptainDialog = ({
   onConfirm,
   isCaptainConfirmed,
   gameState,
+  myTeam,
 }) => {
   const { t } = useTranslation();
   const [phrase, setPhrase] = useState("");
-  const [selectedTeam, setSelectedTeam] = useState("blue");
+  const [phraseError, setPhraseError] = useState(false);
+  const [showingMyTeam, setShowingMyTeam] = useState(true);
   const [isOpponentExpanded, setIsOpponentExpanded] = useState(true);
   const [unrevealedOrders, setUnrevealedOrders] = useState({
     blue: null,
@@ -106,6 +108,10 @@ const CaptainDialog = ({
   });
   const dragItem = useRef(null);
   const dragOverItem = useRef(null);
+
+  // Calculate which team to display based on myTeam and toggle
+  const displayedTeam = showingMyTeam ? myTeam : (myTeam === 'blue' ? 'red' : 'blue');
+  const opponentTeam = myTeam === 'blue' ? 'red' : 'blue';
 
   const getTeamWords = useCallback((team) => {
     if (!gameState?.words) return [];
@@ -157,7 +163,7 @@ const CaptainDialog = ({
       e.target.classList.remove("dragging");
       if (!dragItem.current || !dragOverItem.current) return;
 
-      const words = getTeamWords(selectedTeam);
+      const words = getTeamWords(displayedTeam);
       const unrevealed = words.filter((w) => !w.revealed);
 
       const [fromIndex, toIndex] = [dragItem.current, dragOverItem.current].map(
@@ -171,7 +177,7 @@ const CaptainDialog = ({
 
         setUnrevealedOrders((prev) => ({
           ...prev,
-          [selectedTeam]: newUnrevealed.map((w) => w.word),
+          [displayedTeam]: newUnrevealed.map((w) => w.word),
         }));
       }
 
@@ -181,13 +187,19 @@ const CaptainDialog = ({
   };
 
   useEffect(() => {
-    if (gameState) {
+    if (gameState?.words) {
       setUnrevealedOrders((prev) => {
         const newOrders = { ...prev };
         ["blue", "red"].forEach((team) => {
           if (!newOrders[team]) {
-            const unrevealed = getTeamWords(team)
-              .filter((item) => !item.revealed)
+            // Получаем слова команды напрямую без getTeamWords чтобы избежать бесконечного цикла
+            const unrevealed = gameState.words
+              .map((word, index) => ({
+                word,
+                revealed: gameState.revealed[index],
+                color: gameState.colors[index],
+              }))
+              .filter((item) => item.color === team && !item.revealed)
               .map((item) => item.word);
             newOrders[team] = unrevealed;
           }
@@ -195,7 +207,7 @@ const CaptainDialog = ({
         return newOrders;
       });
     }
-  }, [gameState, getTeamWords]);
+  }, [gameState]);
 
   const handleClose = () => {
     setPhrase("");
@@ -220,8 +232,11 @@ const CaptainDialog = ({
             <div className="confirmation-phrase">{t('captainDialog.confirmationPhrase')}</div>
             <Input
               value={phrase}
-              onChange={(e) => setPhrase(e.target.value.toUpperCase())}
-              className="confirmation-input"
+              onChange={(e) => {
+                setPhrase(e.target.value);
+                setPhraseError(false);
+              }}
+              className={`confirmation-input ${phraseError ? 'error' : ''}`}
               placeholder={t('captainDialog.phrasePlaceholder')}
             />
           </div>
@@ -235,12 +250,17 @@ const CaptainDialog = ({
           </Button>
           <Button
             onClick={() => {
-              if (phrase.trim().toUpperCase() === t('captainDialog.confirmationPhrase')) {
+              const normalizedPhrase = phrase.trim().toUpperCase();
+              const expectedPhrase = t('captainDialog.confirmationPhrase').toUpperCase();
+
+              if (normalizedPhrase === expectedPhrase) {
                 onConfirm();
                 setPhrase("");
+                setPhraseError(false);
+              } else {
+                setPhraseError(true);
               }
             }}
-            disabled={phrase.trim().toUpperCase() !== t('captainDialog.confirmationPhrase')}
           >
             {t('captainDialog.confirm')}
           </Button>
@@ -264,25 +284,27 @@ const CaptainDialog = ({
 		</div>
 
       <div className="captain-helper-content">
-        <TeamSwitch team={selectedTeam} onChange={setSelectedTeam} />
+        <TeamSwitch
+          showingMyTeam={showingMyTeam}
+          onChange={setShowingMyTeam}
+          myTeamColor={myTeam}
+        />
 
         {gameState && (
           <>
             <WordsList
-              title={selectedTeam === "blue" ? t('captainDialog.blueTeam') : t('captainDialog.redTeam')}
-              words={getTeamWords(selectedTeam)}
-              remainingCount={gameState.remainingCards[selectedTeam]}
+              title={showingMyTeam ? t('captainDialog.myWords') : t('captainDialog.opponentWords')}
+              words={getTeamWords(displayedTeam)}
+              remainingCount={gameState.remainingCards[displayedTeam]}
               onDragHandlers={dragHandlers}
               t={t}
             />
 
             <WordsList
-              title={selectedTeam === "blue" ? t('captainDialog.redTeam') : t('captainDialog.blueTeam')}
-              words={getTeamWords(selectedTeam === "blue" ? "red" : "blue")}
+              title={showingMyTeam ? t('captainDialog.opponentWords') : t('captainDialog.myWords')}
+              words={getTeamWords(showingMyTeam ? opponentTeam : myTeam)}
               remainingCount={
-                gameState.remainingCards[
-                  selectedTeam === "blue" ? "red" : "blue"
-                ]
+                gameState.remainingCards[showingMyTeam ? opponentTeam : myTeam]
               }
               isOpponent
               expanded={isOpponentExpanded}

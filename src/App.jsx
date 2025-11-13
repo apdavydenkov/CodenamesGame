@@ -9,6 +9,7 @@ import ChatDialog from "./components/ChatDialog";
 import AuthDialog from "./components/AuthDialog";
 import MetaTags from "./components/MetaTags";
 import LanguageSwitcher from "./components/LanguageSwitcher";
+import Notification from "./components/Notification";
 import {
   generateGameFromKey,
   generateNewKey,
@@ -21,6 +22,7 @@ import { useTranslation } from "./hooks/useTranslation";
 import "./styles/game.css";
 
 const App = () => {
+
   const { t, language } = useTranslation();
   const [gameState, setGameState] = useState({
     words: [],
@@ -34,8 +36,10 @@ const App = () => {
 
   const [isCaptain, setIsCaptain] = useState(false);
   const [isCaptainConfirmed, setIsCaptainConfirmed] = useState(false);
+  const [isPendingCaptainConfirmation, setIsPendingCaptainConfirmation] = useState(false);
   const [showWinDialog, setShowWinDialog] = useState(false);
   const wasWinDialogShownRef = useRef(false);
+  const isInitialRoleSetRef = useRef(false);
   const [showKeyDialog, setShowKeyDialog] = useState(false);
   const [showMenuDialog, setShowMenuDialog] = useState(false);
   const [showCaptainDialog, setShowCaptainDialog] = useState(false);
@@ -50,6 +54,17 @@ const App = () => {
     userId: localStorage.getItem('codenames-user-id') || null,
     username: localStorage.getItem('codenames-username') || ''
   });
+
+  // Состояние команд
+  const [teams, setTeams] = useState(null);
+  const [myTeam, setMyTeam] = useState(null);
+  const [myRole, setMyRole] = useState(null);
+  const [ownerId, setOwnerId] = useState(null);
+  const [teamsLocked, setTeamsLocked] = useState(false);
+  const [isPrivate, setIsPrivate] = useState(false);
+  const [gameError, setGameError] = useState(null);
+  const [highlightMenuIcon, setHighlightMenuIcon] = useState(false);
+  const [highlightCaptainIcon, setHighlightCaptainIcon] = useState(false);
 
   // ID последних прочитанных сообщений (храним в localStorage)
   const [lastReadMessageIds, setLastReadMessageIds] = useState(() => {
@@ -82,24 +97,8 @@ const App = () => {
           const cachedData = JSON.parse(cached);
 
           if (cachedData.data && Array.isArray(cachedData.data)) {
-            // Асинхронно проверяем обновления в фоне (не блокируем загрузку)
-            setTimeout(async () => {
-              try {
-                const response = await fetch(url);
-                const serverLastModified = response.headers.get('Last-Modified');
-
-                if (serverLastModified !== cachedData.lastModified) {
-                  const data = await response.json();
-                  localStorage.setItem(cacheKey, JSON.stringify({
-                    data: data.dictionaries,
-                    lastModified: serverLastModified
-                  }));
-                }
-              } catch (e) {
-                // Игнорируем ошибки фоновой проверки
-              }
-            }, 1000);
-
+            // Возвращаем кешированные данные сразу
+            // (фоновая проверка обновлений отключена для предотвращения утечек памяти)
             return cachedData.data;
           }
         } catch {
@@ -134,11 +133,101 @@ const App = () => {
   const loadAIDictionary = () => {
     // Виртуальный ИИ-словарь
     return {
-      id: "ai_dictionary", 
+      id: "ai_dictionary",
       index: 99,
       title: t('dictionaries.aiDictionary'),
       words: [], // Слова будут загружаться динамически
     };
+  };
+
+  // Helper: найти команду пользователя
+  const findUserTeam = (teams, userId) => {
+    if (!teams || !userId) return null;
+
+    // Проверяем синюю команду
+    if (teams.blue?.captain?.userId === userId) {
+      return { team: 'blue', role: 'captain', username: teams.blue.captain.username };
+    }
+    const bluePlayer = teams.blue?.players?.find(p => p.userId === userId);
+    if (bluePlayer) {
+      return { team: 'blue', role: 'player', username: bluePlayer.username };
+    }
+
+    // Проверяем красную команду
+    if (teams.red?.captain?.userId === userId) {
+      return { team: 'red', role: 'captain', username: teams.red.captain.username };
+    }
+    const redPlayer = teams.red?.players?.find(p => p.userId === userId);
+    if (redPlayer) {
+      return { team: 'red', role: 'player', username: redPlayer.username };
+    }
+
+    // Проверяем наблюдателей
+    const spectator = teams.spectators?.find(s => s.userId === userId);
+    if (spectator) {
+      return { team: 'spectator', role: 'spectator', username: spectator.username };
+    }
+
+    return null;
+  };
+
+  // Handlers для команд
+  const handleJoinTeam = (team, role) => {
+    console.log('[App] handleJoinTeam called:', { team, role, userId: userAuth.userId, username: userAuth.username, currentKey });
+
+    if (!userAuth.userId || !userAuth.username) {
+      console.log('[App] Not authenticated, showing auth dialog');
+      setShowAuthDialog(true);
+      return;
+    }
+
+    console.log('[App] Emitting JOIN_TEAM to server');
+    gameSocket.socket.emit('JOIN_TEAM', {
+      gameKey: currentKey,
+      team,
+      role,
+      userId: userAuth.userId,
+      username: userAuth.username
+    });
+  };
+
+  const handleBecomeCaptain = () => {
+    if (!userAuth.userId || !myTeam) return;
+
+    // Показываем диалог подтверждения ПЕРЕД отправкой на сервер
+    setIsPendingCaptainConfirmation(true);
+    setShowCaptainDialog(true);
+  };
+
+  const handleLeaveCaptain = () => {
+    if (!userAuth.userId) return;
+
+    gameSocket.socket.emit('LEAVE_CAPTAIN', {
+      gameKey: currentKey,
+      userId: userAuth.userId
+    });
+
+    // НЕ сбрасываем состояния локально - пусть сервер сам пришлет обновление
+    // Сброс через useEffect когда myRole изменится
+  };
+
+  const handleLockTeams = () => {
+    if (!userAuth.userId) return;
+
+    gameSocket.socket.emit('LOCK_TEAMS', {
+      gameKey: currentKey,
+      userId: userAuth.userId
+    });
+  };
+
+  const handleSetPrivate = (isPrivate) => {
+    if (!userAuth.userId) return;
+
+    gameSocket.socket.emit('SET_PRIVATE', {
+      gameKey: currentKey,
+      userId: userAuth.userId,
+      isPrivate
+    });
   };
 
   useEffect(() => {
@@ -159,6 +248,22 @@ const App = () => {
         winner: newState.winner,
       }));
 
+      // Обновляем данные команд из GAME_STATE
+      if (newState.teams) {
+        setTeams(newState.teams);
+
+        // Обновляем свою команду и роль
+        if (userAuth.userId && userAuth.username) {
+          const userTeam = findUserTeam(newState.teams, userAuth.userId);
+          setMyTeam(userTeam?.team || null);
+          setMyRole(userTeam?.role || null);
+        }
+      }
+
+      if (newState.ownerId !== undefined) setOwnerId(newState.ownerId);
+      if (newState.teamsLocked !== undefined) setTeamsLocked(newState.teamsLocked);
+      if (newState.isPrivate !== undefined) setIsPrivate(newState.isPrivate);
+
       // Показываем диалог победы только один раз
       if (newState.gameOver && newState.winner && !wasWinDialogShownRef.current) {
         wasWinDialogShownRef.current = true;
@@ -169,6 +274,55 @@ const App = () => {
     gameSocket.socket.on("connect", handleConnect);
     gameSocket.socket.on("disconnect", handleDisconnect);
     gameSocket.onGameState(handleGameState);
+
+    // Обработчики команд
+    gameSocket.socket.on("TEAMS_UPDATE", (data) => {
+      console.log("[Teams] TEAMS_UPDATE:", data);
+      setTeams(data.teams);
+
+      // Обновляем свою команду и роль
+      if (userAuth.userId && data.teams) {
+        const userTeam = findUserTeam(data.teams, userAuth.userId);
+        const newRole = userTeam?.role || null;
+
+        // Если роль изменилась с капитана на что-то другое - сбрасываем подтверждение
+        setMyRole(prevRole => {
+          if (prevRole === 'captain' && newRole !== 'captain') {
+            setIsCaptainConfirmed(false);
+            setIsCaptain(false);
+          }
+          return newRole;
+        });
+
+        setMyTeam(userTeam?.team || null);
+      }
+    });
+
+    gameSocket.socket.on("JOIN_TEAM_SUCCESS", (data) => {
+      console.log("[Teams] JOIN_TEAM_SUCCESS:", data);
+      setMyTeam(data.team);
+      setMyRole(data.role);
+    });
+
+    gameSocket.socket.on("LEAVE_CAPTAIN_SUCCESS", (data) => {
+      console.log("[Teams] LEAVE_CAPTAIN_SUCCESS:", data);
+      setMyTeam(data.team);
+      setMyRole(data.role);
+      setIsCaptainConfirmed(false);
+      setIsCaptain(false);
+    });
+
+    gameSocket.socket.on("GAME_SETTINGS_UPDATE", (data) => {
+      console.log("[Teams] GAME_SETTINGS_UPDATE:", data);
+      if (data.teamsLocked !== undefined) setTeamsLocked(data.teamsLocked);
+      if (data.isPrivate !== undefined) setIsPrivate(data.isPrivate);
+    });
+
+    gameSocket.socket.on("GAME_ERROR", (error) => {
+      console.error("[Teams] GAME_ERROR:", error);
+      setGameError(error.message);
+      setTimeout(() => setGameError(null), 5000);
+    });
 
     return () => {
       gameSocket.removeAllListeners();
@@ -274,6 +428,25 @@ const App = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Run once on mount - intentionally empty deps
 
+  // Автоматическое присоединение к наблюдателям при загрузке с ключом
+  useEffect(() => {
+    // Условия для автоматического присоединения:
+    // 1. Пользователь авторизован
+    // 2. Есть ключ игры (загрузили игру по ссылке)
+    // 3. Еще не в команде
+    // 4. Команды загружены (teams !== null)
+    // 5. Socket подключен
+    if (userAuth.userId && userAuth.username && currentKey && myTeam === null && teams !== null && gameSocket.socket?.connected) {
+      gameSocket.socket.emit('JOIN_TEAM', {
+        gameKey: currentKey,
+        team: 'spectator',
+        role: 'spectator',
+        userId: userAuth.userId,
+        username: userAuth.username
+      });
+    }
+  }, [userAuth.userId, userAuth.username, currentKey, myTeam, teams]);
+
   // Отдельный useEffect для смены языка - создает новую игру
   useEffect(() => {
     const changeLanguage = async () => {
@@ -324,17 +497,18 @@ const App = () => {
   }, [language]); // dictionaries.length is guard, not dependency
 
   // Автоматическое присоединение к чатам при авторизации
+  const joinChats = useCallback(() => {
+    if (!gameSocket.socket || !currentKey) return;
+
+    // Присоединяемся к игровому чату
+    gameSocket.socket.emit("JOIN_CHAT", { gameKey: currentKey });
+
+    // Присоединяемся к глобальному чату
+    gameSocket.socket.emit("JOIN_CHAT", { gameKey: "GLOBAL_CHAT" });
+  }, [currentKey]);
+
   useEffect(() => {
-    if (!gameSocket.socket || !userAuth.userId || !currentKey) return;
-
-    const joinChats = () => {
-
-      // Присоединяемся к игровому чату
-      gameSocket.socket.emit("JOIN_CHAT", { gameKey: currentKey });
-
-      // Присоединяемся к глобальному чату
-      gameSocket.socket.emit("JOIN_CHAT", { gameKey: "GLOBAL_CHAT" });
-    };
+    if (!userAuth.userId) return;
 
     // Присоединяемся сразу при монтировании
     joinChats();
@@ -345,40 +519,47 @@ const App = () => {
     return () => {
       gameSocket.socket.off('connect', joinChats);
     };
-  }, [userAuth.userId, currentKey]);
+  }, [userAuth.userId, joinChats]);
+
+  // Refs для отслеживания текущего состояния без пересоздания listeners
+  const showChatDialogRef = useRef(showChatDialog);
+  const activeChatTabRef = useRef(activeChatTab);
+
+  useEffect(() => {
+    showChatDialogRef.current = showChatDialog;
+    activeChatTabRef.current = activeChatTab;
+  }, [showChatDialog, activeChatTab]);
 
   // Отслеживание новых сообщений для счётчиков непрочитанных
+  const handleNewMessage = useCallback((message) => {
+    const chatKey = message.gameKey === 'GLOBAL_CHAT' ? 'global' : 'game';
+
+    // Игнорируем свои сообщения
+    if (message.userId === userAuth.userId) {
+      return;
+    }
+
+    // Не увеличиваем счётчик если чат открыт И это активная вкладка
+    if (showChatDialogRef.current && activeChatTabRef.current === chatKey) {
+      return;
+    }
+
+    // Увеличиваем счётчик
+    setUnreadCounts(prev => {
+      const newCounts = { ...prev, [chatKey]: prev[chatKey] + 1 };
+      return newCounts;
+    });
+  }, [userAuth.userId]);
+
   useEffect(() => {
     if (!gameSocket.socket) return;
-
-
-    const handleNewMessage = (message) => {
-      const chatKey = message.gameKey === 'GLOBAL_CHAT' ? 'global' : 'game';
-
-
-      // Игнорируем свои сообщения
-      if (message.userId === userAuth.userId) {
-        return;
-      }
-
-      // Не увеличиваем счётчик если чат открыт И это активная вкладка
-      if (showChatDialog && activeChatTab === chatKey) {
-        return;
-      }
-
-      // Увеличиваем счётчик
-      setUnreadCounts(prev => {
-        const newCounts = { ...prev, [chatKey]: prev[chatKey] + 1 };
-        return newCounts;
-      });
-    };
 
     gameSocket.socket.on('NEW_MESSAGE', handleNewMessage);
 
     return () => {
       gameSocket.socket.off('NEW_MESSAGE', handleNewMessage);
     };
-  }, [userAuth.userId, showChatDialog, activeChatTab]);
+  }, [handleNewMessage]);
 
   const handleDictionaryChange = (dictionary) => {
     setCurrentDictionary(dictionary);
@@ -393,6 +574,19 @@ const App = () => {
   useEffect(() => {
     localStorage.setItem('codenames-last-read-messages', JSON.stringify(lastReadMessageIds));
   }, [lastReadMessageIds]);
+
+  // Синхронизация состояния с ролью от сервера
+  useEffect(() => {
+    // При первой установке роли (загрузка страницы)
+    if (myRole !== null && !isInitialRoleSetRef.current) {
+      isInitialRoleSetRef.current = true;
+
+      // Если при загрузке уже капитан - автоматически подтверждаем (перезагрузка страницы)
+      if (myRole === 'captain') {
+        setIsCaptainConfirmed(true);
+      }
+    }
+  }, [myRole]);
 
   // Обновление lastReadMessageId при открытии чата (вызывается из ChatDialog)
   const handleMarkAsRead = useCallback((chatKey, lastMessageId) => {
@@ -544,25 +738,68 @@ const App = () => {
   };
 
   const handleCaptainConfirm = () => {
+    // Если это подтверждение для назначения капитаном - отправляем на сервер
+    if (isPendingCaptainConfirmation) {
+      gameSocket.socket.emit('JOIN_TEAM', {
+        gameKey: currentKey,
+        team: myTeam,
+        role: 'captain',
+        userId: userAuth.userId,
+        username: userAuth.username
+      });
+      setIsPendingCaptainConfirmation(false);
+    }
+
     setIsCaptainConfirmed(true);
     setIsCaptain(true);
     setShowCaptainDialog(false);
   };
 
-  const handleCaptainModeToggle = () => {
+  const handleCaptainModeToggle = useCallback(() => {
     if (isCaptainConfirmed) {
       setIsCaptain(!isCaptain);
     }
-  };
+  }, [isCaptainConfirmed, isCaptain]);
 
-  const handleCaptainHelperClick = () => {
+  const handleCaptainHelperClick = useCallback(() => {
     setShowCaptainDialog(true);
-  };
+  }, []);
 
-  const handleCardClick = (index) => {
+  const handleMenuClick = useCallback(() => {
+    setShowMenuDialog(true);
+  }, []);
+
+  const handleChatClick = useCallback(() => {
+    if (!userAuth.username || !userAuth.userId) {
+      setShowAuthDialog(true);
+    } else {
+      setShowChatDialog(true);
+    }
+  }, [userAuth.username, userAuth.userId]);
+
+  const handleHighlightIcon = useCallback((iconType) => {
+    if (iconType === 'menu') {
+      setHighlightMenuIcon(true);
+      setTimeout(() => setHighlightMenuIcon(false), 3000);
+    } else if (iconType === 'captain') {
+      setHighlightCaptainIcon(true);
+      setTimeout(() => setHighlightCaptainIcon(false), 3000);
+    }
+  }, []);
+
+  const handleCardClick = useCallback((index) => {
     if (gameState.revealed[index] || isCaptain) return;
+
+    // Запрещаем открывать карточки пока не выбраны капитаны в обеих командах
+    const hasBlueCaptain = teams?.blue?.captain !== null;
+    const hasRedCaptain = teams?.red?.captain !== null;
+
+    if (!hasBlueCaptain || !hasRedCaptain) {
+      return;
+    }
+
     gameSocket.revealCard(index);
-  };
+  }, [gameState.revealed, isCaptain, teams]);
 
   return (
     <div className="container">
@@ -575,32 +812,34 @@ const App = () => {
             word={word}
             color={gameState.colors[index]}
             revealed={gameState.revealed[index]}
-            onConfirm={() => handleCardClick(index)}
+            onConfirm={handleCardClick}
             isCaptain={isCaptain}
             gameKey={currentKey}
             position={index}
+            myTeam={myTeam}
+            myRole={myRole}
+            isAuthenticated={!!userAuth.userId}
+            onAuthRequired={() => setShowAuthDialog(true)}
+            currentTeam={gameState.currentTeam}
+            teams={teams}
+            onHighlightIcon={handleHighlightIcon}
           />
         ))}
       </div>
 
       <GameStatus
         remainingCards={gameState.remainingCards}
-        onMenuClick={() => setShowMenuDialog(true)}
-        onChatClick={() => {
-
-          // Если не авторизован - показываем диалог авторизации
-          if (!userAuth.username || !userAuth.userId) {
-            setShowAuthDialog(true);
-          } else {
-            setShowChatDialog(true);
-          }
-        }}
+        onMenuClick={handleMenuClick}
+        onChatClick={handleChatClick}
         isCaptain={isCaptain}
         isCaptainConfirmed={isCaptainConfirmed}
         onCaptainModeToggle={handleCaptainModeToggle}
         onCaptainHelperClick={handleCaptainHelperClick}
         unreadCount={unreadCounts.game + unreadCounts.global}
         isUserAuthorized={!!(userAuth.userId && userAuth.username)}
+        currentTeam={gameState.currentTeam}
+        highlightMenuIcon={highlightMenuIcon}
+        highlightCaptainIcon={highlightCaptainIcon}
       />
 
       <WinDialog
@@ -640,15 +879,32 @@ const App = () => {
         aiTopic={aiTopic}
         onAITopicChange={setAITopic}
         isGeneratingAI={isGeneratingAI}
+        myTeam={myTeam}
+        myRole={myRole}
+        isAuthenticated={!!userAuth.userId}
+        teams={teams}
+        ownerId={ownerId}
+        userId={userAuth.userId}
+        teamsLocked={teamsLocked}
+        isPrivate={isPrivate}
+        onJoinTeam={handleJoinTeam}
+        onBecomeCaptain={handleBecomeCaptain}
+        onLeaveCaptain={handleLeaveCaptain}
+        onLockTeams={handleLockTeams}
+        onSetPrivate={handleSetPrivate}
       />
 
       <CaptainDialog
         isOpen={showCaptainDialog}
-        onClose={() => setShowCaptainDialog(false)}
+        onClose={() => {
+          setShowCaptainDialog(false);
+          setIsPendingCaptainConfirmation(false);
+        }}
         onConfirm={handleCaptainConfirm}
         isCaptain={isCaptain}
         isCaptainConfirmed={isCaptainConfirmed}
         gameState={gameState}
+        myTeam={myTeam}
       />
 
       <ChatDialog
@@ -691,6 +947,15 @@ const App = () => {
           setShowChatDialog(true);
         }}
       />
+
+      {/* Уведомление об ошибках */}
+      {gameError && (
+        <Notification
+          message={gameError}
+          isVisible={true}
+          onClose={() => setGameError(null)}
+        />
+      )}
 
     </div>
   );
