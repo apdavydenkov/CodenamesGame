@@ -30,7 +30,26 @@ export default {
     "generating": "Генерирую игру...",
     "serverOnline": "Онлайн",
     "serverStarting": "Офлайн",
-    "information": "Информация"
+    "information": "Информация",
+    "teamSelection": "",
+    "blueTeam": "",
+    "redTeam": "",
+    "spectator": "",
+    "becomeCaptain": "",
+    "leaveCaptain": "",
+    "yourTeam": "",
+    "yourRole": "",
+    "rolePlayer": "",
+    "roleCaptain": "",
+    "roleSpectator": "",
+    "noTeam": "",
+    "ownerActions": "",
+    "lockTeams": "",
+    "unlockTeams": "",
+    "makePrivate": "",
+    "makePublic": "",
+    "notSelected": "",
+    "andCaptain": ""
   },
   "share": {
     "copyLink": "Копировать ссылку",
@@ -95,7 +114,11 @@ export default {
   "notifications": {
     "linkCopied": "Ссылка скопирована!",
     "keyCopied": "Ключ скопирован",
-    "pressAndHold": "Удерживайте карточку для открытия"
+    "pressAndHold": "Удерживайте карточку для открытия",
+    "chooseTeam": "",
+    "spectatorsCannotPlay": "",
+    "notYourTurn": "",
+    "captainsCannotPlay": ""
   },
   "errors": {
     "enterTopic": "Введите тему для создания ИИ-игры",

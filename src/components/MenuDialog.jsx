@@ -12,7 +12,7 @@ import { Label } from "./Label";
 import { Input } from "./Input";
 import { Select } from "./Select";
 import { FaTelegram, FaWhatsapp, FaVk, FaFacebook } from "react-icons/fa";
-import { FiLink, FiHelpCircle, FiBarChart2 } from "react-icons/fi";
+import { FiLink, FiHelpCircle, FiBarChart2, FiStar } from "react-icons/fi";
 import InfoDialog from "./InfoDialog";
 import Notification from "./Notification";
 import { useTranslation } from "../hooks/useTranslation";
@@ -32,6 +32,20 @@ const MenuDialog = ({
   aiTopic = "",
   onAITopicChange,
   isGeneratingAI = false,
+  // Новые пропсы для команд
+  myTeam = null,
+  myRole = null,
+  isAuthenticated = false,
+  teams = null,
+  ownerId = null,
+  userId = null,
+  teamsLocked = false,
+  isPrivate = false,
+  onJoinTeam,
+  onBecomeCaptain,
+  onLeaveCaptain,
+  onLockTeams,
+  onSetPrivate,
 }) => {
   const [showNotification, setShowNotification] = useState(false);
   const [showInfoDialog, setShowInfoDialog] = useState(false);
@@ -89,16 +103,98 @@ const MenuDialog = ({
           </DialogHeader>
 
           <div className="menu-content">
-            <div className="menu-item">
-              <div className="switch-container">
-                <Switch
-                  id="captain-mode"
-                  checked={isCaptain}
-                  onCheckedChange={onCaptainChange}
-                />
-                <Label htmlFor="captain-mode">{t('menu.captainMode')}</Label>
-              </div>
-            </div>
+            {/* Показываем команды только если залогинен */}
+            {isAuthenticated && (
+              <>
+                {/* Функциональный заголовок */}
+                <label className="section-label">
+                  {t('menu.yourTeam')}:{' '}
+                  {myTeam === 'blue' && t('menu.blueTeam')}
+                  {myTeam === 'red' && t('menu.redTeam')}
+                  {myTeam === 'spectator' && t('menu.spectator')}
+                  {!myTeam && t('menu.notSelected')}
+                  {myRole === 'captain' && (
+                    <>
+                      {' '}{t('menu.andCaptain')}
+                      {' '}<FiStar size={14} style={{ verticalAlign: 'middle', marginLeft: '4px' }} />
+                    </>
+                  )}
+                </label>
+
+                {/* Кнопки команд и капитана вместе */}
+                <div className="team-buttons">
+                  <Button
+                    onClick={() => onJoinTeam?.('blue', 'player')}
+                    variant={myTeam === 'blue' && myRole === 'player' ? 'default' : 'outline'}
+                    disabled={isGeneratingAI || (teamsLocked && ownerId !== userId)}
+                  >
+                    {t('menu.blueTeam')}
+                  </Button>
+                  <Button
+                    onClick={() => onJoinTeam?.('red', 'player')}
+                    variant={myTeam === 'red' && myRole === 'player' ? 'default' : 'outline'}
+                    disabled={isGeneratingAI || (teamsLocked && ownerId !== userId)}
+                  >
+                    {t('menu.redTeam')}
+                  </Button>
+                  <Button
+                    onClick={() => onJoinTeam?.('spectator', 'spectator')}
+                    variant={myTeam === 'spectator' ? 'default' : 'outline'}
+                    disabled={isGeneratingAI}
+                  >
+                    {t('menu.spectator')}
+                  </Button>
+
+                  {/* Кнопка капитана прямо здесь */}
+                  {myTeam && myTeam !== 'spectator' && (
+                    myRole === 'captain' ? (
+                      <Button
+                        onClick={() => onLeaveCaptain?.()}
+                        variant="outline"
+                        disabled={isGeneratingAI}
+                      >
+                        <FiStar size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
+                        {t('menu.leaveCaptain')}
+                      </Button>
+                    ) : (
+                      teams?.[myTeam]?.captain === null && (
+                        <Button
+                          onClick={() => onBecomeCaptain?.()}
+                          variant="outline"
+                          disabled={isGeneratingAI}
+                        >
+                          <FiStar size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
+                          {t('menu.becomeCaptain')}
+                        </Button>
+                      )
+                    )
+                  )}
+                </div>
+
+                {/* Действия владельца - без обёртки menu-item */}
+                {ownerId === userId && (
+                  <div className="owner-actions">
+                    <label className="section-label">{t('menu.ownerActions')}</label>
+                    <div className="owner-buttons">
+                      <Button
+                        onClick={() => onLockTeams?.()}
+                        variant="outline"
+                        disabled={isGeneratingAI}
+                      >
+                        {teamsLocked ? t('menu.unlockTeams') : t('menu.lockTeams')}
+                      </Button>
+                      <Button
+                        onClick={() => onSetPrivate?.(!isPrivate)}
+                        variant="outline"
+                        disabled={isGeneratingAI}
+                      >
+                        {isPrivate ? t('menu.makePublic') : t('menu.makePrivate')}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
 
             <div className="dictionary-select-container">
               <label className="section-label">{t('menu.dictionary')}</label>

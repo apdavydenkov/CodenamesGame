@@ -30,7 +30,26 @@ export default {
     "generating": "Génération du jeu...",
     "serverOnline": "Online",
     "serverStarting": "Offline",
-    "information": "Information"
+    "information": "Information",
+    "teamSelection": "",
+    "blueTeam": "",
+    "redTeam": "",
+    "spectator": "",
+    "becomeCaptain": "",
+    "leaveCaptain": "",
+    "yourTeam": "",
+    "yourRole": "",
+    "rolePlayer": "",
+    "roleCaptain": "",
+    "roleSpectator": "",
+    "noTeam": "",
+    "ownerActions": "",
+    "lockTeams": "",
+    "unlockTeams": "",
+    "makePrivate": "",
+    "makePublic": "",
+    "notSelected": "",
+    "andCaptain": ""
   },
   "share": {
     "copyLink": "Copier le lien",
@@ -95,7 +114,11 @@ export default {
   "notifications": {
     "linkCopied": "Lien copié !",
     "keyCopied": "Clé copiée",
-    "pressAndHold": "Maintenez la carte pour révéler"
+    "pressAndHold": "Maintenez la carte pour révéler",
+    "chooseTeam": "",
+    "spectatorsCannotPlay": "",
+    "notYourTurn": "",
+    "captainsCannotPlay": ""
   },
   "errors": {
     "enterTopic": "Entrez un sujet pour créer un jeu IA",

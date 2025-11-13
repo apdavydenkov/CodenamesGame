@@ -30,7 +30,26 @@ export default {
     "generating": "Đang tạo trò chơi...",
     "serverOnline": "Online",
     "serverStarting": "Offline",
-    "information": "Thông tin"
+    "information": "Thông tin",
+    "teamSelection": "",
+    "blueTeam": "",
+    "redTeam": "",
+    "spectator": "",
+    "becomeCaptain": "",
+    "leaveCaptain": "",
+    "yourTeam": "",
+    "yourRole": "",
+    "rolePlayer": "",
+    "roleCaptain": "",
+    "roleSpectator": "",
+    "noTeam": "",
+    "ownerActions": "",
+    "lockTeams": "",
+    "unlockTeams": "",
+    "makePrivate": "",
+    "makePublic": "",
+    "notSelected": "",
+    "andCaptain": ""
   },
   "share": {
     "copyLink": "Sao chép liên kết",
@@ -95,7 +114,11 @@ export default {
   "notifications": {
     "linkCopied": "Đã sao chép liên kết!",
     "keyCopied": "Đã sao chép khóa",
-    "pressAndHold": "Giữ thẻ để mở"
+    "pressAndHold": "Giữ thẻ để mở",
+    "chooseTeam": "",
+    "spectatorsCannotPlay": "",
+    "notYourTurn": "",
+    "captainsCannotPlay": ""
   },
   "errors": {
     "enterTopic": "Nhập chủ đề để tạo trò chơi AI",

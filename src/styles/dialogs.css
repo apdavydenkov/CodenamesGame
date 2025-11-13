@@ -223,6 +223,11 @@
   padding: 0.25rem;
   letter-spacing: 0.5px;
   text-transform: uppercase;
+  border: 2px solid #e5e7eb;
+}
+
+.confirmation-input.error {
+  border-color: #ef4444;
 }
 
 .captain-helper-content {
@@ -496,4 +501,122 @@
 .close-button:hover {
   background-color: #f3f4f6;
   color: #374151;
+}
+/* Team Selection Styles */
+.team-selection-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background-color: #f9fafb;
+}
+
+.current-team-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background-color: #fff;
+  border-radius: 0.375rem;
+  border: 1px solid #e5e7eb;
+  font-size: 0.875rem;
+}
+
+.team-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.team-buttons button {
+  flex: 1;
+  min-width: 100px;
+}
+
+.captain-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.captain-buttons button {
+  flex: 1;
+}
+
+.owner-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.owner-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.owner-buttons button {
+  flex: 1;
+  min-width: 120px;
+}
+
+/* Цвета для кнопок команд */
+.team-buttons button:nth-child(1) {
+  /* Синяя команда */
+  background-color: #2563eb;
+  color: white;
+  border-color: #2563eb;
+}
+
+.team-buttons button:nth-child(1):hover {
+  background-color: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+.team-buttons button:nth-child(2) {
+  /* Красная команда */
+  background-color: #dc2626;
+  color: white;
+  border-color: #dc2626;
+}
+
+.team-buttons button:nth-child(2):hover {
+  background-color: #b91c1c;
+  border-color: #b91c1c;
+}
+
+.team-buttons button:nth-child(3) {
+  /* Наблюдатель */
+  background-color: #e4d6c5;
+  color: #374151;
+  border-color: #e4d6c5;
+}
+
+.team-buttons button:nth-child(3):hover {
+  background-color: #d4c4b3;
+  border-color: #d4c4b3;
+}
+
+/* Outline variant для кнопок команд */
+.team-buttons button[variant="outline"] {
+  background-color: transparent;
+  color: inherit;
+}
+
+.team-buttons button[variant="outline"]:nth-child(1) {
+  color: #2563eb;
+  border-color: #2563eb;
+}
+
+.team-buttons button[variant="outline"]:nth-child(2) {
+  color: #dc2626;
+  border-color: #dc2626;
+}
+
+.team-buttons button[variant="outline"]:nth-child(3) {
+  color: #78716c;
+  border-color: #e4d6c5;
 }

@@ -30,7 +30,26 @@ export default {
     "generating": "게임 생성 중...",
     "serverOnline": "Online",
     "serverStarting": "Offline",
-    "information": "정보"
+    "information": "정보",
+    "teamSelection": "",
+    "blueTeam": "",
+    "redTeam": "",
+    "spectator": "",
+    "becomeCaptain": "",
+    "leaveCaptain": "",
+    "yourTeam": "",
+    "yourRole": "",
+    "rolePlayer": "",
+    "roleCaptain": "",
+    "roleSpectator": "",
+    "noTeam": "",
+    "ownerActions": "",
+    "lockTeams": "",
+    "unlockTeams": "",
+    "makePrivate": "",
+    "makePublic": "",
+    "notSelected": "",
+    "andCaptain": ""
   },
   "share": {
     "copyLink": "링크 복사",
@@ -95,7 +114,11 @@ export default {
   "notifications": {
     "linkCopied": "링크가 복사되었습니다!",
     "keyCopied": "키가 복사됨",
-    "pressAndHold": "카드를 길게 눌러서 열기"
+    "pressAndHold": "카드를 길게 눌러서 열기",
+    "chooseTeam": "",
+    "spectatorsCannotPlay": "",
+    "notYourTurn": "",
+    "captainsCannotPlay": ""
   },
   "errors": {
     "enterTopic": "AI 게임을 생성하려면 주제를 입력하세요",

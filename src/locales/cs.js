@@ -30,7 +30,26 @@ export default {
     "generating": "Generuji hru...",
     "serverOnline": "Online",
     "serverStarting": "Offline",
-    "information": "Informace"
+    "information": "Informace",
+    "teamSelection": "",
+    "blueTeam": "",
+    "redTeam": "",
+    "spectator": "",
+    "becomeCaptain": "",
+    "leaveCaptain": "",
+    "yourTeam": "",
+    "yourRole": "",
+    "rolePlayer": "",
+    "roleCaptain": "",
+    "roleSpectator": "",
+    "noTeam": "",
+    "ownerActions": "",
+    "lockTeams": "",
+    "unlockTeams": "",
+    "makePrivate": "",
+    "makePublic": "",
+    "notSelected": "",
+    "andCaptain": ""
   },
   "share": {
     "copyLink": "Kopírovat odkaz",
@@ -95,7 +114,11 @@ export default {
   "notifications": {
     "linkCopied": "Odkaz zkopírován!",
     "keyCopied": "Klíč zkopírován",
-    "pressAndHold": "Podržte kartu pro odhalení"
+    "pressAndHold": "Podržte kartu pro odhalení",
+    "chooseTeam": "",
+    "spectatorsCannotPlay": "",
+    "notYourTurn": "",
+    "captainsCannotPlay": ""
   },
   "errors": {
     "enterTopic": "Zadejte téma pro vytvoření AI hry",
