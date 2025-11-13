@@ -17,7 +17,7 @@ const LanguageDialog = ({ isOpen, onClose, onLanguageChange }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="dialog-content">
+      <DialogContent>
         <div className="dialog-header-with-close">
           <DialogTitle>{t('languageDialog.title')}</DialogTitle>
           <button className="close-button" onClick={onClose}>

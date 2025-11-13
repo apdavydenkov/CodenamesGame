@@ -113,7 +113,7 @@ const KeyDialog = ({
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="dialog-content">
+        <DialogContent>
           <DialogHeader className="dialog-header">
             <DialogTitle>{t('keyDialog.title')}</DialogTitle>
 			<DialogDescription>

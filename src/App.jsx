@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import GameCard from "./components/GameCard";
 import GameStatus from "./components/GameStatus";
 import WinDialog from "./components/WinDialog";
@@ -35,7 +35,7 @@ const App = () => {
   const [isCaptain, setIsCaptain] = useState(false);
   const [isCaptainConfirmed, setIsCaptainConfirmed] = useState(false);
   const [showWinDialog, setShowWinDialog] = useState(false);
-  const [wasWinDialogShown, setWasWinDialogShown] = useState(false);
+  const wasWinDialogShownRef = useRef(false);
   const [showKeyDialog, setShowKeyDialog] = useState(false);
   const [showMenuDialog, setShowMenuDialog] = useState(false);
   const [showCaptainDialog, setShowCaptainDialog] = useState(false);
@@ -51,15 +51,18 @@ const App = () => {
     username: localStorage.getItem('codenames-username') || ''
   });
 
-  // Счётчики непрочитанных сообщений (с загрузкой из localStorage)
-  const [unreadCounts, setUnreadCounts] = useState(() => {
+  // ID последних прочитанных сообщений (храним в localStorage)
+  const [lastReadMessageIds, setLastReadMessageIds] = useState(() => {
     try {
-      const saved = localStorage.getItem('codenames-unread-counts');
-      return saved ? JSON.parse(saved) : { game: 0, global: 0 };
+      const saved = localStorage.getItem('codenames-last-read-messages');
+      return saved ? JSON.parse(saved) : { game: null, global: null };
     } catch {
-      return { game: 0, global: 0 };
+      return { game: null, global: null };
     }
   });
+
+  // Счётчики непрочитанных сообщений (вычисляемое значение, не храним в localStorage)
+  const [unreadCounts, setUnreadCounts] = useState({ game: 0, global: 0 });
 
   const [dictionaries, setDictionaries] = useState([]);
   const [currentDictionary, setCurrentDictionary] = useState(null);
@@ -73,21 +76,31 @@ const App = () => {
       const cached = localStorage.getItem(cacheKey);
       const url = `/dictionaries/dictionaries_${language}.json`;
       
-      // Проверяем кеш и Last-Modified
+      // Используем кеш если есть (без проверки HEAD запроса для быстрой загрузки)
       if (cached) {
         try {
           const cachedData = JSON.parse(cached);
-          
-          // Если есть данные но нет lastModified (старый формат) - обновляем
-          if (cachedData.data && cachedData.lastModified) {
 
-            // Делаем HEAD запрос для проверки Last-Modified
-            const headResponse = await fetch(url, { method: 'HEAD' });
-            const serverLastModified = headResponse.headers.get('Last-Modified');
+          if (cachedData.data && Array.isArray(cachedData.data)) {
+            // Асинхронно проверяем обновления в фоне (не блокируем загрузку)
+            setTimeout(async () => {
+              try {
+                const response = await fetch(url);
+                const serverLastModified = response.headers.get('Last-Modified');
 
-            if (serverLastModified === cachedData.lastModified) {
-              return cachedData.data;
-            }
+                if (serverLastModified !== cachedData.lastModified) {
+                  const data = await response.json();
+                  localStorage.setItem(cacheKey, JSON.stringify({
+                    data: data.dictionaries,
+                    lastModified: serverLastModified
+                  }));
+                }
+              } catch (e) {
+                // Игнорируем ошибки фоновой проверки
+              }
+            }, 1000);
+
+            return cachedData.data;
           }
         } catch {
           // Ignore cache errors, will fetch fresh data
@@ -146,9 +159,10 @@ const App = () => {
         winner: newState.winner,
       }));
 
-      if (newState.gameOver && newState.winner && !wasWinDialogShown) {
+      // Показываем диалог победы только один раз
+      if (newState.gameOver && newState.winner && !wasWinDialogShownRef.current) {
+        wasWinDialogShownRef.current = true;
         setShowWinDialog(true);
-        setWasWinDialogShown(true);
       }
     };
 
@@ -160,7 +174,7 @@ const App = () => {
       gameSocket.removeAllListeners();
       gameSocket.disconnect();
     };
-  }, [wasWinDialogShown]);
+  }, []); // Подключаемся только один раз при монтировании
 
   useEffect(() => {
     const init = async () => {
@@ -375,13 +389,21 @@ const App = () => {
     }
   };
 
-  // Сохранение счётчиков в localStorage при изменении
+  // Сохранение lastReadMessageIds в localStorage при изменении
   useEffect(() => {
-    localStorage.setItem('codenames-unread-counts', JSON.stringify(unreadCounts));
-  }, [unreadCounts]);
+    localStorage.setItem('codenames-last-read-messages', JSON.stringify(lastReadMessageIds));
+  }, [lastReadMessageIds]);
 
-  // Обнуление счётчиков при открытии чата
-  const handleMarkAsRead = useCallback((chatKey) => {
+  // Обновление lastReadMessageId при открытии чата (вызывается из ChatDialog)
+  const handleMarkAsRead = useCallback((chatKey, lastMessageId) => {
+    if (!lastMessageId) return;
+
+    setLastReadMessageIds(prev => ({
+      ...prev,
+      [chatKey]: lastMessageId
+    }));
+
+    // Сразу обнуляем счётчик для этого чата
     setUnreadCounts(prev => ({
       ...prev,
       [chatKey]: 0
@@ -476,7 +498,7 @@ const App = () => {
       // Для обычной новой игры (без ключа) - обновляем состояние локально
       setCurrentDictionary(gameDictionary);
       setCurrentKey(gameKey);
-      setWasWinDialogShown(false);
+      wasWinDialogShownRef.current = false;
       setIsCaptain(false);
       setIsCaptainConfirmed(false);
 
@@ -637,12 +659,24 @@ const App = () => {
         userId={userAuth.userId}
         username={userAuth.username}
         unreadCounts={unreadCounts}
+        lastReadMessageIds={lastReadMessageIds}
         onMarkAsRead={handleMarkAsRead}
+        onUpdateUnreadCount={setUnreadCounts}
         activeTab={activeChatTab}
         onTabChange={setActiveChatTab}
         onLogout={() => {
+          // Очищаем все данные авторизации
           localStorage.removeItem('codenames-user-id');
           localStorage.removeItem('codenames-username');
+          localStorage.removeItem('codenames-pin');
+
+          // НЕ удаляем lastReadMessageIds - они нужны для подсчёта при следующем входе!
+          // localStorage.removeItem('codenames-last-read-messages'); ← НЕ ТРОГАЕМ
+
+          // Обнуляем только state счётчиков (при следующем входе пересчитаются)
+          setUnreadCounts({ game: 0, global: 0 });
+
+          // Обнуляем состояние авторизации
           setUserAuth({ userId: null, username: '' });
           setShowChatDialog(false);
         }}

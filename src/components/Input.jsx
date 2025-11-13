@@ -7,12 +7,13 @@ export const Input = forwardRef(({
   placeholder,
   error,
   className = "",
+  type = "text",
   ...props
 }, ref) => {
   return (
     <input
       ref={ref}
-      type="text"
+      type={type}
       value={value}
       onChange={onChange}
       placeholder={placeholder}
