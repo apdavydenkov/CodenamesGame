@@ -9,6 +9,7 @@ import { Button } from "./Button";
 import { Input } from "./Input";
 import { FiSend, FiX, FiSettings } from "react-icons/fi";
 import { useTranslation } from "../hooks/useTranslation";
+import SettingsDialog from "./SettingsDialog";
 
 const ChatDialog = ({
   isOpen,
@@ -29,44 +30,8 @@ const ChatDialog = ({
   const [messagesCache, setMessagesCache] = useState({}); // Кеш сообщений по ключам
   const [inputText, setInputText] = useState("");
   const [isSending, setIsSending] = useState(false);
-  const [showSettingsPopup, setShowSettingsPopup] = useState(false);
+  const [showSettingsDialog, setShowSettingsDialog] = useState(false);
 
-  const handleChangeName = useCallback(async () => {
-    const newName = prompt(t('chat.changeNamePrompt'), username);
-
-    if (!newName || newName === username || newName.trim().length < 2) {
-      return;
-    }
-
-    // Получаем PIN из localStorage
-    const pin = localStorage.getItem('codenames-pin');
-    if (!pin) {
-      alert('Ошибка: PIN-код не найден. Перезайдите в чат.');
-      return;
-    }
-
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3050';
-
-    try {
-      const response = await fetch(`${apiUrl}/api/auth/change-name`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, newUsername: newName.trim(), pin })
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
-        localStorage.setItem('codenames-username', result.newUsername);
-        alert(t('chat.nameChanged'));
-        window.location.reload(); // Перезагрузка для обновления username
-      } else {
-        alert(result.error || t('chat.nameChangeError'));
-      }
-    } catch {
-      alert(t('chat.nameChangeError'));
-    }
-  }, [userId, username, t]);
 
   const currentChatKey = useMemo(() => {
     return activeTab === 'global' ? 'GLOBAL_CHAT' : gameKey;
@@ -240,35 +205,23 @@ const ChatDialog = ({
   }, []);
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="chat-dialog-content">
+    <>
+      <Dialog open={isOpen} onOpenChange={onClose}>
         {/* Шапка (фиксированная) */}
         <div className="chat-header-fixed">
-          <DialogHeader>
-            <div className="chat-header-content">
-              <DialogTitle className="chat-title-greeting">
-                {t('chat.hello')}, <span className="chat-username" onClick={() => setShowSettingsPopup(!showSettingsPopup)} style={{cursor: 'pointer'}}>{username}</span>
-                <button onClick={() => setShowSettingsPopup(!showSettingsPopup)} className="chat-settings-button" aria-label="Settings">
-                  <FiSettings size={18} />
-                </button>
-              </DialogTitle>
-              <button onClick={onClose} className="chat-close-button" aria-label="Close">
-                <FiX size={20} />
-              </button>
-            </div>
-
-            {/* Settings Popup */}
-            {showSettingsPopup && (
-              <div className="chat-settings-popup">
-                <button onClick={() => { handleChangeName(); setShowSettingsPopup(false); }} className="chat-settings-option">
-                  {t('chat.changeName')}
-                </button>
-                <button onClick={() => { onLogout(); setShowSettingsPopup(false); }} className="chat-settings-option">
-                  {t('chat.logout')}
+            <DialogHeader>
+              <div className="chat-header-content">
+                <DialogTitle className="chat-title-greeting">
+                  {t('chat.hello')}, <span className="chat-username">{username}</span>
+                  <button onClick={() => setShowSettingsDialog(true)} className="chat-settings-button" aria-label="Settings">
+                    <FiSettings size={18} />
+                  </button>
+                </DialogTitle>
+                <button onClick={onClose} className="chat-close-button" aria-label="Close">
+                  <FiX size={20} />
                 </button>
               </div>
-            )}
-          </DialogHeader>
+            </DialogHeader>
 
           {/* Вкладки */}
           <div className="chat-tabs">
@@ -325,6 +278,7 @@ const ChatDialog = ({
         <div className="chat-input-fixed">
           <form className="chat-input-form" onSubmit={handleSendMessage}>
             <Input
+              type="search"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               placeholder={t('chat.typeMessage')}
@@ -344,11 +298,18 @@ const ChatDialog = ({
 
       <style>{`
         /* Базовая структура чата */
-        .chat-dialog-content {
+        .dialog {
+          height: 80vh;
+          max-height: 600px;
           display: flex;
           flex-direction: column;
-          height: 100%;
-          overflow: hidden;
+          padding: 1rem;
+        }
+
+        @media (max-width: 768px) {
+          .dialog {
+            padding: 0;
+          }
         }
 
         .chat-header-fixed {
@@ -376,20 +337,17 @@ const ChatDialog = ({
         @media (max-width: 768px) {
           .dialog-overlay {
             padding: 0 !important;
+            align-items: stretch !important;
           }
 
           .dialog {
             width: 100vw !important;
             max-width: 100vw !important;
             height: 100dvh !important;
+            height: calc(100dvh - env(keyboard-inset-height, 0px)) !important;
             max-height: 100dvh !important;
             border-radius: 0 !important;
             margin: 0 !important;
-          }
-
-          .chat-dialog-content {
-            padding: 0 !important;
-            height: 100dvh;
           }
 
           .dialog-header {
@@ -450,6 +408,15 @@ const ChatDialog = ({
           align-items: center;
           justify-content: center;
           transition: opacity 0.2s;
+          flex-shrink: 0;
+          line-height: 1;
+          position: relative;
+          top: 2px;
+          -webkit-tap-highlight-color: transparent;
+          user-select: none;
+          -webkit-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
         }
 
         .chat-settings-button:hover {
@@ -458,7 +425,6 @@ const ChatDialog = ({
 
         .chat-settings-popup {
           position: absolute;
-          top: 100%;
           left: 0.75rem;
           margin-top: 0.5rem;
           background: white;
@@ -734,8 +700,20 @@ const ChatDialog = ({
           }
         }
       `}</style>
-      </DialogContent>
     </Dialog>
+
+    <SettingsDialog
+      isOpen={showSettingsDialog}
+      onClose={() => setShowSettingsDialog(false)}
+      userId={userId}
+      username={username}
+      onLogout={onLogout}
+      onBackToGame={() => {
+        setShowSettingsDialog(false);
+        onClose();
+      }}
+    />
+    </>
   );
 };
 

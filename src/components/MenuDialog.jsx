@@ -12,7 +12,7 @@ import { Label } from "./Label";
 import { Input } from "./Input";
 import { Select } from "./Select";
 import { FaTelegram, FaWhatsapp, FaVk, FaFacebook } from "react-icons/fa";
-import { FiLink, FiHelpCircle } from "react-icons/fi";
+import { FiLink, FiHelpCircle, FiBarChart2 } from "react-icons/fi";
 import InfoDialog from "./InfoDialog";
 import Notification from "./Notification";
 import { useTranslation } from "../hooks/useTranslation";
@@ -83,7 +83,7 @@ const MenuDialog = ({
   return (
     <>
       <Dialog open={isOpen} onOpenChange={isGeneratingAI ? () => {} : onClose}>
-        <DialogContent className="dialog-content">
+        <DialogContent>
           <DialogHeader className="dialog-header">
             <DialogTitle>{t('menu.title')}</DialogTitle>
           </DialogHeader>
@@ -197,22 +197,27 @@ const MenuDialog = ({
           <DialogFooter>
             <div className="menu-footer">
               <div className="menu-footer-left">
-                <Button
-                  variant="ghost"
-                  className="icon-button"
+                <button
                   onClick={() => setShowInfoDialog(true)}
                   title={t('menu.information')}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', display: 'inline-flex', alignItems: 'center' }}
                 >
                   <FiHelpCircle size={20} />
-                </Button>
-                <Button
-                  variant="ghost"
-                  className="icon-button telegram-button"
+                </button>
+                <button
                   onClick={() => window.open('https://t.me/codenamesru_game', '_blank')}
-                  title="Сообщество в Телеграм"
+                  title="Telegram"
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', display: 'inline-flex', alignItems: 'center' }}
                 >
                   <FaTelegram size={20} />
-                </Button>
+                </button>
+                <button
+                  onClick={() => window.open('https://server.code-names.ru', '_blank')}
+                  title="Statistics"
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', display: 'inline-flex', alignItems: 'center' }}
+                >
+                  <FiBarChart2 size={20} />
+                </button>
                 <div
                   className="server-status"
                   title={serverStatus ? t('menu.serverOnline') : t('menu.serverStarting')}

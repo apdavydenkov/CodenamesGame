@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import Notification from "./Notification";
 import { useTranslation } from "../hooks/useTranslation";
 import { getBackNumber } from "../utils/cardBacks";
@@ -88,6 +88,9 @@ const GameCard = ({ word, color, revealed, onConfirm, isCaptain, gameKey, positi
         className={getCardStyle()}
         onPointerDown={startPress}
         onClick={handleClick}
+        style={{
+          animationDelay: `${position * 0.03}s` // Задержка 30ms между карточками (25 карточек = 750ms всего)
+        }}
       >
         <div
           style={{
@@ -115,4 +118,14 @@ const GameCard = ({ word, color, revealed, onConfirm, isCaptain, gameKey, positi
   );
 };
 
-export default GameCard;
+// Мемоизация для предотвращения лишних ре-рендеров
+export default memo(GameCard, (prevProps, nextProps) => {
+  return (
+    prevProps.word === nextProps.word &&
+    prevProps.color === nextProps.color &&
+    prevProps.revealed === nextProps.revealed &&
+    prevProps.isCaptain === nextProps.isCaptain &&
+    prevProps.gameKey === nextProps.gameKey &&
+    prevProps.position === nextProps.position
+  );
+});
