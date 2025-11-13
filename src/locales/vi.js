@@ -90,7 +90,9 @@ export default {
     "enterPhrase": "Nhập cụm từ xác nhận:",
     "phrasePlaceholder": "Cụm từ",
     "assassinWord": "Từ sát thủ",
-    "confirmationPhrase": "ĐỘI TRƯỞNG"
+    "confirmationPhrase": "ĐỘI TRƯỞNG",
+    "myWords": "",
+    "opponentWords": ""
   },
   "winDialog": {
     "title": "Trò chơi kết thúc!",
@@ -109,7 +111,8 @@ export default {
     "captainHelper": "Trợ lý đội trưởng",
     "menu": "Menu",
     "fullscreen": "Toàn màn hình",
-    "chat": "Trò chuyện"
+    "chat": "Trò chuyện",
+    "iosFullscreenInstructions": ""
   },
   "notifications": {
     "linkCopied": "Đã sao chép liên kết!",
@@ -118,7 +121,14 @@ export default {
     "chooseTeam": "",
     "spectatorsCannotPlay": "",
     "notYourTurn": "",
-    "captainsCannotPlay": ""
+    "captainsCannotPlay": "",
+    "captainsRequired": "",
+    "teamsLocked": "",
+    "teamsUnlocked": "",
+    "gamePrivate": "",
+    "gamePublic": "",
+    "privateGameTitle": "",
+    "privateGameMessage": ""
   },
   "errors": {
     "enterTopic": "Nhập chủ đề để tạo trò chơi AI",

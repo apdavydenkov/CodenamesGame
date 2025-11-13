@@ -24,7 +24,8 @@ const ChatDialog = ({
   onUpdateUnreadCount,
   activeTab,
   onTabChange,
-  onLogout
+  onLogout,
+  canAccessGame = true
 }) => {
   const { t } = useTranslation();
   const [messagesCache, setMessagesCache] = useState({}); // Кеш сообщений по ключам
@@ -40,6 +41,13 @@ const ChatDialog = ({
   const messages = Array.isArray(messagesCache[currentChatKey])
     ? messagesCache[currentChatKey]
     : [];
+
+  // Принудительное переключение на глобальную вкладку если нет доступа к игре
+  useEffect(() => {
+    if (!canAccessGame && activeTab === 'game') {
+      onTabChange('global');
+    }
+  }, [canAccessGame, activeTab, onTabChange]);
 
   // Обновление lastReadMessageId при открытии или переключении вкладки
   useEffect(() => {
@@ -249,15 +257,17 @@ const ChatDialog = ({
 
           {/* Вкладки */}
           <div className="chat-tabs">
-            <button
-              className={`chat-tab ${activeTab === 'game' ? 'active' : ''}`}
-              onClick={() => onTabChange('game')}
-            >
-              {t('chat.tabGame')}
-              {unreadCounts && unreadCounts.game > 0 && (
-                <span className="tab-badge">+{unreadCounts.game}</span>
-              )}
-            </button>
+            {canAccessGame && (
+              <button
+                className={`chat-tab ${activeTab === 'game' ? 'active' : ''}`}
+                onClick={() => onTabChange('game')}
+              >
+                {t('chat.tabGame')}
+                {unreadCounts && unreadCounts.game > 0 && (
+                  <span className="tab-badge">+{unreadCounts.game}</span>
+                )}
+              </button>
+            )}
             <button
               className={`chat-tab ${activeTab === 'global' ? 'active' : ''}`}
               onClick={() => onTabChange('global')}

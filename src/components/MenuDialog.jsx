@@ -12,7 +12,7 @@ import { Label } from "./Label";
 import { Input } from "./Input";
 import { Select } from "./Select";
 import { FaTelegram, FaWhatsapp, FaVk, FaFacebook } from "react-icons/fa";
-import { FiLink, FiHelpCircle, FiBarChart2, FiStar } from "react-icons/fi";
+import { FiLink, FiHelpCircle, FiBarChart2, FiStar, FiX } from "react-icons/fi";
 import InfoDialog from "./InfoDialog";
 import Notification from "./Notification";
 import { useTranslation } from "../hooks/useTranslation";
@@ -41,6 +41,7 @@ const MenuDialog = ({
   userId = null,
   teamsLocked = false,
   isPrivate = false,
+  canAccessGame = true,
   onJoinTeam,
   onBecomeCaptain,
   onLeaveCaptain,
@@ -48,6 +49,7 @@ const MenuDialog = ({
   onSetPrivate,
 }) => {
   const [showNotification, setShowNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState('');
   const [showInfoDialog, setShowInfoDialog] = useState(false);
   const { t } = useTranslation();
 
@@ -73,6 +75,7 @@ const MenuDialog = ({
       default:
         try {
           await navigator.clipboard.writeText(url.toString());
+          setNotificationMessage(t('notifications.linkCopied'));
           setShowNotification(true);
         } catch {
           // Clipboard API may fail
@@ -98,13 +101,16 @@ const MenuDialog = ({
     <>
       <Dialog open={isOpen} onOpenChange={isGeneratingAI ? () => {} : onClose}>
         <DialogContent>
-          <DialogHeader className="dialog-header">
+          <div className="dialog-header-with-close">
             <DialogTitle>{t('menu.title')}</DialogTitle>
-          </DialogHeader>
+            <button className="close-button" onClick={onClose} disabled={isGeneratingAI}>
+              <FiX size={20} />
+            </button>
+          </div>
 
           <div className="menu-content">
-            {/* Показываем команды только если залогинен */}
-            {isAuthenticated && (
+            {/* Показываем команды только если залогинен и (набор открыт или пользователь владелец или участник команды) */}
+            {canAccessGame && isAuthenticated && (!teamsLocked || ownerId === userId || myTeam === 'blue' || myTeam === 'red') && (
               <>
                 {/* Функциональный заголовок */}
                 <label className="section-label">
@@ -177,14 +183,30 @@ const MenuDialog = ({
                     <label className="section-label">{t('menu.ownerActions')}</label>
                     <div className="owner-buttons">
                       <Button
-                        onClick={() => onLockTeams?.()}
+                        onClick={() => {
+                          onLockTeams?.();
+                          setNotificationMessage(
+                            teamsLocked
+                              ? t('notifications.teamsUnlocked')
+                              : t('notifications.teamsLocked')
+                          );
+                          setShowNotification(true);
+                        }}
                         variant="outline"
                         disabled={isGeneratingAI}
                       >
                         {teamsLocked ? t('menu.unlockTeams') : t('menu.lockTeams')}
                       </Button>
                       <Button
-                        onClick={() => onSetPrivate?.(!isPrivate)}
+                        onClick={() => {
+                          onSetPrivate?.(!isPrivate);
+                          setNotificationMessage(
+                            isPrivate
+                              ? t('notifications.gamePublic')
+                              : t('notifications.gamePrivate')
+                          );
+                          setShowNotification(true);
+                        }}
                         variant="outline"
                         disabled={isGeneratingAI}
                       >
@@ -296,21 +318,21 @@ const MenuDialog = ({
                 <button
                   onClick={() => setShowInfoDialog(true)}
                   title={t('menu.information')}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', display: 'inline-flex', alignItems: 'center' }}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', display: 'inline-flex', alignItems: 'center', color: '#000' }}
                 >
                   <FiHelpCircle size={20} />
                 </button>
                 <button
                   onClick={() => window.open('https://t.me/codenamesru_game', '_blank')}
                   title="Telegram"
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', display: 'inline-flex', alignItems: 'center' }}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', display: 'inline-flex', alignItems: 'center', color: '#000' }}
                 >
                   <FaTelegram size={20} />
                 </button>
                 <button
                   onClick={() => window.open('https://server.code-names.ru', '_blank')}
                   title="Statistics"
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', display: 'inline-flex', alignItems: 'center' }}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', display: 'inline-flex', alignItems: 'center', color: '#000' }}
                 >
                   <FiBarChart2 size={20} />
                 </button>
@@ -342,7 +364,7 @@ const MenuDialog = ({
       />
 
       <Notification
-        message={t('notifications.linkCopied')}
+        message={notificationMessage}
         isVisible={showNotification}
         onClose={() => setShowNotification(false)}
       />

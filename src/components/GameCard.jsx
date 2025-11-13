@@ -61,15 +61,12 @@ const GameCard = ({
   const startPress = (e) => {
     if (revealed) return;
 
-    // Проверка наличия капитанов в обеих командах
-    const hasBlueCaptain = teams?.blue?.captain !== null;
-    const hasRedCaptain = teams?.red?.captain !== null;
-
-    if (!hasBlueCaptain || !hasRedCaptain) {
+    // Проверка авторизации ПЕРВАЯ - открываем чат
+    if (!isAuthenticated) {
       e.preventDefault();
-      setNotificationMessage(t('notifications.captainsRequired'));
-      setShowNotification(true);
-      onHighlightIcon?.('menu');
+      if (onAuthRequired) {
+        onAuthRequired();
+      }
       return;
     }
 
@@ -82,12 +79,15 @@ const GameCard = ({
       return;
     }
 
-    // Проверка авторизации и команды
-    if (!isAuthenticated) {
+    // Проверка наличия капитанов в обеих командах
+    const hasBlueCaptain = teams?.blue?.captain !== null;
+    const hasRedCaptain = teams?.red?.captain !== null;
+
+    if (!hasBlueCaptain || !hasRedCaptain) {
       e.preventDefault();
-      if (onAuthRequired) {
-        onAuthRequired();
-      }
+      setNotificationMessage(t('notifications.captainsRequired'));
+      setShowNotification(true);
+      onHighlightIcon?.('menu');
       return;
     }
 

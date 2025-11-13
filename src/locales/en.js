@@ -90,7 +90,9 @@ export default {
     "enterPhrase": "Enter phrase to confirm:",
     "phrasePlaceholder": "Phrase",
     "assassinWord": "Assassin Word",
-    "confirmationPhrase": "CAPTAIN"
+    "confirmationPhrase": "CAPTAIN",
+    "myWords": "",
+    "opponentWords": ""
   },
   "winDialog": {
     "title": "Game Over!",
@@ -109,7 +111,8 @@ export default {
     "captainHelper": "Captain Helper",
     "menu": "Menu",
     "fullscreen": "Fullscreen",
-    "chat": "Chat"
+    "chat": "Chat",
+    "iosFullscreenInstructions": ""
   },
   "notifications": {
     "linkCopied": "Link copied!",
@@ -118,7 +121,14 @@ export default {
     "chooseTeam": "",
     "spectatorsCannotPlay": "",
     "notYourTurn": "",
-    "captainsCannotPlay": ""
+    "captainsCannotPlay": "",
+    "captainsRequired": "",
+    "teamsLocked": "",
+    "teamsUnlocked": "",
+    "gamePrivate": "",
+    "gamePublic": "",
+    "privateGameTitle": "",
+    "privateGameMessage": ""
   },
   "errors": {
     "enterTopic": "Enter topic to create AI game",

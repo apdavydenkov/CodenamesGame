@@ -90,7 +90,9 @@ export default {
     "enterPhrase": "输入确认短语：",
     "phrasePlaceholder": "短语",
     "assassinWord": "杀手单词",
-    "confirmationPhrase": "队长"
+    "confirmationPhrase": "队长",
+    "myWords": "",
+    "opponentWords": ""
   },
   "winDialog": {
     "title": "游戏结束！",
@@ -109,7 +111,8 @@ export default {
     "captainHelper": "队长助手",
     "menu": "菜单",
     "fullscreen": "全屏",
-    "chat": "聊天"
+    "chat": "聊天",
+    "iosFullscreenInstructions": ""
   },
   "notifications": {
     "linkCopied": "链接已复制！",
@@ -118,7 +121,14 @@ export default {
     "chooseTeam": "",
     "spectatorsCannotPlay": "",
     "notYourTurn": "",
-    "captainsCannotPlay": ""
+    "captainsCannotPlay": "",
+    "captainsRequired": "",
+    "teamsLocked": "",
+    "teamsUnlocked": "",
+    "gamePrivate": "",
+    "gamePublic": "",
+    "privateGameTitle": "",
+    "privateGameMessage": ""
   },
   "errors": {
     "enterTopic": "请输入主题以创建AI游戏",

@@ -90,7 +90,9 @@ export default {
     "enterPhrase": "Zadejte frázi pro potvrzení:",
     "phrasePlaceholder": "Fráze",
     "assassinWord": "Slovo vraha",
-    "confirmationPhrase": "KAPITÁN"
+    "confirmationPhrase": "KAPITÁN",
+    "myWords": "",
+    "opponentWords": ""
   },
   "winDialog": {
     "title": "Hra skončila!",
@@ -109,7 +111,8 @@ export default {
     "captainHelper": "Pomocník kapitána",
     "menu": "Menu",
     "fullscreen": "Celá obrazovka",
-    "chat": "Chat"
+    "chat": "Chat",
+    "iosFullscreenInstructions": ""
   },
   "notifications": {
     "linkCopied": "Odkaz zkopírován!",
@@ -118,7 +121,14 @@ export default {
     "chooseTeam": "",
     "spectatorsCannotPlay": "",
     "notYourTurn": "",
-    "captainsCannotPlay": ""
+    "captainsCannotPlay": "",
+    "captainsRequired": "",
+    "teamsLocked": "",
+    "teamsUnlocked": "",
+    "gamePrivate": "",
+    "gamePublic": "",
+    "privateGameTitle": "",
+    "privateGameMessage": ""
   },
   "errors": {
     "enterTopic": "Zadejte téma pro vytvoření AI hry",
