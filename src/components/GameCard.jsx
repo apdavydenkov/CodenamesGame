@@ -2,7 +2,6 @@ import { useState, useEffect, memo } from "react";
 import Notification from "./Notification";
 import { useTranslation } from "../hooks/useTranslation";
 import { getBackNumber } from "../utils/cardBacks";
-import "../styles/card-backs.css";
 
 const PRESS_DURATION = 1500;
 const PROGRESS_INTERVAL = 50;
@@ -84,17 +83,8 @@ const GameCard = ({
     const hasBlueCaptain = teams?.blue?.captain !== null;
     const hasRedCaptain = teams?.red?.captain !== null;
 
-    console.log('[GameCard] Checking captains:', {
-      teams,
-      hasBlueCaptain,
-      hasRedCaptain,
-      blueCaptain: teams?.blue?.captain,
-      redCaptain: teams?.red?.captain
-    });
-
     if (!hasBlueCaptain || !hasRedCaptain) {
       e.preventDefault();
-      console.log('[GameCard] ❌ Captains missing - blocking card reveal');
       setNotificationMessage(t('notifications.captainsRequired'));
       setShowNotification(true);
       onHighlightIcon?.('menu');

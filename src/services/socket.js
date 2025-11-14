@@ -192,12 +192,6 @@ class GameSocket {
     this.offlineRevealed.clear();
 
     if (this.socket?.connected) {
-      console.log('[Socket] Emitting NEW_GAME:', {
-        gameKey,
-        userId,
-        makeOwner,
-        connected: this.socket.connected
-      });
       this.socket.emit("NEW_GAME", {
         gameKey,
         words: this.words,

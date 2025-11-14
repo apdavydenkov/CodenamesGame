@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+/* Отключаем брейкпоинты и ограничения ширины для всего приложения */
+html, body, #root {
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+#root {
+  display: contents;
+}
