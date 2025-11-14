@@ -238,5 +238,17 @@ export default {
     "checkError": "Lỗi kiểm tra tên",
     "registerError": "Lỗi khi đăng ký",
     "verifyError": "Lỗi xác minh PIN"
+  },
+  "hintDialog": {
+    "title": "",
+    "wordExpired": "",
+    "attemptsLeft": "",
+    "bonusAttempt": "",
+    "endTurn": "",
+    "giveHintLabel": "",
+    "wordPlaceholder": "",
+    "numberPlaceholder": "",
+    "numberHint": "",
+    "giveHintButton": ""
   }
 };

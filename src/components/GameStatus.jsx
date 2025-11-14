@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, memo } from "react";
 import { Button } from "./Button";
-import { FiMenu, FiMaximize, FiUserPlus, FiMessageCircle, FiStar } from "react-icons/fi";
+import { FiMenu, FiMaximize, FiUserPlus, FiMessageCircle, FiStar, FiFileText, FiUser } from "react-icons/fi";
 import { useTranslation } from "../hooks/useTranslation";
 
 const PRESS_DURATION = 1000;
@@ -20,6 +20,10 @@ const GameStatus = ({
   highlightMenuIcon = false,
   highlightCaptainIcon = false,
   onShowNotification,
+  currentHint = null,
+  hintTeam = null,
+  onHintClick,
+  teams = null,
 }) => {
   const { t } = useTranslation();
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -28,6 +32,9 @@ const GameStatus = ({
   const pressTimer = useRef(null);
   const progressTimer = useRef(null);
   const wasLongPress = useRef(false);
+
+  // State для кнопки подсказки
+  const [isHintGlowing, setIsHintGlowing] = useState(false);
 
   // Fullscreen button hide state
   const [isFullscreenButtonHidden, setIsFullscreenButtonHidden] = useState(
@@ -49,6 +56,28 @@ const GameStatus = ({
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
     };
   }, []);
+
+  // Эффект для подсветки кнопки подсказки (30 секунд)
+  useEffect(() => {
+    if (!currentHint) {
+      setIsHintGlowing(false);
+      return;
+    }
+
+    const elapsed = Date.now() - currentHint.timestamp;
+    const remaining = 30000 - elapsed;
+
+    if (remaining <= 0) {
+      setIsHintGlowing(false);
+    } else {
+      setIsHintGlowing(true);
+      const timer = setTimeout(() => {
+        setIsHintGlowing(false);
+      }, remaining);
+
+      return () => clearTimeout(timer);
+    }
+  }, [currentHint?.timestamp]);
 
   const toggleFullscreen = async () => {
     // Определяем iOS (включая iPad на iPadOS 13+)
@@ -203,6 +232,13 @@ const GameStatus = ({
             <div className="team-score">
               <span className="score-value">{remainingCards.blue}</span>
             </div>
+            {teams?.blue && (
+              <div className="team-info">
+                {teams.blue.captain && <FiStar size={14} />}
+                <FiUser size={14} />
+                <span className="team-count">{teams.blue.players.length}</span>
+              </div>
+            )}
           </div>
 
           <div className="status-menu">
@@ -260,6 +296,16 @@ const GameStatus = ({
                   </span>
                 )}
               </Button>
+              {currentHint && onHintClick && (
+                <Button
+                  variant="outline"
+                  onClick={onHintClick}
+                  className={`menu-button hint-button hint-${hintTeam} ${isHintGlowing ? 'glowing' : ''}`}
+                  title="Шифровка"
+                >
+                  <FiFileText />
+                </Button>
+              )}
               {!isFullscreenButtonHidden && (
                 <Button
                   variant="outline"
@@ -291,6 +337,13 @@ const GameStatus = ({
             <div className="team-score">
               <span className="score-value">{remainingCards.red}</span>
             </div>
+            {teams?.red && (
+              <div className="team-info">
+                {teams.red.captain && <FiStar size={14} />}
+                <FiUser size={14} />
+                <span className="team-count">{teams.red.players.length}</span>
+              </div>
+            )}
           </div>
         </div>
       </div>

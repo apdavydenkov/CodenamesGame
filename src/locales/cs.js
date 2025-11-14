@@ -238,5 +238,17 @@ export default {
     "checkError": "Chyba při kontrole jména",
     "registerError": "Chyba při registraci",
     "verifyError": "Chyba při ověřování PIN"
+  },
+  "hintDialog": {
+    "title": "",
+    "wordExpired": "",
+    "attemptsLeft": "",
+    "bonusAttempt": "",
+    "endTurn": "",
+    "giveHintLabel": "",
+    "wordPlaceholder": "",
+    "numberPlaceholder": "",
+    "numberHint": "",
+    "giveHintButton": ""
   }
 };

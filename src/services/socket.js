@@ -173,7 +173,7 @@ class GameSocket {
     };
   }
 
-  startNewGame(gameKey, words, colors, userId = null, makeOwner = false) {
+  startNewGame(gameKey, words, colors, startingTeam = 'blue', userId = null, makeOwner = false) {
     if (!words || !colors || words.length !== 25 || colors.length !== 25) {
       console.error('Invalid game setup');
       return;
@@ -184,7 +184,7 @@ class GameSocket {
     this.words = [...words];
     this.colors = [...colors];
     this.revealed = Array(25).fill(false);
-    this.currentTeam = 'blue';
+    this.currentTeam = startingTeam;
     this.remainingCards = {
       blue: colors.filter(c => c === 'blue').length,
       red: colors.filter(c => c === 'red').length
@@ -202,6 +202,7 @@ class GameSocket {
         gameKey,
         words: this.words,
         colors: this.colors,
+        startingTeam,
         userId,
         makeOwner
       });

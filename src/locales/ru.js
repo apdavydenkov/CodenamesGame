@@ -238,5 +238,17 @@ export default {
     "nameHint": "После регистрации вы получите PIN-код для восстановления доступа. К вашему профилю будет привязана вся игровая статистика и история сообщений.",
     "testWarning": "Это тестовый режим. Аккаунты могут быть удалены в процессе разработки.",
     "userExistsEnd": "уже зарегистрирован."
+  },
+  "hintDialog": {
+    "title": "",
+    "wordExpired": "",
+    "attemptsLeft": "",
+    "bonusAttempt": "",
+    "endTurn": "",
+    "giveHintLabel": "",
+    "wordPlaceholder": "",
+    "numberPlaceholder": "",
+    "numberHint": "",
+    "giveHintButton": ""
   }
 };
