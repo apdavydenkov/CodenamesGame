@@ -49,7 +49,13 @@ export default {
     "makePrivate": "",
     "makePublic": "",
     "notSelected": "",
-    "andCaptain": ""
+    "andCaptain": "",
+    "teamsStatus": "",
+    "gameStatus": "",
+    "teamsOpen": "",
+    "teamsClosed": "",
+    "gamePublic": "",
+    "gamePrivate": ""
   },
   "share": {
     "copyLink": "Sao chép liên kết",
@@ -92,7 +98,9 @@ export default {
     "assassinWord": "Từ sát thủ",
     "confirmationPhrase": "ĐỘI TRƯỞNG",
     "myWords": "",
-    "opponentWords": ""
+    "opponentWords": "",
+    "myTeam": "",
+    "opponentTeam": ""
   },
   "winDialog": {
     "title": "Trò chơi kết thúc!",
@@ -128,7 +136,8 @@ export default {
     "gamePrivate": "",
     "gamePublic": "",
     "privateGameTitle": "",
-    "privateGameMessage": ""
+    "privateGameMessage": "",
+    "waitingForHint": ""
   },
   "errors": {
     "enterTopic": "Nhập chủ đề để tạo trò chơi AI",
@@ -240,7 +249,6 @@ export default {
     "verifyError": "Lỗi xác minh PIN"
   },
   "hintDialog": {
-    "title": "",
     "wordExpired": "",
     "attemptsLeft": "",
     "bonusAttempt": "",
@@ -249,6 +257,9 @@ export default {
     "wordPlaceholder": "",
     "numberPlaceholder": "",
     "numberHint": "",
-    "giveHintButton": ""
+    "giveHintButton": "",
+    "titleBlue": "",
+    "titleRed": "",
+    "wordVisibleCountdown": ""
   }
 };

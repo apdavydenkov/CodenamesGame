@@ -49,7 +49,13 @@ export default {
     "makePrivate": "",
     "makePublic": "",
     "notSelected": "",
-    "andCaptain": ""
+    "andCaptain": "",
+    "teamsStatus": "",
+    "gameStatus": "",
+    "teamsOpen": "",
+    "teamsClosed": "",
+    "gamePublic": "",
+    "gamePrivate": ""
   },
   "share": {
     "copyLink": "Copiar enlace",
@@ -92,7 +98,9 @@ export default {
     "assassinWord": "Palabra del asesino",
     "confirmationPhrase": "CAPITÁN",
     "myWords": "",
-    "opponentWords": ""
+    "opponentWords": "",
+    "myTeam": "",
+    "opponentTeam": ""
   },
   "winDialog": {
     "title": "¡Juego terminado!",
@@ -128,7 +136,8 @@ export default {
     "gamePrivate": "",
     "gamePublic": "",
     "privateGameTitle": "",
-    "privateGameMessage": ""
+    "privateGameMessage": "",
+    "waitingForHint": ""
   },
   "errors": {
     "enterTopic": "Ingrese tema para crear juego IA",
@@ -240,7 +249,6 @@ export default {
     "verifyError": "Error al verificar el PIN"
   },
   "hintDialog": {
-    "title": "",
     "wordExpired": "",
     "attemptsLeft": "",
     "bonusAttempt": "",
@@ -249,6 +257,9 @@ export default {
     "wordPlaceholder": "",
     "numberPlaceholder": "",
     "numberHint": "",
-    "giveHintButton": ""
+    "giveHintButton": "",
+    "titleBlue": "",
+    "titleRed": "",
+    "wordVisibleCountdown": ""
   }
 };

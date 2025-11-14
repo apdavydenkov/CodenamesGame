@@ -49,7 +49,13 @@ export default {
     "makePrivate": "",
     "makePublic": "",
     "notSelected": "",
-    "andCaptain": ""
+    "andCaptain": "",
+    "teamsStatus": "",
+    "gameStatus": "",
+    "teamsOpen": "",
+    "teamsClosed": "",
+    "gamePublic": "",
+    "gamePrivate": ""
   },
   "share": {
     "copyLink": "Kopírovat odkaz",
@@ -92,7 +98,9 @@ export default {
     "assassinWord": "Slovo vraha",
     "confirmationPhrase": "KAPITÁN",
     "myWords": "",
-    "opponentWords": ""
+    "opponentWords": "",
+    "myTeam": "",
+    "opponentTeam": ""
   },
   "winDialog": {
     "title": "Hra skončila!",
@@ -128,7 +136,8 @@ export default {
     "gamePrivate": "",
     "gamePublic": "",
     "privateGameTitle": "",
-    "privateGameMessage": ""
+    "privateGameMessage": "",
+    "waitingForHint": ""
   },
   "errors": {
     "enterTopic": "Zadejte téma pro vytvoření AI hry",
@@ -240,7 +249,6 @@ export default {
     "verifyError": "Chyba při ověřování PIN"
   },
   "hintDialog": {
-    "title": "",
     "wordExpired": "",
     "attemptsLeft": "",
     "bonusAttempt": "",
@@ -249,6 +257,9 @@ export default {
     "wordPlaceholder": "",
     "numberPlaceholder": "",
     "numberHint": "",
-    "giveHintButton": ""
+    "giveHintButton": "",
+    "titleBlue": "",
+    "titleRed": "",
+    "wordVisibleCountdown": ""
   }
 };

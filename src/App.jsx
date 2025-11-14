@@ -1,15 +1,14 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import GameCard from "./components/GameCard";
 import GameStatus from "./components/GameStatus";
-import WinDialog from "./components/WinDialog";
-import KeyDialog from "./components/KeyDialog";
-import MenuDialog from "./components/MenuDialog";
-import CaptainDialog from "./components/CaptainDialog";
-import ChatDialog from "./components/ChatDialog";
-import AuthDialog from "./components/AuthDialog";
-import HintPopup from "./components/HintPopup";
+import WinDialog from "./components/dialogs/WinDialog";
+import KeyDialog from "./components/dialogs/KeyDialog";
+import MenuDialog from "./components/dialogs/MenuDialog";
+import CaptainDialog from "./components/dialogs/CaptainDialog";
+import ChatDialog from "./components/dialogs/ChatDialog";
+import AuthDialog from "./components/dialogs/AuthDialog";
+import HintDialog from "./components/dialogs/HintDialog";
 import MetaTags from "./components/MetaTags";
-import LanguageSwitcher from "./components/LanguageSwitcher";
 import Notification from "./components/Notification";
 import {
   generateGameFromKey,
@@ -20,7 +19,6 @@ import { isAIKey } from "./utils/aiGameGenerator";
 import { generateAIWords } from "./services/aiService";
 import gameSocket from "./services/socket";
 import { useTranslation } from "./hooks/useTranslation";
-import "./styles/game.css";
 
 const App = () => {
 
@@ -181,15 +179,11 @@ const App = () => {
 
   // Handlers для команд
   const handleJoinTeam = (team, role) => {
-    console.log('[App] handleJoinTeam called:', { team, role, userId: userAuth.userId, username: userAuth.username, currentKey });
-
     if (!userAuth.userId || !userAuth.username) {
-      console.log('[App] Not authenticated, showing auth dialog');
       setShowAuthDialog(true);
       return;
     }
 
-    console.log('[App] Emitting JOIN_TEAM to server');
     gameSocket.socket.emit('JOIN_TEAM', {
       gameKey: currentKey,
       team,
@@ -258,9 +252,6 @@ const App = () => {
     const handleDisconnect = () => setIsServerConnected(false);
 
     const handleGameState = (newState) => {
-      console.log("[HintIcon] GAME_STATE received");
-      console.log("[HintIcon] currentHint in GAME_STATE:", JSON.stringify(newState.currentHint));
-
       setIsGameStateReceived(true);
       setGameState((prevState) => ({
         ...prevState,
@@ -273,20 +264,15 @@ const App = () => {
         winner: newState.winner,
       }));
 
-      // Восстанавливаем currentHint после перезагрузки (баг #1)
+      // Синхронизируем currentHint с сервером
       if (newState.currentHint) {
-        console.log("[HintIcon] Restoring currentHint from GAME_STATE:", newState.currentHint);
         setCurrentHint(newState.currentHint);
       } else {
-        console.log("[HintIcon] No currentHint in GAME_STATE, clearing");
+        setCurrentHint(null);
       }
 
       // Обновляем данные команд из GAME_STATE
       if (newState.teams) {
-        console.log("[GAME_STATE] Captains in state:", {
-          blueCaptain: newState.teams?.blue?.captain,
-          redCaptain: newState.teams?.red?.captain
-        });
         setTeams(newState.teams);
 
         // Обновляем свою команду и роль
@@ -295,28 +281,17 @@ const App = () => {
           const newTeam = userTeam?.team || null;
           const newRole = userTeam?.role || null;
 
-          console.log("[GAME_STATE] ========================================");
-          console.log("[GAME_STATE] Role sync from server:");
-          console.log("  newTeam:", newTeam);
-          console.log("  newRole:", newRole);
-          console.log("  Current isCaptain:", isCaptain);
-          console.log("  Current isCaptainConfirmed:", isCaptainConfirmed);
-
           setMyTeam(newTeam);
           setMyRole(newRole);
 
           // КРИТИЧНО: Синхронизируем isCaptain с ролью из GAME_STATE
           if (newRole === 'captain') {
-            console.log("[GAME_STATE] ✓ IS captain → setting isCaptain=true");
             setIsCaptainConfirmed(true);
             setIsCaptain(true);
           } else {
-            console.log("[GAME_STATE] ○ NOT captain → setting isCaptain=false");
             setIsCaptainConfirmed(false);
             setIsCaptain(false);
           }
-
-          console.log("[GAME_STATE] ========================================");
         }
       }
 
@@ -324,12 +299,6 @@ const App = () => {
       if (newState.teamsLocked !== undefined) setTeamsLocked(newState.teamsLocked);
       if (newState.isPrivate !== undefined) setIsPrivate(newState.isPrivate);
       if (newState.canAccessGame !== undefined) {
-        console.log('[Access Control] Client received canAccessGame:', {
-          canAccessGame: newState.canAccessGame,
-          isPrivate: newState.isPrivate,
-          ownerId: newState.ownerId,
-          wordsLength: newState.words?.length || 0
-        });
         setCanAccessGame(newState.canAccessGame);
       }
 
@@ -346,11 +315,6 @@ const App = () => {
 
     // Обработчики команд
     gameSocket.socket.on("TEAMS_UPDATE", (data) => {
-      console.log("[Teams] TEAMS_UPDATE:", data);
-      console.log("[Teams] Captains in update:", {
-        blueCaptain: data.teams?.blue?.captain,
-        redCaptain: data.teams?.red?.captain
-      });
       setTeams(data.teams);
 
       // Обновляем свою команду и роль
@@ -360,29 +324,17 @@ const App = () => {
 
         // Если роль изменилась с капитана на что-то другое - сбрасываем подтверждение
         setMyRole(prevRole => {
-          console.log("[TEAMS_UPDATE] ========================================");
-          console.log("[TEAMS_UPDATE] Role sync:");
-          console.log("  prevRole:", prevRole);
-          console.log("  newRole:", newRole);
-          console.log("  Current isCaptain state:", isCaptain);
-          console.log("  Current isCaptainConfirmed:", isCaptainConfirmed);
-
           if (prevRole === 'captain' && newRole !== 'captain') {
-            console.log("[TEAMS_UPDATE] ✗ Changed FROM captain → resetting");
             setIsCaptainConfirmed(false);
             setIsCaptain(false);
           } else if (newRole === 'captain') {
-            console.log("[TEAMS_UPDATE] ✓ IS captain → setting isCaptain=true");
             setIsCaptainConfirmed(true);
             setIsCaptain(true);
           } else if (!newRole) {
-            console.log("[TEAMS_UPDATE] ○ No role → resetting captain states");
             setIsCaptainConfirmed(false);
             setIsCaptain(false);
           }
 
-          console.log("[TEAMS_UPDATE] New role will be:", newRole);
-          console.log("[TEAMS_UPDATE] ========================================");
           return newRole;
         });
 
@@ -391,13 +343,11 @@ const App = () => {
     });
 
     gameSocket.socket.on("JOIN_TEAM_SUCCESS", (data) => {
-      console.log("[Teams] JOIN_TEAM_SUCCESS:", data);
       setMyTeam(data.team);
       setMyRole(data.role);
     });
 
     gameSocket.socket.on("LEAVE_CAPTAIN_SUCCESS", (data) => {
-      console.log("[Teams] LEAVE_CAPTAIN_SUCCESS:", data);
       setMyTeam(data.team);
       setMyRole(data.role);
       setIsCaptainConfirmed(false);
@@ -405,37 +355,18 @@ const App = () => {
     });
 
     gameSocket.socket.on("GAME_SETTINGS_UPDATE", (data) => {
-      console.log("[Teams] GAME_SETTINGS_UPDATE:", data);
       if (data.teamsLocked !== undefined) setTeamsLocked(data.teamsLocked);
       if (data.isPrivate !== undefined) setIsPrivate(data.isPrivate);
     });
 
     gameSocket.socket.on("HINT_GIVEN", (data) => {
-      console.log("[HINT_GIVEN] ========================================");
-      console.log("[HINT_GIVEN] Event data:", JSON.stringify(data));
-      console.log("[HINT_GIVEN] Hint team:", data.team);
-      console.log("[HINT_GIVEN] Hint:", data.hint);
-      console.log("[HINT_GIVEN] My team:", myTeam);
-      console.log("[HINT_GIVEN] My role:", myRole);
-      console.log("[HINT_GIVEN] isCaptain:", isCaptain);
-      console.log("[HINT_GIVEN] Current team (gameState):", gameState.currentTeam);
-
       setCurrentHint(data.hint);
       setShowHintPopup(true);
-
-      console.log("[HINT_GIVEN] State updated: popup will show");
-      console.log("[HINT_GIVEN] ========================================");
     });
 
     gameSocket.socket.on("TURN_ENDED", (data) => {
-      console.log("[TURN_ENDED] ========================================");
-      console.log("[TURN_ENDED] Received data:", data);
-      console.log("[TURN_ENDED] New current team from server:", data.currentTeam);
-      console.log("[TURN_ENDED] BEFORE update - gameState.currentTeam:", gameState.currentTeam);
-
       // КРИТИЧНО: Обновляем currentTeam в gameState
       setGameState(prev => {
-        console.log("[TURN_ENDED] Updating gameState.currentTeam:", prev.currentTeam, "→", data.currentTeam);
         return {
           ...prev,
           currentTeam: data.currentTeam
@@ -444,8 +375,6 @@ const App = () => {
 
       setCurrentHint(null);
       setShowHintPopup(false);
-      console.log("[TURN_ENDED] State updates queued");
-      console.log("[TURN_ENDED] ========================================");
     });
 
     gameSocket.socket.on("GAME_ERROR", (error) => {
@@ -550,15 +479,9 @@ const App = () => {
         });
 
         // Автозагрузка без ключа - НЕ делаем владельцем
-        console.log('[Init] Auto-creating game:', {
-          userId: userAuth.userId,
-          username: userAuth.username,
-          hasUserId: !!userAuth.userId,
-          fromLocalStorage: localStorage.getItem('codenames-user-id')
-        });
         gameSocket.startNewGame(newKey, gameData.words, gameData.colors, gameData.startingTeam, userAuth.userId, false);
       }
-      
+
     };
 
     init();
@@ -624,12 +547,6 @@ const App = () => {
         });
 
         // Автозагрузка без ключа - НЕ делаем владельцем
-        console.log('[Init] Auto-creating game:', {
-          userId: userAuth.userId,
-          username: userAuth.username,
-          hasUserId: !!userAuth.userId,
-          fromLocalStorage: localStorage.getItem('codenames-user-id')
-        });
         gameSocket.startNewGame(newKey, gameData.words, gameData.colors, gameData.startingTeam, userAuth.userId, false);
       }
     };
@@ -870,21 +787,13 @@ const App = () => {
   };
 
   const handleCaptainRequest = (value) => {
-    console.log("[CaptainConfirm] handleCaptainRequest called");
-    console.log("[CaptainConfirm] value:", value);
-    console.log("[CaptainConfirm] isCaptainConfirmed:", isCaptainConfirmed);
-    console.log("[CaptainConfirm] myRole:", myRole);
-
     if (value) {
       if (!isCaptainConfirmed) {
-        console.log("[CaptainConfirm] NOT confirmed - showing dialog");
         setShowCaptainDialog(true);
       } else {
-        console.log("[CaptainConfirm] Already confirmed - setting isCaptain=true");
         setIsCaptain(true);
       }
     } else {
-      console.log("[CaptainConfirm] Turning OFF captain mode");
       setIsCaptain(false);
     }
   };
@@ -960,13 +869,12 @@ const App = () => {
   }, [gameState.revealed, isCaptain, teams]);
 
   return (
-    <div className="container">
+    <div className="h-dvh flex flex-col p-1.5 w-full max-w-full ml-0 mr-0">
       <MetaTags />
-      <LanguageSwitcher />
       {!isGameStateReceived ? (
-        <div className="game-grid"></div>
+        <div className="grid grid-cols-5 grid-rows-5 gap-1 mb-1.5 w-full h-[calc(100vh-3.5rem)] min-h-0 select-none [-webkit-touch-callout:none] [-webkit-user-select:none] [-moz-user-select:none] portrait:h-auto portrait:aspect-[0.8] portrait:my-auto"></div>
       ) : canAccessGame ? (
-        <div className="game-grid">
+        <div className="grid grid-cols-5 grid-rows-5 gap-1 mb-1.5 w-full h-[calc(100vh-3.5rem)] min-h-0 select-none [-webkit-touch-callout:none] [-webkit-user-select:none] [-moz-user-select:none] portrait:h-auto portrait:aspect-[0.8] portrait:my-auto">
           {gameState.words.map((word, index) => (
             <GameCard
               key={`${currentKey}-${index}`}
@@ -989,10 +897,10 @@ const App = () => {
           ))}
         </div>
       ) : (
-        <div className="private-game-message">
-          <div className="private-game-icon">🔒</div>
-          <h2>{t('notifications.privateGameTitle')}</h2>
-          <p>{t('notifications.privateGameMessage')}</p>
+        <div className="flex flex-col items-center justify-center h-[calc(100vh-3.5rem)] text-center p-8 text-gray-500 [animation:fadeInUp_0.5s_ease-out] portrait:h-auto portrait:my-auto">
+          <div className="text-6xl mb-4 [animation:fadeInUp_0.6s_ease-out]">🔒</div>
+          <h2 className="text-2xl font-semibold text-gray-700 m-0 mb-4 [animation:fadeInUp_0.7s_ease-out]">{t('notifications.privateGameTitle')}</h2>
+          <p className="text-base text-gray-500 m-0 max-w-md [animation:fadeInUp_0.8s_ease-out]">{t('notifications.privateGameMessage')}</p>
         </div>
       )}
 
@@ -1009,7 +917,6 @@ const App = () => {
         currentTeam={gameState.currentTeam}
         highlightMenuIcon={highlightMenuIcon}
         highlightCaptainIcon={highlightCaptainIcon}
-        onShowNotification={handleShowNotification}
         currentHint={currentHint}
         hintTeam={gameState.currentTeam}
         onHintClick={() => setShowHintPopup(true)}
@@ -1127,26 +1034,16 @@ const App = () => {
         }}
       />
 
-      <HintPopup
+      <HintDialog
         isOpen={showHintPopup}
         onClose={() => {
-          console.log('[App] Closing HintPopup');
           setShowHintPopup(false);
         }}
         hint={currentHint}
         team={gameState.currentTeam}
         remainingCards={gameState.remainingCards}
         onEndTurn={handleEndTurn}
-        canEndTurn={(() => {
-          const canEnd = myTeam === gameState.currentTeam && !isCaptain && myTeam !== null;
-          console.log('[App] canEndTurn calculation:', {
-            myTeam,
-            currentTeam: gameState.currentTeam,
-            isCaptain,
-            result: canEnd
-          });
-          return canEnd;
-        })()}
+        canEndTurn={myTeam === gameState.currentTeam && !isCaptain && myTeam !== null}
       />
 
       {/* Уведомление об ошибках */}

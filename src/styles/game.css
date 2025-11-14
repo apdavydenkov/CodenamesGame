@@ -1,11 +1,3 @@
-/* Container and Layout  */
-.container {
-  height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  padding: 0.375rem;
-}
-
 /* Mobile Background (portrait orientation only) */
 @media screen and (orientation: portrait) {
   body {
@@ -14,31 +6,6 @@
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
-  }
-}
-
-.game-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  grid-template-rows: repeat(5, 1fr);
-  gap: 0.25rem;
-  margin-bottom: 0.375rem;
-  width: 100%;
-  height: calc(100vh - 3.5rem);
-  min-height: 0;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-@media screen and (orientation: portrait) {
-  .game-grid {
-    height: auto;
-    aspect-ratio: 0.8;
-    margin: auto 0;
   }
 }
 
@@ -214,191 +181,7 @@
   color: #111827;
 }
 
-/* Status Bar and Controls */
-.status-bar {
-  background-color: white;
-  width: 100%;
-  flex-shrink: 0;
-  user-select: none;
-  margin-top: 0.375rem;
-}
-
-/* Transparent status bar on mobile */
-@media screen and (orientation: portrait) {
-  .status-bar {
-    background-color: transparent;
-    position: relative;
-    z-index: 2;
-  }
-}
-
-.status-grid {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  gap: 0.25rem;
-  width: 100%;
-}
-
-.status-menu {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.menu-buttons {
-  display: flex;
-  gap: 0.25rem;
-}
-
-.status-blue,
-.status-red {
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.375rem;
-  position: relative;
-}
-
-.status-blue {
-  background-color: #2563eb;
-}
-
-.status-red {
-  background-color: #dc2626;
-}
-
-.team-score {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  color: white;
-}
-
-.score-value {
-  font-size: 1.5rem;
-  font-weight: 700;
-  line-height: 1;
-}
-
-.team-info {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  color: white;
-  font-size: 0.75rem;
-}
-
-.status-blue .team-info {
-  right: 0.5rem;
-}
-
-.status-red .team-info {
-  left: 0.5rem;
-}
-
-.team-count {
-  font-weight: 600;
-}
-
-/* Button Styles */
-.menu-button,
-.icon-button {
-  padding: 0;
-  width: 40px;
-  height: 40px;
-  min-width: 40px;
-  flex: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-}
-
-.menu-button.active {
-  background-color: #f3f4f6;
-  color: #2563eb;
-}
-
-.menu-button.highlight {
-  animation: buttonHighlight 3s ease-in-out;
-}
-
-@keyframes buttonHighlight {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
-  }
-  10%, 30%, 50%, 70%, 90% {
-    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.4);
-    background-color: rgba(37, 99, 235, 0.1);
-  }
-  20%, 40%, 60%, 80% {
-    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
-  }
-}
-
-.menu-button.chat-button {
-  position: relative;
-}
-
-.unread-badge {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: #000;
-  font-weight: bold;
-  pointer-events: none;
-}
-
-/* Share Components */
-.share-button {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  width: 100%;
-  justify-content: center;
-}
-
-.share-icons {
-  display: flex;
-  gap: 0.375rem;
-  margin-top: 0.5rem;
-  justify-content: center;
-}
-
-/* Captain Button */
-.captain-button {
-  position: relative;
-  overflow: hidden;
-}
-
-.captain-button .button-content {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.captain-button .press-progress {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.1);
-  transition: width 50ms linear;
-  z-index: 15;
-}
-
-/* Private Game Message */
+/* Private Game Message - fadeInUp animation */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -407,47 +190,6 @@
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-.private-game-message {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: calc(100vh - 3.5rem);
-  text-align: center;
-  padding: 2rem;
-  color: #6b7280;
-  animation: fadeInUp 0.5s ease-out;
-}
-
-.private-game-icon {
-  font-size: 4rem;
-  margin-bottom: 1rem;
-  animation: fadeInUp 0.6s ease-out;
-}
-
-.private-game-message h2 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #374151;
-  margin: 0 0 1rem 0;
-  animation: fadeInUp 0.7s ease-out;
-}
-
-.private-game-message p {
-  font-size: 1rem;
-  color: #6b7280;
-  margin: 0;
-  max-width: 400px;
-  animation: fadeInUp 0.8s ease-out;
-}
-
-@media screen and (orientation: portrait) {
-  .private-game-message {
-    height: auto;
-    margin: auto 0;
   }
 }
 
@@ -481,4 +223,89 @@
     opacity: 0.7;
     transform: scale(1.05);
   }
+}
+
+/* Рубашки для карточек */
+/* Изображения загружаются только когда карточка раскрывается (не блокируют начальный рендер) */
+
+/* Синие рубашки (1-20) */
+.card-back-blue-1:not(.card-unrevealed)::before { background-image: url('/images/card-blue-back-1.webp'); }
+.card-back-blue-2:not(.card-unrevealed)::before { background-image: url('/images/card-blue-back-2.webp'); }
+.card-back-blue-3:not(.card-unrevealed)::before { background-image: url('/images/card-blue-back-3.webp'); }
+.card-back-blue-4:not(.card-unrevealed)::before { background-image: url('/images/card-blue-back-4.webp'); }
+.card-back-blue-5:not(.card-unrevealed)::before { background-image: url('/images/card-blue-back-5.webp'); }
+.card-back-blue-6:not(.card-unrevealed)::before { background-image: url('/images/card-blue-back-6.webp'); }
+.card-back-blue-7:not(.card-unrevealed)::before { background-image: url('/images/card-blue-back-7.webp'); }
+.card-back-blue-8:not(.card-unrevealed)::before { background-image: url('/images/card-blue-back-8.webp'); }
+.card-back-blue-9:not(.card-unrevealed)::before { background-image: url('/images/card-blue-back-9.webp'); }
+.card-back-blue-10:not(.card-unrevealed)::before { background-image: url('/images/card-blue-back-10.webp'); }
+.card-back-blue-11:not(.card-unrevealed)::before { background-image: url('/images/card-blue-back-11.webp'); }
+.card-back-blue-12:not(.card-unrevealed)::before { background-image: url('/images/card-blue-back-12.webp'); }
+.card-back-blue-13:not(.card-unrevealed)::before { background-image: url('/images/card-blue-back-13.webp'); }
+.card-back-blue-14:not(.card-unrevealed)::before { background-image: url('/images/card-blue-back-14.webp'); }
+.card-back-blue-15:not(.card-unrevealed)::before { background-image: url('/images/card-blue-back-15.webp'); }
+.card-back-blue-16:not(.card-unrevealed)::before { background-image: url('/images/card-blue-back-16.webp'); }
+.card-back-blue-17:not(.card-unrevealed)::before { background-image: url('/images/card-blue-back-17.webp'); }
+.card-back-blue-18:not(.card-unrevealed)::before { background-image: url('/images/card-blue-back-18.webp'); }
+.card-back-blue-19:not(.card-unrevealed)::before { background-image: url('/images/card-blue-back-19.webp'); }
+.card-back-blue-20:not(.card-unrevealed)::before { background-image: url('/images/card-blue-back-20.webp'); }
+
+/* Красные рубашки (1-20) */
+.card-back-red-1:not(.card-unrevealed)::before { background-image: url('/images/card-red-back-1.webp'); }
+.card-back-red-2:not(.card-unrevealed)::before { background-image: url('/images/card-red-back-2.webp'); }
+.card-back-red-3:not(.card-unrevealed)::before { background-image: url('/images/card-red-back-3.webp'); }
+.card-back-red-4:not(.card-unrevealed)::before { background-image: url('/images/card-red-back-4.webp'); }
+.card-back-red-5:not(.card-unrevealed)::before { background-image: url('/images/card-red-back-5.webp'); }
+.card-back-red-6:not(.card-unrevealed)::before { background-image: url('/images/card-red-back-6.webp'); }
+.card-back-red-7:not(.card-unrevealed)::before { background-image: url('/images/card-red-back-7.webp'); }
+.card-back-red-8:not(.card-unrevealed)::before { background-image: url('/images/card-red-back-8.webp'); }
+.card-back-red-9:not(.card-unrevealed)::before { background-image: url('/images/card-red-back-9.webp'); }
+.card-back-red-10:not(.card-unrevealed)::before { background-image: url('/images/card-red-back-10.webp'); }
+.card-back-red-11:not(.card-unrevealed)::before { background-image: url('/images/card-red-back-11.webp'); }
+.card-back-red-12:not(.card-unrevealed)::before { background-image: url('/images/card-red-back-12.webp'); }
+.card-back-red-13:not(.card-unrevealed)::before { background-image: url('/images/card-red-back-13.webp'); }
+.card-back-red-14:not(.card-unrevealed)::before { background-image: url('/images/card-red-back-14.webp'); }
+.card-back-red-15:not(.card-unrevealed)::before { background-image: url('/images/card-red-back-15.webp'); }
+.card-back-red-16:not(.card-unrevealed)::before { background-image: url('/images/card-red-back-16.webp'); }
+.card-back-red-17:not(.card-unrevealed)::before { background-image: url('/images/card-red-back-17.webp'); }
+.card-back-red-18:not(.card-unrevealed)::before { background-image: url('/images/card-red-back-18.webp'); }
+.card-back-red-19:not(.card-unrevealed)::before { background-image: url('/images/card-red-back-19.webp'); }
+.card-back-red-20:not(.card-unrevealed)::before { background-image: url('/images/card-red-back-20.webp'); }
+
+/* Нейтральные рубашки (1-20) */
+.card-back-neutral-1:not(.card-unrevealed)::before { background-image: url('/images/card-neutral-back-1.webp'); }
+.card-back-neutral-2:not(.card-unrevealed)::before { background-image: url('/images/card-neutral-back-2.webp'); }
+.card-back-neutral-3:not(.card-unrevealed)::before { background-image: url('/images/card-neutral-back-3.webp'); }
+.card-back-neutral-4:not(.card-unrevealed)::before { background-image: url('/images/card-neutral-back-4.webp'); }
+.card-back-neutral-5:not(.card-unrevealed)::before { background-image: url('/images/card-neutral-back-5.webp'); }
+.card-back-neutral-6:not(.card-unrevealed)::before { background-image: url('/images/card-neutral-back-6.webp'); }
+.card-back-neutral-7:not(.card-unrevealed)::before { background-image: url('/images/card-neutral-back-7.webp'); }
+.card-back-neutral-8:not(.card-unrevealed)::before { background-image: url('/images/card-neutral-back-8.webp'); }
+.card-back-neutral-9:not(.card-unrevealed)::before { background-image: url('/images/card-neutral-back-9.webp'); }
+.card-back-neutral-10:not(.card-unrevealed)::before { background-image: url('/images/card-neutral-back-10.webp'); }
+.card-back-neutral-11:not(.card-unrevealed)::before { background-image: url('/images/card-neutral-back-11.webp'); }
+.card-back-neutral-12:not(.card-unrevealed)::before { background-image: url('/images/card-neutral-back-12.webp'); }
+.card-back-neutral-13:not(.card-unrevealed)::before { background-image: url('/images/card-neutral-back-13.webp'); }
+.card-back-neutral-14:not(.card-unrevealed)::before { background-image: url('/images/card-neutral-back-14.webp'); }
+.card-back-neutral-15:not(.card-unrevealed)::before { background-image: url('/images/card-neutral-back-15.webp'); }
+.card-back-neutral-16:not(.card-unrevealed)::before { background-image: url('/images/card-neutral-back-16.webp'); }
+.card-back-neutral-17:not(.card-unrevealed)::before { background-image: url('/images/card-neutral-back-17.webp'); }
+.card-back-neutral-18:not(.card-unrevealed)::before { background-image: url('/images/card-neutral-back-18.webp'); }
+.card-back-neutral-19:not(.card-unrevealed)::before { background-image: url('/images/card-neutral-back-19.webp'); }
+.card-back-neutral-20:not(.card-unrevealed)::before { background-image: url('/images/card-neutral-back-20.webp'); }
+
+/* Черные рубашки (1-10) */
+.card-back-black-1:not(.card-unrevealed)::before { background-image: url('/images/card-black-back-1.webp'); }
+.card-back-black-2:not(.card-unrevealed)::before { background-image: url('/images/card-black-back-2.webp'); }
+.card-back-black-3:not(.card-unrevealed)::before { background-image: url('/images/card-black-back-3.webp'); }
+.card-back-black-4:not(.card-unrevealed)::before { background-image: url('/images/card-black-back-4.webp'); }
+.card-back-black-5:not(.card-unrevealed)::before { background-image: url('/images/card-black-back-5.webp'); }
+.card-back-black-6:not(.card-unrevealed)::before { background-image: url('/images/card-black-back-6.webp'); }
+.card-back-black-7:not(.card-unrevealed)::before { background-image: url('/images/card-black-back-7.webp'); }
+.card-back-black-8:not(.card-unrevealed)::before { background-image: url('/images/card-black-back-8.webp'); }
+.card-back-black-9:not(.card-unrevealed)::before { background-image: url('/images/card-black-back-9.webp'); }
+.card-back-black-10:not(.card-unrevealed)::before { background-image: url('/images/card-black-back-10.webp'); }
+
+:not(.card-unrevealed)[class*="card-back-"]:not(.card-unrevealed)::before {
+  opacity: 1;
 }

@@ -49,7 +49,13 @@ export default {
     "makePrivate": "",
     "makePublic": "",
     "notSelected": "",
-    "andCaptain": ""
+    "andCaptain": "",
+    "teamsStatus": "",
+    "gameStatus": "",
+    "teamsOpen": "",
+    "teamsClosed": "",
+    "gamePublic": "",
+    "gamePrivate": ""
   },
   "share": {
     "copyLink": "Link kopieren",
@@ -92,7 +98,9 @@ export default {
     "assassinWord": "Attentäterwort",
     "confirmationPhrase": "KAPITÄN",
     "myWords": "",
-    "opponentWords": ""
+    "opponentWords": "",
+    "myTeam": "",
+    "opponentTeam": ""
   },
   "winDialog": {
     "title": "Spiel beendet!",
@@ -128,7 +136,8 @@ export default {
     "gamePrivate": "",
     "gamePublic": "",
     "privateGameTitle": "",
-    "privateGameMessage": ""
+    "privateGameMessage": "",
+    "waitingForHint": ""
   },
   "errors": {
     "enterTopic": "Thema für KI-Spiel eingeben",
@@ -240,7 +249,6 @@ export default {
     "verifyError": "Fehler beim Überprüfen des PIN"
   },
   "hintDialog": {
-    "title": "",
     "wordExpired": "",
     "attemptsLeft": "",
     "bonusAttempt": "",
@@ -249,6 +257,9 @@ export default {
     "wordPlaceholder": "",
     "numberPlaceholder": "",
     "numberHint": "",
-    "giveHintButton": ""
+    "giveHintButton": "",
+    "titleBlue": "",
+    "titleRed": "",
+    "wordVisibleCountdown": ""
   }
 };

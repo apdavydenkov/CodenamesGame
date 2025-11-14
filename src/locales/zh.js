@@ -49,7 +49,13 @@ export default {
     "makePrivate": "",
     "makePublic": "",
     "notSelected": "",
-    "andCaptain": ""
+    "andCaptain": "",
+    "teamsStatus": "",
+    "gameStatus": "",
+    "teamsOpen": "",
+    "teamsClosed": "",
+    "gamePublic": "",
+    "gamePrivate": ""
   },
   "share": {
     "copyLink": "复制链接",
@@ -92,7 +98,9 @@ export default {
     "assassinWord": "杀手单词",
     "confirmationPhrase": "队长",
     "myWords": "",
-    "opponentWords": ""
+    "opponentWords": "",
+    "myTeam": "",
+    "opponentTeam": ""
   },
   "winDialog": {
     "title": "游戏结束！",
@@ -128,7 +136,8 @@ export default {
     "gamePrivate": "",
     "gamePublic": "",
     "privateGameTitle": "",
-    "privateGameMessage": ""
+    "privateGameMessage": "",
+    "waitingForHint": ""
   },
   "errors": {
     "enterTopic": "请输入主题以创建AI游戏",
@@ -240,7 +249,6 @@ export default {
     "verifyError": "验证PIN时出错"
   },
   "hintDialog": {
-    "title": "",
     "wordExpired": "",
     "attemptsLeft": "",
     "bonusAttempt": "",
@@ -249,6 +257,9 @@ export default {
     "wordPlaceholder": "",
     "numberPlaceholder": "",
     "numberHint": "",
-    "giveHintButton": ""
+    "giveHintButton": "",
+    "titleBlue": "",
+    "titleRed": "",
+    "wordVisibleCountdown": ""
   }
 };
