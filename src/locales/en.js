@@ -238,5 +238,17 @@ export default {
     "nameHint": "After registration you will receive a PIN code to restore access. All game statistics and message history will be linked to your profile.",
     "testWarning": "This is test mode. Accounts may be deleted during development.",
     "userExistsEnd": "is already registered."
+  },
+  "hintDialog": {
+    "title": "",
+    "wordExpired": "",
+    "attemptsLeft": "",
+    "bonusAttempt": "",
+    "endTurn": "",
+    "giveHintLabel": "",
+    "wordPlaceholder": "",
+    "numberPlaceholder": "",
+    "numberHint": "",
+    "giveHintButton": ""
   }
 };

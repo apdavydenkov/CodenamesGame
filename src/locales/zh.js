@@ -238,5 +238,17 @@ export default {
     "checkError": "检查名称时出错",
     "registerError": "注册时出错",
     "verifyError": "验证PIN时出错"
+  },
+  "hintDialog": {
+    "title": "",
+    "wordExpired": "",
+    "attemptsLeft": "",
+    "bonusAttempt": "",
+    "endTurn": "",
+    "giveHintLabel": "",
+    "wordPlaceholder": "",
+    "numberPlaceholder": "",
+    "numberHint": "",
+    "giveHintButton": ""
   }
 };

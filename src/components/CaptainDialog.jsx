@@ -12,6 +12,7 @@ import { Input } from "./Input";
 import { FiEye, FiXCircle, FiChevronDown, FiStar, FiX } from "react-icons/fi";
 import TeamSwitch from "./TeamSwitch";
 import { useTranslation } from "../hooks/useTranslation";
+import gameSocket from "../services/socket";
 import "../styles/dialogs.css";
 import "../styles/captain-helper.css";
 
@@ -96,6 +97,9 @@ const CaptainDialog = ({
   isCaptainConfirmed,
   gameState,
   myTeam,
+  gameKey,
+  userId,
+  username,
 }) => {
   const { t } = useTranslation();
   const [phrase, setPhrase] = useState("");
@@ -108,6 +112,10 @@ const CaptainDialog = ({
   });
   const dragItem = useRef(null);
   const dragOverItem = useRef(null);
+
+  // State для формы подсказки
+  const [hintWord, setHintWord] = useState("");
+  const [hintNumber, setHintNumber] = useState("1");
 
   // Calculate which team to display based on myTeam and toggle
   const displayedTeam = showingMyTeam ? myTeam : (myTeam === 'blue' ? 'red' : 'blue');
@@ -214,6 +222,33 @@ const CaptainDialog = ({
     onClose();
   };
 
+  const handleGiveHint = () => {
+    if (!hintWord.trim()) return;
+    if (!gameKey || !userId || !username) {
+      console.error('[GIVE_HINT] Missing required data:', { gameKey, userId, username });
+      return;
+    }
+
+    console.log('[GIVE_HINT] Sending:', { gameKey, userId, username, word: hintWord, number: parseInt(hintNumber) });
+    console.log('[GIVE_HINT] Socket connected:', gameSocket.socket?.connected);
+
+    if (gameSocket.socket?.connected) {
+      gameSocket.socket.emit('GIVE_HINT', {
+        gameKey,
+        userId,
+        username,
+        word: hintWord,
+        number: parseInt(hintNumber)
+      });
+      console.log('[GIVE_HINT] Event emitted');
+    } else {
+      console.error('[GIVE_HINT] Socket not connected!');
+    }
+
+    setHintWord("");
+    setHintNumber("1");
+  };
+
   const VerificationContent = (
     <>
       <DialogHeader>
@@ -285,6 +320,46 @@ const CaptainDialog = ({
 		  </span>{" "}
 		  {t('captainDialog.helperInstructions')}
 		</div>
+
+      {/* Форма подсказки - показывать только если подсказка еще не дана */}
+      {!gameState?.currentHint && (
+        <div className="hint-form">
+          <label className="section-label">{t('hintDialog.giveHintLabel')}</label>
+
+          <div className="hint-inputs">
+            <Input
+              value={hintWord}
+              onChange={(e) => setHintWord(e.target.value.slice(0, 20))}
+              placeholder={t('hintDialog.wordPlaceholder')}
+              maxLength={20}
+              className="hint-word-input"
+            />
+
+            <Input
+              type="number"
+              value={hintNumber}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val === "" || (parseInt(val) >= 0 && parseInt(val) <= 9)) {
+                  setHintNumber(val);
+                }
+              }}
+              min="0"
+              max="9"
+              placeholder={t('hintDialog.numberPlaceholder')}
+              className="hint-number-input"
+            />
+          </div>
+
+          <Button onClick={handleGiveHint} disabled={!hintWord.trim()} className="hint-submit-button">
+            {t('hintDialog.giveHintButton')}
+          </Button>
+
+          <div className="hint-help">
+            {t('hintDialog.numberHint')}
+          </div>
+        </div>
+      )}
 
       <div className="captain-helper-content">
         <TeamSwitch

@@ -238,5 +238,17 @@ export default {
     "checkError": "Fehler beim Überprüfen des Namens",
     "registerError": "Fehler bei der Registrierung",
     "verifyError": "Fehler beim Überprüfen des PIN"
+  },
+  "hintDialog": {
+    "title": "",
+    "wordExpired": "",
+    "attemptsLeft": "",
+    "bonusAttempt": "",
+    "endTurn": "",
+    "giveHintLabel": "",
+    "wordPlaceholder": "",
+    "numberPlaceholder": "",
+    "numberHint": "",
+    "giveHintButton": ""
   }
 };

@@ -238,5 +238,17 @@ export default {
     "checkError": "Error al verificar el nombre",
     "registerError": "Error durante el registro",
     "verifyError": "Error al verificar el PIN"
+  },
+  "hintDialog": {
+    "title": "",
+    "wordExpired": "",
+    "attemptsLeft": "",
+    "bonusAttempt": "",
+    "endTurn": "",
+    "giveHintLabel": "",
+    "wordPlaceholder": "",
+    "numberPlaceholder": "",
+    "numberHint": "",
+    "giveHintButton": ""
   }
 };

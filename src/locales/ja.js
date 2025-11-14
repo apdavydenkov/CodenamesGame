@@ -238,5 +238,17 @@ export default {
     "checkError": "名前の確認エラー",
     "registerError": "登録エラー",
     "verifyError": "PIN確認エラー"
+  },
+  "hintDialog": {
+    "title": "",
+    "wordExpired": "",
+    "attemptsLeft": "",
+    "bonusAttempt": "",
+    "endTurn": "",
+    "giveHintLabel": "",
+    "wordPlaceholder": "",
+    "numberPlaceholder": "",
+    "numberHint": "",
+    "giveHintButton": ""
   }
 };

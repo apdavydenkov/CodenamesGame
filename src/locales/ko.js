@@ -238,5 +238,17 @@ export default {
     "checkError": "이름 확인 오류",
     "registerError": "등록 오류",
     "verifyError": "PIN 확인 오류"
+  },
+  "hintDialog": {
+    "title": "",
+    "wordExpired": "",
+    "attemptsLeft": "",
+    "bonusAttempt": "",
+    "endTurn": "",
+    "giveHintLabel": "",
+    "wordPlaceholder": "",
+    "numberPlaceholder": "",
+    "numberHint": "",
+    "giveHintButton": ""
   }
 };

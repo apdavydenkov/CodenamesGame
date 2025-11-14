@@ -7,6 +7,7 @@ import MenuDialog from "./components/MenuDialog";
 import CaptainDialog from "./components/CaptainDialog";
 import ChatDialog from "./components/ChatDialog";
 import AuthDialog from "./components/AuthDialog";
+import HintPopup from "./components/HintPopup";
 import MetaTags from "./components/MetaTags";
 import LanguageSwitcher from "./components/LanguageSwitcher";
 import Notification from "./components/Notification";
@@ -68,6 +69,10 @@ const App = () => {
   const [notificationDuration, setNotificationDuration] = useState(5000);
   const [highlightMenuIcon, setHighlightMenuIcon] = useState(false);
   const [highlightCaptainIcon, setHighlightCaptainIcon] = useState(false);
+
+  // Состояние подсказок
+  const [currentHint, setCurrentHint] = useState(null);
+  const [showHintPopup, setShowHintPopup] = useState(false);
 
   // ID последних прочитанных сообщений (храним в localStorage)
   const [lastReadMessageIds, setLastReadMessageIds] = useState(() => {
@@ -235,6 +240,17 @@ const App = () => {
     });
   };
 
+  const handleEndTurn = () => {
+    if (!userAuth.userId) return;
+
+    gameSocket.socket.emit('END_TURN', {
+      gameKey: currentKey,
+      userId: userAuth.userId
+    });
+
+    setShowHintPopup(false);
+  };
+
   useEffect(() => {
     gameSocket.connect();
 
@@ -331,6 +347,18 @@ const App = () => {
       console.log("[Teams] GAME_SETTINGS_UPDATE:", data);
       if (data.teamsLocked !== undefined) setTeamsLocked(data.teamsLocked);
       if (data.isPrivate !== undefined) setIsPrivate(data.isPrivate);
+    });
+
+    gameSocket.socket.on("HINT_GIVEN", (data) => {
+      console.log("[Hint] HINT_GIVEN:", data);
+      setCurrentHint(data.hint);
+      setShowHintPopup(true);
+    });
+
+    gameSocket.socket.on("TURN_ENDED", (data) => {
+      console.log("[Hint] TURN_ENDED:", data);
+      setCurrentHint(null);
+      setShowHintPopup(false);
     });
 
     gameSocket.socket.on("GAME_ERROR", (error) => {
@@ -441,7 +469,7 @@ const App = () => {
           hasUserId: !!userAuth.userId,
           fromLocalStorage: localStorage.getItem('codenames-user-id')
         });
-        gameSocket.startNewGame(newKey, gameData.words, gameData.colors, userAuth.userId, false);
+        gameSocket.startNewGame(newKey, gameData.words, gameData.colors, gameData.startingTeam, userAuth.userId, false);
       }
       
     };
@@ -515,7 +543,7 @@ const App = () => {
           hasUserId: !!userAuth.userId,
           fromLocalStorage: localStorage.getItem('codenames-user-id')
         });
-        gameSocket.startNewGame(newKey, gameData.words, gameData.colors, userAuth.userId, false);
+        gameSocket.startNewGame(newKey, gameData.words, gameData.colors, gameData.startingTeam, userAuth.userId, false);
       }
     };
     
@@ -745,7 +773,7 @@ const App = () => {
         gameSocket.joinGame(gameKey, null, null, null, userAuth.userId);
       } else {
         // Явное нажатие "Новая игра" - делаем владельцем
-        gameSocket.startNewGame(gameKey, newGameData.words, newGameData.colors, userAuth.userId, true);
+        gameSocket.startNewGame(gameKey, newGameData.words, newGameData.colors, newGameData.startingTeam, userAuth.userId, true);
       }
     }
 
@@ -781,7 +809,8 @@ const App = () => {
 
     setIsCaptainConfirmed(true);
     setIsCaptain(true);
-    setShowCaptainDialog(false);
+    // НЕ закрываем диалог, чтобы показать форму подсказки
+    // setShowCaptainDialog(false);
   };
 
   const handleCaptainModeToggle = useCallback(() => {
@@ -885,6 +914,10 @@ const App = () => {
         highlightMenuIcon={highlightMenuIcon}
         highlightCaptainIcon={highlightCaptainIcon}
         onShowNotification={handleShowNotification}
+        currentHint={currentHint}
+        hintTeam={gameState.currentTeam}
+        onHintClick={() => setShowHintPopup(true)}
+        teams={teams}
       />
 
       <WinDialog
@@ -951,6 +984,9 @@ const App = () => {
         isCaptainConfirmed={isCaptainConfirmed}
         gameState={gameState}
         myTeam={myTeam}
+        gameKey={currentKey}
+        userId={userAuth.userId}
+        username={userAuth.username}
       />
 
       <ChatDialog
@@ -993,6 +1029,16 @@ const App = () => {
           setShowAuthDialog(false);
           setShowChatDialog(true);
         }}
+      />
+
+      <HintPopup
+        isOpen={showHintPopup}
+        onClose={() => setShowHintPopup(false)}
+        hint={currentHint}
+        team={gameState.currentTeam}
+        remainingCards={gameState.remainingCards}
+        onEndTurn={handleEndTurn}
+        canEndTurn={myTeam === gameState.currentTeam && !isCaptain && myTeam !== null}
       />
 
       {/* Уведомление об ошибках */}

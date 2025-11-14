@@ -106,6 +106,20 @@ export default {
     confirmationPhrase: "КАПИТАН"
   },
 
+  // Hint dialog
+  hintDialog: {
+    title: "Шифровка команды",
+    wordExpired: "Слово скрыто. Запомнили?",
+    attemptsLeft: "Осталось попыток:",
+    bonusAttempt: "(включая +1 бонус)",
+    endTurn: "Передать ход",
+    giveHintLabel: "Дать шифровку команде:",
+    wordPlaceholder: "Слово",
+    numberPlaceholder: "0-9",
+    numberHint: "0 = без ограничений, 1-9 = конкретное число",
+    giveHintButton: "Дать шифровку"
+  },
+
   // Диалог победы
   winDialog: {
     title: "Игра окончена!",
