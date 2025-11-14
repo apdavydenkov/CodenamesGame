@@ -258,6 +258,9 @@ const App = () => {
     const handleDisconnect = () => setIsServerConnected(false);
 
     const handleGameState = (newState) => {
+      console.log("[HintIcon] GAME_STATE received");
+      console.log("[HintIcon] currentHint in GAME_STATE:", JSON.stringify(newState.currentHint));
+
       setIsGameStateReceived(true);
       setGameState((prevState) => ({
         ...prevState,
@@ -270,15 +273,50 @@ const App = () => {
         winner: newState.winner,
       }));
 
+      // Восстанавливаем currentHint после перезагрузки (баг #1)
+      if (newState.currentHint) {
+        console.log("[HintIcon] Restoring currentHint from GAME_STATE:", newState.currentHint);
+        setCurrentHint(newState.currentHint);
+      } else {
+        console.log("[HintIcon] No currentHint in GAME_STATE, clearing");
+      }
+
       // Обновляем данные команд из GAME_STATE
       if (newState.teams) {
+        console.log("[GAME_STATE] Captains in state:", {
+          blueCaptain: newState.teams?.blue?.captain,
+          redCaptain: newState.teams?.red?.captain
+        });
         setTeams(newState.teams);
 
         // Обновляем свою команду и роль
         if (userAuth.userId && userAuth.username) {
           const userTeam = findUserTeam(newState.teams, userAuth.userId);
-          setMyTeam(userTeam?.team || null);
-          setMyRole(userTeam?.role || null);
+          const newTeam = userTeam?.team || null;
+          const newRole = userTeam?.role || null;
+
+          console.log("[GAME_STATE] ========================================");
+          console.log("[GAME_STATE] Role sync from server:");
+          console.log("  newTeam:", newTeam);
+          console.log("  newRole:", newRole);
+          console.log("  Current isCaptain:", isCaptain);
+          console.log("  Current isCaptainConfirmed:", isCaptainConfirmed);
+
+          setMyTeam(newTeam);
+          setMyRole(newRole);
+
+          // КРИТИЧНО: Синхронизируем isCaptain с ролью из GAME_STATE
+          if (newRole === 'captain') {
+            console.log("[GAME_STATE] ✓ IS captain → setting isCaptain=true");
+            setIsCaptainConfirmed(true);
+            setIsCaptain(true);
+          } else {
+            console.log("[GAME_STATE] ○ NOT captain → setting isCaptain=false");
+            setIsCaptainConfirmed(false);
+            setIsCaptain(false);
+          }
+
+          console.log("[GAME_STATE] ========================================");
         }
       }
 
@@ -309,6 +347,10 @@ const App = () => {
     // Обработчики команд
     gameSocket.socket.on("TEAMS_UPDATE", (data) => {
       console.log("[Teams] TEAMS_UPDATE:", data);
+      console.log("[Teams] Captains in update:", {
+        blueCaptain: data.teams?.blue?.captain,
+        redCaptain: data.teams?.red?.captain
+      });
       setTeams(data.teams);
 
       // Обновляем свою команду и роль
@@ -318,10 +360,29 @@ const App = () => {
 
         // Если роль изменилась с капитана на что-то другое - сбрасываем подтверждение
         setMyRole(prevRole => {
+          console.log("[TEAMS_UPDATE] ========================================");
+          console.log("[TEAMS_UPDATE] Role sync:");
+          console.log("  prevRole:", prevRole);
+          console.log("  newRole:", newRole);
+          console.log("  Current isCaptain state:", isCaptain);
+          console.log("  Current isCaptainConfirmed:", isCaptainConfirmed);
+
           if (prevRole === 'captain' && newRole !== 'captain') {
+            console.log("[TEAMS_UPDATE] ✗ Changed FROM captain → resetting");
+            setIsCaptainConfirmed(false);
+            setIsCaptain(false);
+          } else if (newRole === 'captain') {
+            console.log("[TEAMS_UPDATE] ✓ IS captain → setting isCaptain=true");
+            setIsCaptainConfirmed(true);
+            setIsCaptain(true);
+          } else if (!newRole) {
+            console.log("[TEAMS_UPDATE] ○ No role → resetting captain states");
             setIsCaptainConfirmed(false);
             setIsCaptain(false);
           }
+
+          console.log("[TEAMS_UPDATE] New role will be:", newRole);
+          console.log("[TEAMS_UPDATE] ========================================");
           return newRole;
         });
 
@@ -350,15 +411,41 @@ const App = () => {
     });
 
     gameSocket.socket.on("HINT_GIVEN", (data) => {
-      console.log("[Hint] HINT_GIVEN:", data);
+      console.log("[HINT_GIVEN] ========================================");
+      console.log("[HINT_GIVEN] Event data:", JSON.stringify(data));
+      console.log("[HINT_GIVEN] Hint team:", data.team);
+      console.log("[HINT_GIVEN] Hint:", data.hint);
+      console.log("[HINT_GIVEN] My team:", myTeam);
+      console.log("[HINT_GIVEN] My role:", myRole);
+      console.log("[HINT_GIVEN] isCaptain:", isCaptain);
+      console.log("[HINT_GIVEN] Current team (gameState):", gameState.currentTeam);
+
       setCurrentHint(data.hint);
       setShowHintPopup(true);
+
+      console.log("[HINT_GIVEN] State updated: popup will show");
+      console.log("[HINT_GIVEN] ========================================");
     });
 
     gameSocket.socket.on("TURN_ENDED", (data) => {
-      console.log("[Hint] TURN_ENDED:", data);
+      console.log("[TURN_ENDED] ========================================");
+      console.log("[TURN_ENDED] Received data:", data);
+      console.log("[TURN_ENDED] New current team from server:", data.currentTeam);
+      console.log("[TURN_ENDED] BEFORE update - gameState.currentTeam:", gameState.currentTeam);
+
+      // КРИТИЧНО: Обновляем currentTeam в gameState
+      setGameState(prev => {
+        console.log("[TURN_ENDED] Updating gameState.currentTeam:", prev.currentTeam, "→", data.currentTeam);
+        return {
+          ...prev,
+          currentTeam: data.currentTeam
+        };
+      });
+
       setCurrentHint(null);
       setShowHintPopup(false);
+      console.log("[TURN_ENDED] State updates queued");
+      console.log("[TURN_ENDED] ========================================");
     });
 
     gameSocket.socket.on("GAME_ERROR", (error) => {
@@ -783,13 +870,21 @@ const App = () => {
   };
 
   const handleCaptainRequest = (value) => {
+    console.log("[CaptainConfirm] handleCaptainRequest called");
+    console.log("[CaptainConfirm] value:", value);
+    console.log("[CaptainConfirm] isCaptainConfirmed:", isCaptainConfirmed);
+    console.log("[CaptainConfirm] myRole:", myRole);
+
     if (value) {
       if (!isCaptainConfirmed) {
+        console.log("[CaptainConfirm] NOT confirmed - showing dialog");
         setShowCaptainDialog(true);
       } else {
+        console.log("[CaptainConfirm] Already confirmed - setting isCaptain=true");
         setIsCaptain(true);
       }
     } else {
+      console.log("[CaptainConfirm] Turning OFF captain mode");
       setIsCaptain(false);
     }
   };
@@ -888,6 +983,7 @@ const App = () => {
               onAuthRequired={handleChatClick}
               currentTeam={gameState.currentTeam}
               teams={teams}
+              currentHint={currentHint}
               onHighlightIcon={handleHighlightIcon}
             />
           ))}
@@ -1033,12 +1129,24 @@ const App = () => {
 
       <HintPopup
         isOpen={showHintPopup}
-        onClose={() => setShowHintPopup(false)}
+        onClose={() => {
+          console.log('[App] Closing HintPopup');
+          setShowHintPopup(false);
+        }}
         hint={currentHint}
         team={gameState.currentTeam}
         remainingCards={gameState.remainingCards}
         onEndTurn={handleEndTurn}
-        canEndTurn={myTeam === gameState.currentTeam && !isCaptain && myTeam !== null}
+        canEndTurn={(() => {
+          const canEnd = myTeam === gameState.currentTeam && !isCaptain && myTeam !== null;
+          console.log('[App] canEndTurn calculation:', {
+            myTeam,
+            currentTeam: gameState.currentTeam,
+            isCaptain,
+            result: canEnd
+          });
+          return canEnd;
+        })()}
       />
 
       {/* Уведомление об ошибках */}
