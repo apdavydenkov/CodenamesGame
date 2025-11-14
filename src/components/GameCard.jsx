@@ -22,6 +22,7 @@ const GameCard = ({
   onAuthRequired,
   currentTeam = "blue",
   teams = null,
+  currentHint = null,
   onHighlightIcon
 }) => {
   const { t } = useTranslation();
@@ -83,8 +84,17 @@ const GameCard = ({
     const hasBlueCaptain = teams?.blue?.captain !== null;
     const hasRedCaptain = teams?.red?.captain !== null;
 
+    console.log('[GameCard] Checking captains:', {
+      teams,
+      hasBlueCaptain,
+      hasRedCaptain,
+      blueCaptain: teams?.blue?.captain,
+      redCaptain: teams?.red?.captain
+    });
+
     if (!hasBlueCaptain || !hasRedCaptain) {
       e.preventDefault();
+      console.log('[GameCard] ❌ Captains missing - blocking card reveal');
       setNotificationMessage(t('notifications.captainsRequired'));
       setShowNotification(true);
       onHighlightIcon?.('menu');
@@ -114,6 +124,15 @@ const GameCard = ({
       e.preventDefault();
       setNotificationMessage(t('notifications.notYourTurn'));
       setShowNotification(true);
+      return;
+    }
+
+    // Проверка что капитан дал шифровку
+    if (!currentHint) {
+      e.preventDefault();
+      setNotificationMessage(t('notifications.waitingForHint'));
+      setShowNotification(true);
+      onHighlightIcon?.('captain');
       return;
     }
 
@@ -195,6 +214,8 @@ export default memo(GameCard, (prevProps, nextProps) => {
     prevProps.position === nextProps.position &&
     prevProps.myTeam === nextProps.myTeam &&
     prevProps.isAuthenticated === nextProps.isAuthenticated &&
-    prevProps.currentTeam === nextProps.currentTeam
+    prevProps.currentTeam === nextProps.currentTeam &&
+    prevProps.teams === nextProps.teams &&
+    prevProps.currentHint === nextProps.currentHint
   );
 });
