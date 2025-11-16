@@ -9,7 +9,9 @@ import ChatDialog from "./components/dialogs/ChatDialog";
 import AuthDialog from "./components/dialogs/AuthDialog";
 import HintDialog from "./components/dialogs/HintDialog";
 import MetaTags from "./components/MetaTags";
+import { validateCardReveal } from "./utils/cardValidation";
 import Notification from "./components/Notification";
+import DebugLogger from "./components/DebugLogger";
 import {
   generateGameFromKey,
   generateNewKey,
@@ -34,7 +36,6 @@ const App = () => {
   });
 
   const [isCaptain, setIsCaptain] = useState(false);
-  const [isCaptainConfirmed, setIsCaptainConfirmed] = useState(false);
   const [isPendingCaptainConfirmation, setIsPendingCaptainConfirmation] = useState(false);
   const [showWinDialog, setShowWinDialog] = useState(false);
   const wasWinDialogShownRef = useRef(false);
@@ -45,7 +46,10 @@ const App = () => {
   const [showChatDialog, setShowChatDialog] = useState(false);
   const [activeChatTab, setActiveChatTab] = useState('game'); // 'game' или 'global'
   const [showAuthDialog, setShowAuthDialog] = useState(false);
-  const [currentKey, setCurrentKey] = useState("");
+  const [currentKey, setCurrentKey] = useState(() => {
+    console.log('[GameLoad] Initializing currentKey state');
+    return "";
+  });
   const [isServerConnected, setIsServerConnected] = useState(false);
 
   // Состояние авторизации
@@ -71,6 +75,9 @@ const App = () => {
   // Состояние подсказок
   const [currentHint, setCurrentHint] = useState(null);
   const [showHintPopup, setShowHintPopup] = useState(false);
+
+  // Простой режим (включен по умолчанию)
+  const [simpleMode, setSimpleMode] = useState(true);
 
   // ID последних прочитанных сообщений (храним в localStorage)
   const [lastReadMessageIds, setLastReadMessageIds] = useState(() => {
@@ -168,7 +175,7 @@ const App = () => {
       return { team: 'red', role: 'player', username: redPlayer.username };
     }
 
-    // Проверяем наблюдателей
+    // Проверяем зрителей
     const spectator = teams.spectators?.find(s => s.userId === userId);
     if (spectator) {
       return { team: 'spectator', role: 'spectator', username: spectator.username };
@@ -234,6 +241,24 @@ const App = () => {
     });
   };
 
+  const handleToggleSimpleMode = () => {
+    if (!userAuth.userId) return;
+
+    console.log('[GameLoad] Toggle simple mode', {
+      from: simpleMode,
+      to: !simpleMode,
+      gameKey: currentKey,
+      userId: userAuth.userId
+    });
+
+    gameSocket.socket.emit('TOGGLE_SIMPLE_MODE', {
+      gameKey: currentKey,
+      userId: userAuth.userId,
+      enabled: !simpleMode
+    });
+  };
+
+
   const handleEndTurn = () => {
     if (!userAuth.userId) return;
 
@@ -284,12 +309,8 @@ const App = () => {
           setMyTeam(newTeam);
           setMyRole(newRole);
 
-          // КРИТИЧНО: Синхронизируем isCaptain с ролью из GAME_STATE
-          if (newRole === 'captain') {
-            setIsCaptainConfirmed(true);
-            setIsCaptain(true);
-          } else {
-            setIsCaptainConfirmed(false);
+          // Если роль изменилась на НЕ-капитана - сбрасываем режим капитана
+          if (newRole !== 'captain') {
             setIsCaptain(false);
           }
         }
@@ -300,6 +321,16 @@ const App = () => {
       if (newState.isPrivate !== undefined) setIsPrivate(newState.isPrivate);
       if (newState.canAccessGame !== undefined) {
         setCanAccessGame(newState.canAccessGame);
+      }
+
+      // Обновляем простой режим
+      if (newState.simpleMode !== undefined) {
+        console.log('[GameLoad] Simple mode updated from server', {
+          oldValue: simpleMode,
+          newValue: newState.simpleMode,
+          gameKey: currentKey
+        });
+        setSimpleMode(newState.simpleMode);
       }
 
       // Показываем диалог победы только один раз
@@ -322,16 +353,9 @@ const App = () => {
         const userTeam = findUserTeam(data.teams, userAuth.userId);
         const newRole = userTeam?.role || null;
 
-        // Если роль изменилась с капитана на что-то другое - сбрасываем подтверждение
+        // Если роль изменилась - сбрасываем режим капитана при смене роли
         setMyRole(prevRole => {
-          if (prevRole === 'captain' && newRole !== 'captain') {
-            setIsCaptainConfirmed(false);
-            setIsCaptain(false);
-          } else if (newRole === 'captain') {
-            setIsCaptainConfirmed(true);
-            setIsCaptain(true);
-          } else if (!newRole) {
-            setIsCaptainConfirmed(false);
+          if (newRole !== 'captain') {
             setIsCaptain(false);
           }
 
@@ -350,13 +374,27 @@ const App = () => {
     gameSocket.socket.on("LEAVE_CAPTAIN_SUCCESS", (data) => {
       setMyTeam(data.team);
       setMyRole(data.role);
-      setIsCaptainConfirmed(false);
       setIsCaptain(false);
     });
 
     gameSocket.socket.on("GAME_SETTINGS_UPDATE", (data) => {
+      console.log('[GameLoad] GAME_SETTINGS_UPDATE received', {
+        rawData: data,
+        currentSimpleMode: simpleMode,
+        currentKey: currentKey
+      });
+
+      if (data.simpleMode !== undefined) {
+        console.log('[GameLoad] GAME_SETTINGS_UPDATE - simple mode', {
+          oldValue: simpleMode,
+          newValue: data.simpleMode,
+          gameKey: currentKey
+        });
+        setSimpleMode(data.simpleMode);
+      }
       if (data.teamsLocked !== undefined) setTeamsLocked(data.teamsLocked);
       if (data.isPrivate !== undefined) setIsPrivate(data.isPrivate);
+      if (data.currentHint !== undefined) setCurrentHint(data.currentHint);
     });
 
     gameSocket.socket.on("HINT_GIVEN", (data) => {
@@ -408,9 +446,11 @@ const App = () => {
       const keyFromUrl = urlParams.get("key");
 
       if (keyFromUrl) {
+        console.log('[GameLoad] Loading game from URL key', { key: keyFromUrl });
+
         const dictionaryIndex = getDictionaryIndexFromKey(keyFromUrl);
         let keyDictionary;
-        
+
         // Если это ИИ-ключ
         if (isAIKey(keyFromUrl)) {
           keyDictionary = aiDictionary;
@@ -426,7 +466,14 @@ const App = () => {
           );
 
           if (gameData) {
+            console.log('[GameLoad] Game loaded from URL - JOIN_GAME', {
+              key: keyFromUrl,
+              isAI: isAIKey(keyFromUrl),
+              dictionaryIndex
+            });
+
             setCurrentDictionary(keyDictionary);
+            console.log('[GameLoad] Setting currentKey', { newKey: keyFromUrl });
             setCurrentKey(keyFromUrl);
 
             setGameState({
@@ -449,6 +496,8 @@ const App = () => {
       }
 
       // Если ключ невалидный или его нет - создаем новую игру
+      console.log('[GameLoad] No URL key - creating new game (auto-load)');
+
       const dictionaryIndex = 0; // Первый словарь
       const newKey = generateNewKey(dictionaryIndex);
       const gameData = await generateGameFromKey(
@@ -458,7 +507,10 @@ const App = () => {
       );
 
       if (gameData) {
+        console.log('[GameLoad] Auto-created game', { key: newKey, dictionaryIndex });
+
         setCurrentDictionary(dictionary);
+        console.log('[GameLoad] Setting currentKey', { newKey });
         setCurrentKey(newKey);
 
         const url = new URL(window.location);
@@ -488,7 +540,7 @@ const App = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Run once on mount - intentionally empty deps
 
-  // Автоматическое присоединение к наблюдателям при загрузке с ключом
+  // Автоматическое присоединение к зрителям при загрузке с ключом
   useEffect(() => {
     // Условия для автоматического присоединения:
     // 1. Пользователь авторизован
@@ -640,13 +692,9 @@ const App = () => {
     // При первой установке роли (загрузка страницы)
     if (myRole !== null && !isInitialRoleSetRef.current) {
       isInitialRoleSetRef.current = true;
-
-      // Если при загрузке уже капитан - автоматически подтверждаем (перезагрузка страницы)
-      if (myRole === 'captain') {
-        setIsCaptainConfirmed(true);
-      }
     }
   }, [myRole]);
+
 
   // Обновление lastReadMessageId при открытии чата (вызывается из ChatDialog)
   const handleMarkAsRead = useCallback((chatKey, lastMessageId) => {
@@ -666,6 +714,12 @@ const App = () => {
 
   const startNewGame = async (key = null) => {
     if (!currentDictionary) return;
+
+    console.log('[GameLoad] startNewGame called', {
+      hasKey: !!key,
+      key: key,
+      source: key ? 'KeyDialog' : 'NewGame button'
+    });
 
     let gameKey = key;
     let newGameData;
@@ -754,7 +808,6 @@ const App = () => {
       setCurrentKey(gameKey);
       wasWinDialogShownRef.current = false;
       setIsCaptain(false);
-      setIsCaptainConfirmed(false);
 
       const url = new URL(window.location);
       url.searchParams.set("key", gameKey);
@@ -788,11 +841,7 @@ const App = () => {
 
   const handleCaptainRequest = (value) => {
     if (value) {
-      if (!isCaptainConfirmed) {
-        setShowCaptainDialog(true);
-      } else {
-        setIsCaptain(true);
-      }
+      setShowCaptainDialog(true);
     } else {
       setIsCaptain(false);
     }
@@ -811,17 +860,14 @@ const App = () => {
       setIsPendingCaptainConfirmation(false);
     }
 
-    setIsCaptainConfirmed(true);
     setIsCaptain(true);
     // НЕ закрываем диалог, чтобы показать форму подсказки
     // setShowCaptainDialog(false);
   };
 
   const handleCaptainModeToggle = useCallback(() => {
-    if (isCaptainConfirmed) {
-      setIsCaptain(!isCaptain);
-    }
-  }, [isCaptainConfirmed, isCaptain]);
+    setIsCaptain(!isCaptain);
+  }, [isCaptain]);
 
   const handleCaptainHelperClick = useCallback(() => {
     setShowCaptainDialog(true);
@@ -855,18 +901,27 @@ const App = () => {
   }, []);
 
   const handleCardClick = useCallback((index) => {
-    if (gameState.revealed[index] || isCaptain) return;
+    // Валидация через единую функцию
+    const error = validateCardReveal({
+      revealed: gameState.revealed[index],
+      isAuthenticated: !!userAuth.userId,
+      simpleMode,
+      isCaptain,
+      myRole,
+      teams,
+      myTeam,
+      currentTeam: gameState.currentTeam,
+      currentHint,
+    });
 
-    // Запрещаем открывать карточки пока не выбраны капитаны в обеих командах
-    const hasBlueCaptain = teams?.blue?.captain !== null;
-    const hasRedCaptain = teams?.red?.captain !== null;
-
-    if (!hasBlueCaptain || !hasRedCaptain) {
+    // Если есть ошибка - блокируем
+    if (error) {
       return;
     }
 
+    // Отправляем на сервер
     gameSocket.revealCard(index);
-  }, [gameState.revealed, isCaptain, teams]);
+  }, [gameState.revealed, gameState.currentTeam, userAuth.userId, simpleMode, isCaptain, myRole, teams, myTeam, currentHint]);
 
   return (
     <div className="h-dvh flex flex-col p-1.5 w-full max-w-full ml-0 mr-0">
@@ -893,6 +948,7 @@ const App = () => {
               teams={teams}
               currentHint={currentHint}
               onHighlightIcon={handleHighlightIcon}
+              gameSettings={{ simpleMode }}
             />
           ))}
         </div>
@@ -909,7 +965,7 @@ const App = () => {
         onMenuClick={handleMenuClick}
         onChatClick={handleChatClick}
         isCaptain={isCaptain}
-        isCaptainConfirmed={isCaptainConfirmed}
+        myRole={myRole}
         onCaptainModeToggle={handleCaptainModeToggle}
         onCaptainHelperClick={handleCaptainHelperClick}
         unreadCount={unreadCounts.game + unreadCounts.global}
@@ -921,6 +977,7 @@ const App = () => {
         hintTeam={gameState.currentTeam}
         onHintClick={() => setShowHintPopup(true)}
         teams={teams}
+        gameSettings={{ simpleMode }}
       />
 
       <WinDialog
@@ -974,6 +1031,8 @@ const App = () => {
         onLeaveCaptain={handleLeaveCaptain}
         onLockTeams={handleLockTeams}
         onSetPrivate={handleSetPrivate}
+        gameSettings={{ simpleMode }}
+        onToggleSimpleMode={handleToggleSimpleMode}
       />
 
       <CaptainDialog
@@ -984,12 +1043,12 @@ const App = () => {
         }}
         onConfirm={handleCaptainConfirm}
         isCaptain={isCaptain}
-        isCaptainConfirmed={isCaptainConfirmed}
         gameState={gameState}
         myTeam={myTeam}
         gameKey={currentKey}
         userId={userAuth.userId}
         username={userAuth.username}
+        gameSettings={{ simpleMode }}
       />
 
       <ChatDialog
@@ -1055,6 +1114,8 @@ const App = () => {
           onClose={() => setGameError(null)}
         />
       )}
+
+      <DebugLogger />
 
     </div>
   );

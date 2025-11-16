@@ -55,7 +55,11 @@ export default {
     "teamsOpen": "",
     "teamsClosed": "",
     "gamePublic": "",
-    "gamePrivate": ""
+    "gamePrivate": "",
+    "gameMode": "",
+    "simpleMode": "",
+    "simpleModeOn": "",
+    "simpleModeHint": ""
   },
   "share": {
     "copyLink": "Link kopieren",

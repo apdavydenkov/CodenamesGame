@@ -33,6 +33,8 @@ const MenuDialog = ({
   onLeaveCaptain,
   onLockTeams,
   onSetPrivate,
+  gameSettings = {},
+  onToggleSimpleMode,
 }) => {
   const [showNotification, setShowNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState('');
@@ -188,8 +190,97 @@ const MenuDialog = ({
           {/* BODY */}
           <div className="menu-dialog-content flex-1 overflow-y-auto px-3 sm:px-4 py-4 space-y-2 sm:space-y-4 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-gray-400">
 
+            {/* Simple Mode Toggle - Owner Only */}
+            {ownerId === userId && (
+              <div className="space-y-1 sm:space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-medium text-gray-900">
+                    {t('menu.simpleMode')}
+                  </label>
+                  <button
+                    onClick={() => onToggleSimpleMode?.()}
+                    disabled={isGeneratingAI}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                      gameSettings?.simpleMode ? 'bg-gray-900' : 'bg-gray-200'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        gameSettings?.simpleMode ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+                <p className="text-xs text-gray-500">
+                  {t('menu.simpleModeHint')}
+                </p>
+              </div>
+            )}
+
+            {/* Simple Mode Captain Section - только 2 кнопки капитанов */}
+            {gameSettings?.simpleMode && canAccessGame && isAuthenticated && (
+              <div className="space-y-1 sm:space-y-2">
+                <label className="block text-sm font-medium text-gray-900">
+                  {t('menu.yourTeam')}:{' '}
+                  {myTeam === 'blue' && t('menu.blueTeam')}
+                  {myTeam === 'red' && t('menu.redTeam')}
+                  {!myTeam && t('menu.notSelected')}
+                  {myRole === 'captain' && (
+                    <>
+                      {' '}{t('menu.andCaptain')}
+                      {' '}<FiStar size={14} className="inline-block align-middle ml-1" />
+                    </>
+                  )}
+                </label>
+
+                <div className="grid grid-cols-2 gap-2 sm:gap-4">
+                  {/* Синий капитан */}
+                  <button
+                    onClick={() => {
+                      // Если уже синий капитан - снять капитанство (стать зрителем)
+                      if (myTeam === 'blue' && myRole === 'captain') {
+                        onJoinTeam?.('spectator', 'spectator');
+                      } else {
+                        onJoinTeam?.('blue', 'captain');
+                      }
+                    }}
+                    disabled={isGeneratingAI}
+                    className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
+                      myTeam === 'blue' && myRole === 'captain'
+                        ? 'bg-blue-700 text-white hover:bg-blue-800'
+                        : 'border border-gray-200 bg-white text-gray-900 hover:bg-gray-50'
+                    }`}
+                  >
+                    <FiStar size={14} className="inline-block align-middle mr-1" />
+                    {t('menu.blueTeam')}
+                  </button>
+
+                  {/* Красный капитан */}
+                  <button
+                    onClick={() => {
+                      // Если уже красный капитан - снять капитанство (стать зрителем)
+                      if (myTeam === 'red' && myRole === 'captain') {
+                        onJoinTeam?.('spectator', 'spectator');
+                      } else {
+                        onJoinTeam?.('red', 'captain');
+                      }
+                    }}
+                    disabled={isGeneratingAI}
+                    className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
+                      myTeam === 'red' && myRole === 'captain'
+                        ? 'bg-red-700 text-white hover:bg-red-800'
+                        : 'border border-gray-200 bg-white text-gray-900 hover:bg-gray-50'
+                    }`}
+                  >
+                    <FiStar size={14} className="inline-block align-middle mr-1" />
+                    {t('menu.redTeam')}
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Team Selection Section */}
-            {canAccessGame && isAuthenticated && (!teamsLocked || ownerId === userId || myTeam === 'blue' || myTeam === 'red') && (
+            {!gameSettings?.simpleMode && canAccessGame && isAuthenticated && (!teamsLocked || ownerId === userId || myTeam === 'blue' || myTeam === 'red') && (
               <div className="space-y-1 sm:space-y-2">
                 <label className="block text-sm font-medium text-gray-900">
                   {t('menu.yourTeam')}:{' '}
@@ -205,89 +296,106 @@ const MenuDialog = ({
                   )}
                 </label>
 
-                <div className="grid grid-cols-2 gap-2 sm:gap-4 sm:grid-cols-4">
-                  <button
-                    onClick={() => onJoinTeam?.('blue', 'player')}
-                    disabled={isGeneratingAI || (teamsLocked && ownerId !== userId)}
-                    className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
-                      myTeam === 'blue' && myRole === 'player'
-                        ? 'bg-blue-600 text-white hover:bg-blue-700'
-                        : 'border border-gray-200 bg-white text-gray-900 hover:bg-gray-50'
-                    }`}
-                  >
-                    {t('menu.blueTeam')}
-                  </button>
-                  <button
-                    onClick={() => onJoinTeam?.('red', 'player')}
-                    disabled={isGeneratingAI || (teamsLocked && ownerId !== userId)}
-                    className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
-                      myTeam === 'red' && myRole === 'player'
-                        ? 'bg-red-600 text-white hover:bg-red-700'
-                        : 'border border-gray-200 bg-white text-gray-900 hover:bg-gray-50'
-                    }`}
-                  >
-                    {t('menu.redTeam')}
-                  </button>
-                  <button
-                    onClick={() => onJoinTeam?.('spectator', 'spectator')}
-                    disabled={isGeneratingAI}
-                    className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
-                      myTeam === 'spectator'
-                        ? 'bg-[#e4d6c5] text-gray-900 hover:bg-[#d9c9b5]'
-                        : 'border border-gray-200 bg-white text-gray-900 hover:bg-gray-50'
-                    }`}
-                  >
-                    {t('menu.spectator')}
-                  </button>
+                <div className="space-y-2">
+                  {/* Ряд 1: Игроки и зритель */}
+                  <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                    {/* Синий игрок */}
+                    <button
+                      onClick={() => onJoinTeam?.('blue', 'player')}
+                      disabled={isGeneratingAI || (teamsLocked && ownerId !== userId)}
+                      className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
+                        myTeam === 'blue' && myRole === 'player'
+                          ? 'bg-blue-600 text-white hover:bg-blue-700'
+                          : 'border border-gray-200 bg-white text-gray-900 hover:bg-gray-50'
+                      }`}
+                    >
+                      {t('menu.blueTeam')}
+                    </button>
 
-                  {myTeam && myTeam !== 'spectator' && (
-                    myRole === 'captain' ? (
-                      <button
-                        onClick={() => onLeaveCaptain?.()}
-                        disabled={isGeneratingAI}
-                        className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                      >
-                        <FiStar size={14} className="inline-block align-middle mr-1" />
-                        {t('menu.leaveCaptain')}
-                      </button>
-                    ) : (
-                      teams?.[myTeam]?.captain === null && (
-                        <button
-                          onClick={() => onBecomeCaptain?.()}
-                          disabled={isGeneratingAI}
-                          className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                        >
-                          <FiStar size={14} className="inline-block align-middle mr-1" />
-                          {t('menu.becomeCaptain')}
-                        </button>
-                      )
-                    )
-                  )}
+                    {/* Красный игрок */}
+                    <button
+                      onClick={() => onJoinTeam?.('red', 'player')}
+                      disabled={isGeneratingAI || (teamsLocked && ownerId !== userId)}
+                      className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
+                        myTeam === 'red' && myRole === 'player'
+                          ? 'bg-red-600 text-white hover:bg-red-700'
+                          : 'border border-gray-200 bg-white text-gray-900 hover:bg-gray-50'
+                      }`}
+                    >
+                      {t('menu.redTeam')}
+                    </button>
+
+                    {/* Зритель */}
+                    <button
+                      onClick={() => onJoinTeam?.('spectator', 'spectator')}
+                      disabled={isGeneratingAI}
+                      className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
+                        myTeam === 'spectator'
+                          ? 'bg-[#e4d6c5] text-gray-900 hover:bg-[#d9c9b5]'
+                          : 'border border-gray-200 bg-white text-gray-900 hover:bg-gray-50'
+                      }`}
+                    >
+                      {t('menu.spectator')}
+                    </button>
+                  </div>
+
+                  {/* Ряд 2: Капитаны */}
+                  <div className="grid grid-cols-2 gap-2 sm:gap-4">
+                    {/* Синий капитан */}
+                    <button
+                      onClick={() => onJoinTeam?.('blue', 'captain')}
+                      disabled={isGeneratingAI || (teamsLocked && ownerId !== userId)}
+                      className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
+                        myTeam === 'blue' && myRole === 'captain'
+                          ? 'bg-blue-700 text-white hover:bg-blue-800'
+                          : 'border border-gray-200 bg-white text-gray-900 hover:bg-gray-50'
+                      }`}
+                    >
+                      <FiStar size={14} className="inline-block align-middle mr-1" />
+                      {t('menu.blueTeam')}
+                    </button>
+
+                    {/* Красный капитан */}
+                    <button
+                      onClick={() => onJoinTeam?.('red', 'captain')}
+                      disabled={isGeneratingAI || (teamsLocked && ownerId !== userId)}
+                      className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
+                        myTeam === 'red' && myRole === 'captain'
+                          ? 'bg-red-700 text-white hover:bg-red-800'
+                          : 'border border-gray-200 bg-white text-gray-900 hover:bg-gray-50'
+                      }`}
+                    >
+                      <FiStar size={14} className="inline-block align-middle mr-1" />
+                      {t('menu.redTeam')}
+                    </button>
+                  </div>
                 </div>
 
                 {ownerId === userId && (
                   <>
                     <div className="space-y-1 sm:space-y-2">
                       <label className="block text-sm font-medium text-gray-900">
-                        {t('menu.ownerActions')} {t('menu.teamsStatus')} {teamsLocked ? t('menu.teamsClosed') : t('menu.teamsOpen')}, {t('menu.gameStatus')} {isPrivate ? t('menu.gamePrivate') : t('menu.gamePublic')}
+                        {t('menu.ownerActions')} {!gameSettings?.simpleMode && <>{t('menu.teamsStatus')} {teamsLocked ? t('menu.teamsClosed') : t('menu.teamsOpen')}, </>}{t('menu.gameStatus')} {isPrivate ? t('menu.gamePrivate') : t('menu.gamePublic')}
                       </label>
                     </div>
-                    <div className="grid grid-cols-2 gap-2 sm:gap-4">
-                      <button
-                        onClick={() => {
-                          onLockTeams?.();
-                          setNotificationMessage(
-                            teamsLocked
-                              ? t('notifications.teamsUnlocked')
-                              : t('notifications.teamsLocked')
-                          );
-                          setShowNotification(true);
-                        }}
-                        disabled={isGeneratingAI}
-                        className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                      >
-                        {teamsLocked ? t('menu.unlockTeams') : t('menu.lockTeams')}
-                      </button>
+                    <div className={`grid gap-2 sm:gap-4 ${gameSettings?.simpleMode ? 'grid-cols-1' : 'grid-cols-2'}`}>
+                      {!gameSettings?.simpleMode && (
+                        <button
+                          onClick={() => {
+                            onLockTeams?.();
+                            setNotificationMessage(
+                              teamsLocked
+                                ? t('notifications.teamsUnlocked')
+                                : t('notifications.teamsLocked')
+                            );
+                            setShowNotification(true);
+                          }}
+                          disabled={isGeneratingAI}
+                          className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                          {teamsLocked ? t('menu.unlockTeams') : t('menu.lockTeams')}
+                        </button>
+                      )}
                       <button
                         onClick={() => {
                           onSetPrivate?.(!isPrivate);

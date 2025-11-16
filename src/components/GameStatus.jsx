@@ -6,12 +6,22 @@ import ReferenceDialog from "./dialogs/ReferenceDialog";
 const PRESS_DURATION = 1000;
 const PROGRESS_INTERVAL = 50;
 
+// Проверка подтверждения капитана (1 раз в неделю)
+const needsCaptainConfirmation = () => {
+  const lastConfirmed = localStorage.getItem('codenames-captain-confirmed');
+  if (!lastConfirmed) return true;
+
+  const weekInMs = 7 * 24 * 60 * 60 * 1000;
+  const timeSinceConfirmation = Date.now() - parseInt(lastConfirmed, 10);
+  return timeSinceConfirmation > weekInMs;
+};
+
 const GameStatus = ({
   remainingCards,
   onMenuClick,
   onChatClick,
   isCaptain,
-  isCaptainConfirmed,
+  myRole,
   onCaptainModeToggle,
   onCaptainHelperClick,
   unreadCount = 0,
@@ -23,6 +33,7 @@ const GameStatus = ({
   hintTeam = null,
   onHintClick,
   teams = null,
+  gameSettings = {},
 }) => {
   const { t } = useTranslation();
   const [pressing, setPressing] = useState(false);
@@ -65,6 +76,15 @@ const GameStatus = ({
       wasLongPress.current = true;
       setPressing(false);
       setProgress(0);
+
+      // Проверяем подтверждение перед переключением режима
+      if (needsCaptainConfirmation()) {
+        // Если не подтверждено или прошла неделя - открываем диалог
+        onCaptainHelperClick();
+        return;
+      }
+
+      // Подтверждение актуально - переключаем режим
       onCaptainModeToggle();
     }, PRESS_DURATION);
 
@@ -90,6 +110,8 @@ const GameStatus = ({
 
   const handleCaptainClick = () => {
     if (!pressing && !wasLongPress.current) {
+      // Короткий клик - всегда открываем диалог
+      // Диалог сам решит показывать форму или хелпер
       onCaptainHelperClick();
     }
     wasLongPress.current = false;
@@ -108,13 +130,15 @@ const GameStatus = ({
         <div className="grid grid-cols-[1fr_auto_1fr] gap-1 w-full">
           {/* Blue Team */}
           <div
-            className="h-10 flex items-center justify-between rounded-md bg-blue-600 px-1"
-            style={{ opacity: currentTeam === "blue" ? 1 : 0.4 }}
+            className={`h-10 flex items-center rounded-md bg-blue-600 px-1 ${
+              gameSettings?.simpleMode ? 'justify-center' : 'justify-between'
+            }`}
+            style={{ opacity: !gameSettings?.simpleMode && currentTeam === "blue" ? 1 : !gameSettings?.simpleMode ? 0.4 : 1 }}
           >
             <div className="flex items-center justify-center text-white min-w-[2rem]">
               <span className="text-2xl font-bold">{remainingCards.blue}</span>
             </div>
-            {teams?.blue && (
+            {!gameSettings?.simpleMode && teams?.blue && (
               <div className="flex flex-col items-center justify-center gap-0.5 text-white text-xs bg-blue-700 rounded h-[calc(100%-0.5rem)] px-1.5 min-w-[2.5rem]">
                 {teams.blue.captain ? (
                   <>
@@ -139,7 +163,7 @@ const GameStatus = ({
           {/* Menu Buttons */}
           <div className="flex items-center justify-center">
             <div className="flex gap-1">
-              {isCaptainConfirmed && (
+              {myRole === 'captain' && (
                 <button
                   className={`inline-flex items-center justify-center rounded-lg border border-gray-300 bg-transparent w-10 h-10 min-w-[40px] text-gray-900 hover:bg-gray-50 cursor-pointer transition-colors [-webkit-tap-highlight-color:transparent] ${
                     isCaptain ? "bg-gray-100 text-blue-600" : ""
@@ -191,7 +215,7 @@ const GameStatus = ({
                   </span>
                 )}
               </button>
-              {currentHint && onHintClick && (
+              {!gameSettings?.simpleMode && currentHint && onHintClick && (
                 <button
                   className={`inline-flex items-center justify-center rounded-lg border border-gray-300 bg-transparent w-10 h-10 min-w-[40px] text-gray-900 hover:bg-gray-50 cursor-pointer transition-colors [-webkit-tap-highlight-color:transparent] hint-button hint-${hintTeam} ${
                     isHintGlowing ? 'glowing' : ''
@@ -207,10 +231,12 @@ const GameStatus = ({
 
           {/* Red Team */}
           <div
-            className="h-10 flex items-center justify-between rounded-md bg-red-600 px-1"
-            style={{ opacity: currentTeam === "red" ? 1 : 0.4 }}
+            className={`h-10 flex items-center rounded-md bg-red-600 px-1 ${
+              gameSettings?.simpleMode ? 'justify-center' : 'justify-between'
+            }`}
+            style={{ opacity: !gameSettings?.simpleMode && currentTeam === "red" ? 1 : !gameSettings?.simpleMode ? 0.4 : 1 }}
           >
-            {teams?.red && (
+            {!gameSettings?.simpleMode && teams?.red && (
               <div className="flex flex-col items-center justify-center gap-0.5 text-white text-xs bg-red-700 rounded h-[calc(100%-0.5rem)] px-1.5 min-w-[2.5rem]">
                 {teams.red.captain ? (
                   <>

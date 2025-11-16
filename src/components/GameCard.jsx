@@ -2,6 +2,7 @@ import { useState, useEffect, memo } from "react";
 import Notification from "./Notification";
 import { useTranslation } from "../hooks/useTranslation";
 import { getBackNumber } from "../utils/cardBacks";
+import { validateCardReveal } from "../utils/cardValidation";
 
 const PRESS_DURATION = 1500;
 const PROGRESS_INTERVAL = 50;
@@ -22,7 +23,8 @@ const GameCard = ({
   currentTeam = "blue",
   teams = null,
   currentHint = null,
-  onHighlightIcon
+  onHighlightIcon,
+  gameSettings = {}
 }) => {
   const { t } = useTranslation();
   const [pressing, setPressing] = useState(false);
@@ -45,9 +47,8 @@ const GameCard = ({
   const getCardStyle = () => {
     const base = "game-card";
     const flip = flipped && !isCaptain ? " card-flipped" : "";
-    const colorClass =
-      revealed || isCaptain ? ` card-${color}` : " card-unrevealed";
-    
+    const colorClass = revealed || isCaptain ? ` card-${color}` : " card-unrevealed";
+
     // Добавляем класс рубашки для нераскрытых карт
     let backClass = "";
 	if (gameKey) {
@@ -59,70 +60,44 @@ const GameCard = ({
   };
 
   const startPress = (e) => {
-    if (revealed) return;
+    console.log('[GameLoad] Card clicked - checking gameSettings', {
+      gameSettings,
+      simpleMode: gameSettings?.simpleMode,
+      hasGameSettings: !!gameSettings
+    });
 
-    // Проверка авторизации ПЕРВАЯ - открываем чат
-    if (!isAuthenticated) {
+    // Валидация через единую функцию
+    const error = validateCardReveal({
+      revealed,
+      isAuthenticated,
+      simpleMode: gameSettings?.simpleMode,
+      isCaptain,
+      myRole,
+      teams,
+      myTeam,
+      currentTeam,
+      currentHint,
+    });
+
+    // Если есть ошибка - обрабатываем
+    if (error) {
       e.preventDefault();
-      if (onAuthRequired) {
+
+      // Специальная обработка для авторизации
+      if (error.code === 'NOT_AUTHENTICATED' && onAuthRequired) {
         onAuthRequired();
+        return;
       }
-      return;
-    }
 
-    // Капитаны не могут открывать карточки
-    if (isCaptain || myRole === 'captain') {
-      e.preventDefault();
-      setNotificationMessage(t('notifications.captainsCannotPlay'));
+      // Показываем уведомление
+      setNotificationMessage(t(error.message));
       setShowNotification(true);
-      onHighlightIcon?.('captain');
-      return;
-    }
 
-    // Проверка наличия капитанов в обеих командах
-    const hasBlueCaptain = teams?.blue?.captain !== null;
-    const hasRedCaptain = teams?.red?.captain !== null;
+      // Подсвечиваем иконку если нужно
+      if (error.highlight) {
+        onHighlightIcon?.(error.highlight);
+      }
 
-    if (!hasBlueCaptain || !hasRedCaptain) {
-      e.preventDefault();
-      setNotificationMessage(t('notifications.captainsRequired'));
-      setShowNotification(true);
-      onHighlightIcon?.('menu');
-      return;
-    }
-
-    // Проверка что выбрана команда
-    if (!myTeam) {
-      e.preventDefault();
-      setNotificationMessage(t('notifications.chooseTeam'));
-      setShowNotification(true);
-      onHighlightIcon?.('menu');
-      return;
-    }
-
-    // Наблюдатели не могут открывать карточки
-    if (myTeam === 'spectator') {
-      e.preventDefault();
-      setNotificationMessage(t('notifications.spectatorsCannotPlay'));
-      setShowNotification(true);
-      onHighlightIcon?.('menu');
-      return;
-    }
-
-    // Проверка что сейчас ход команды игрока
-    if (myTeam !== currentTeam) {
-      e.preventDefault();
-      setNotificationMessage(t('notifications.notYourTurn'));
-      setShowNotification(true);
-      return;
-    }
-
-    // Проверка что капитан дал шифровку
-    if (!currentHint) {
-      e.preventDefault();
-      setNotificationMessage(t('notifications.waitingForHint'));
-      setShowNotification(true);
-      onHighlightIcon?.('captain');
       return;
     }
 
@@ -206,6 +181,7 @@ export default memo(GameCard, (prevProps, nextProps) => {
     prevProps.isAuthenticated === nextProps.isAuthenticated &&
     prevProps.currentTeam === nextProps.currentTeam &&
     prevProps.teams === nextProps.teams &&
-    prevProps.currentHint === nextProps.currentHint
+    prevProps.currentHint === nextProps.currentHint &&
+    prevProps.gameSettings?.simpleMode === nextProps.gameSettings?.simpleMode
   );
 });

@@ -98,12 +98,12 @@ const CaptainDialog = ({
   isOpen,
   onClose,
   onConfirm,
-  isCaptainConfirmed,
   gameState,
   myTeam,
   gameKey,
   userId,
   username,
+  gameSettings = {},
 }) => {
   const { t } = useTranslation();
   const [phrase, setPhrase] = useState("");
@@ -119,6 +119,16 @@ const CaptainDialog = ({
 
   const [hintWord, setHintWord] = useState("");
   const [hintNumber, setHintNumber] = useState("1");
+
+  // Проверка подтверждения капитана через localStorage (1 раз в неделю)
+  const [needsConfirmation, setNeedsConfirmation] = useState(() => {
+    const lastConfirmed = localStorage.getItem('codenames-captain-confirmed');
+    if (!lastConfirmed) return true;
+
+    const weekInMs = 7 * 24 * 60 * 60 * 1000;
+    const timeSinceConfirmation = Date.now() - parseInt(lastConfirmed, 10);
+    return timeSinceConfirmation > weekInMs;
+  });
 
   const displayedTeam = showingMyTeam ? myTeam : (myTeam === 'blue' ? 'red' : 'blue');
   const opponentTeam = myTeam === 'blue' ? 'red' : 'blue';
@@ -248,9 +258,9 @@ const CaptainDialog = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-0 sm:p-4">
-      <div className={`flex flex-col h-full sm:h-auto sm:max-h-[calc(100vh-2rem)] w-full ${isCaptainConfirmed ? 'max-w-2xl' : 'max-w-md'} bg-white sm:rounded-lg`}>
+      <div className={`flex flex-col h-full sm:h-auto sm:max-h-[calc(100vh-2rem)] w-full ${needsConfirmation ? 'max-w-md' : 'max-w-2xl'} bg-white sm:rounded-lg`}>
 
-        {!isCaptainConfirmed ? (
+        {needsConfirmation ? (
           <>
             {/* HEADER */}
             <div className="captain-dialog-header flex items-center justify-between border-b border-gray-200 px-3 sm:px-4">
@@ -312,6 +322,9 @@ const CaptainDialog = ({
                     const expectedPhrase = t('captainDialog.confirmationPhrase').toUpperCase();
 
                     if (normalizedPhrase === expectedPhrase) {
+                      // Сохраняем время подтверждения в localStorage
+                      localStorage.setItem('codenames-captain-confirmed', Date.now().toString());
+                      setNeedsConfirmation(false);
                       onConfirm();
                       setPhrase("");
                       setPhraseError(false);
@@ -355,7 +368,7 @@ const CaptainDialog = ({
                 </div>
               </div>
 
-              {!gameState?.currentHint && (
+              {!gameSettings?.simpleMode && !gameState?.currentHint && (
                 <div className="space-y-1 sm:space-y-2">
                   <label className="block text-sm font-medium text-gray-900">
                     {t('hintDialog.giveHintLabel')}
