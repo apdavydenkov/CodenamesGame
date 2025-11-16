@@ -11,7 +11,6 @@ import HintDialog from "./components/dialogs/HintDialog";
 import MetaTags from "./components/MetaTags";
 import { validateCardReveal } from "./utils/cardValidation";
 import Notification from "./components/Notification";
-import DebugLogger from "./components/DebugLogger";
 import {
   generateGameFromKey,
   generateNewKey,
@@ -46,10 +45,7 @@ const App = () => {
   const [showChatDialog, setShowChatDialog] = useState(false);
   const [activeChatTab, setActiveChatTab] = useState('game'); // 'game' или 'global'
   const [showAuthDialog, setShowAuthDialog] = useState(false);
-  const [currentKey, setCurrentKey] = useState(() => {
-    console.log('[GameLoad] Initializing currentKey state');
-    return "";
-  });
+  const [currentKey, setCurrentKey] = useState("");
   const [isServerConnected, setIsServerConnected] = useState(false);
 
   // Состояние авторизации
@@ -243,14 +239,6 @@ const App = () => {
 
   const handleToggleSimpleMode = () => {
     if (!userAuth.userId) return;
-
-    console.log('[GameLoad] Toggle simple mode', {
-      from: simpleMode,
-      to: !simpleMode,
-      gameKey: currentKey,
-      userId: userAuth.userId
-    });
-
     gameSocket.socket.emit('TOGGLE_SIMPLE_MODE', {
       gameKey: currentKey,
       userId: userAuth.userId,
@@ -325,11 +313,6 @@ const App = () => {
 
       // Обновляем простой режим
       if (newState.simpleMode !== undefined) {
-        console.log('[GameLoad] Simple mode updated from server', {
-          oldValue: simpleMode,
-          newValue: newState.simpleMode,
-          gameKey: currentKey
-        });
         setSimpleMode(newState.simpleMode);
       }
 
@@ -378,18 +361,7 @@ const App = () => {
     });
 
     gameSocket.socket.on("GAME_SETTINGS_UPDATE", (data) => {
-      console.log('[GameLoad] GAME_SETTINGS_UPDATE received', {
-        rawData: data,
-        currentSimpleMode: simpleMode,
-        currentKey: currentKey
-      });
-
       if (data.simpleMode !== undefined) {
-        console.log('[GameLoad] GAME_SETTINGS_UPDATE - simple mode', {
-          oldValue: simpleMode,
-          newValue: data.simpleMode,
-          gameKey: currentKey
-        });
         setSimpleMode(data.simpleMode);
       }
       if (data.teamsLocked !== undefined) setTeamsLocked(data.teamsLocked);
@@ -446,8 +418,6 @@ const App = () => {
       const keyFromUrl = urlParams.get("key");
 
       if (keyFromUrl) {
-        console.log('[GameLoad] Loading game from URL key', { key: keyFromUrl });
-
         const dictionaryIndex = getDictionaryIndexFromKey(keyFromUrl);
         let keyDictionary;
 
@@ -466,14 +436,7 @@ const App = () => {
           );
 
           if (gameData) {
-            console.log('[GameLoad] Game loaded from URL - JOIN_GAME', {
-              key: keyFromUrl,
-              isAI: isAIKey(keyFromUrl),
-              dictionaryIndex
-            });
-
             setCurrentDictionary(keyDictionary);
-            console.log('[GameLoad] Setting currentKey', { newKey: keyFromUrl });
             setCurrentKey(keyFromUrl);
 
             setGameState({
@@ -495,9 +458,6 @@ const App = () => {
         }
       }
 
-      // Если ключ невалидный или его нет - создаем новую игру
-      console.log('[GameLoad] No URL key - creating new game (auto-load)');
-
       const dictionaryIndex = 0; // Первый словарь
       const newKey = generateNewKey(dictionaryIndex);
       const gameData = await generateGameFromKey(
@@ -507,10 +467,7 @@ const App = () => {
       );
 
       if (gameData) {
-        console.log('[GameLoad] Auto-created game', { key: newKey, dictionaryIndex });
-
         setCurrentDictionary(dictionary);
-        console.log('[GameLoad] Setting currentKey', { newKey });
         setCurrentKey(newKey);
 
         const url = new URL(window.location);
@@ -714,12 +671,6 @@ const App = () => {
 
   const startNewGame = async (key = null) => {
     if (!currentDictionary) return;
-
-    console.log('[GameLoad] startNewGame called', {
-      hasKey: !!key,
-      key: key,
-      source: key ? 'KeyDialog' : 'NewGame button'
-    });
 
     let gameKey = key;
     let newGameData;
@@ -1114,9 +1065,6 @@ const App = () => {
           onClose={() => setGameError(null)}
         />
       )}
-
-      <DebugLogger />
-
     </div>
   );
 };

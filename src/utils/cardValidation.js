@@ -31,13 +31,11 @@ export function validateCardReveal({
 
   // Проверка 1: Карточка уже открыта
   if (revealed) {
-    console.log('[CardValidation] Already revealed', logData);
     return null; // Просто игнорируем, не ошибка
   }
 
   // Проверка 2: Авторизация (всегда)
   if (!isAuthenticated) {
-    console.log('[CardValidation] Not authenticated', logData);
     return {
       code: 'NOT_AUTHENTICATED',
       message: 'notifications.enterName',
@@ -47,7 +45,6 @@ export function validateCardReveal({
 
   // В простом режиме - все остальные проверки пропускаем
   if (simpleMode) {
-    console.log('[CardValidation] Simple mode - ALLOWED', logData);
     return null; // Можно открывать
   }
 
@@ -55,7 +52,6 @@ export function validateCardReveal({
 
   // Проверка 3: Капитаны не могут открывать
   if (isCaptain || myRole === 'captain') {
-    console.log('[CardValidation] Captain cannot play', logData);
     return {
       code: 'CAPTAIN_CANNOT_PLAY',
       message: 'notifications.captainsCannotPlay',
@@ -68,7 +64,6 @@ export function validateCardReveal({
   const hasRedCaptain = Boolean(teams?.red?.captain);
 
   if (!hasBlueCaptain || !hasRedCaptain) {
-    console.log('[CardValidation] Captains required', { ...logData, hasBlueCaptain, hasRedCaptain });
     return {
       code: 'CAPTAINS_REQUIRED',
       message: 'notifications.captainsRequired',
@@ -78,7 +73,6 @@ export function validateCardReveal({
 
   // Проверка 5: Выбрана команда
   if (!myTeam) {
-    console.log('[CardValidation] No team selected', logData);
     return {
       code: 'NO_TEAM',
       message: 'notifications.chooseTeam',
@@ -88,7 +82,6 @@ export function validateCardReveal({
 
   // Проверка 6: Зрители не могут играть
   if (myTeam === 'spectator') {
-    console.log('[CardValidation] Spectator cannot play', logData);
     return {
       code: 'SPECTATOR_CANNOT_PLAY',
       message: 'notifications.spectatorsCannotPlay',
@@ -98,7 +91,6 @@ export function validateCardReveal({
 
   // Проверка 7: Сейчас ход команды игрока
   if (myTeam !== currentTeam) {
-    console.log('[CardValidation] Not your turn', logData);
     return {
       code: 'NOT_YOUR_TURN',
       message: 'notifications.notYourTurn',
@@ -107,7 +99,6 @@ export function validateCardReveal({
 
   // Проверка 8: Капитан дал шифровку
   if (!currentHint) {
-    console.log('[CardValidation] Waiting for hint', logData);
     return {
       code: 'WAITING_FOR_HINT',
       message: 'notifications.waitingForHint',
@@ -116,6 +107,5 @@ export function validateCardReveal({
   }
 
   // Все проверки пройдены
-  console.log('[CardValidation] All checks passed - ALLOWED', logData);
   return null;
 }

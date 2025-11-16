@@ -60,12 +60,6 @@ const GameCard = ({
   };
 
   const startPress = (e) => {
-    console.log('[GameLoad] Card clicked - checking gameSettings', {
-      gameSettings,
-      simpleMode: gameSettings?.simpleMode,
-      hasGameSettings: !!gameSettings
-    });
-
     // Валидация через единую функцию
     const error = validateCardReveal({
       revealed,
