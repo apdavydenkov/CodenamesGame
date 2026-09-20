@@ -26,6 +26,7 @@
   "scripts": {
     "dev": "npm run sync-locales && npm run generate-sitemaps && vite",
     "build": "vite build",
+    "deploy": "npm run build && bash scripts/deploy-yos.sh",
     "preview": "vite preview",
     "clean": "rm -rf dist node_modules",
     "generate-sitemaps": "node src/utils/generateSitemaps.js",

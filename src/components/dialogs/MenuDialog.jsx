@@ -200,7 +200,7 @@ const MenuDialog = ({
                   <button
                     onClick={() => onToggleSimpleMode?.()}
                     disabled={isGeneratingAI}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
                       gameSettings?.simpleMode ? 'bg-gray-900' : 'bg-gray-200'
                     }`}
                   >

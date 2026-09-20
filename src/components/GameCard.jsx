@@ -1,7 +1,7 @@
 import { useState, useEffect, memo } from "react";
 import Notification from "./Notification";
 import { useTranslation } from "../hooks/useTranslation";
-import { getBackNumber } from "../utils/cardBacks";
+import { getCardBack } from "../utils/cardBacks";
 import { validateCardReveal } from "../utils/cardValidation";
 
 const PRESS_DURATION = 1500;
@@ -49,14 +49,19 @@ const GameCard = ({
     const flip = flipped && !isCaptain ? " card-flipped" : "";
     const colorClass = revealed || isCaptain ? ` card-${color}` : " card-unrevealed";
 
-    // Добавляем класс рубашки для нераскрытых карт
-    let backClass = "";
-	if (gameKey) {
-	  const backNumber = getBackNumber(gameKey, position, color);
-	  backClass = ` card-back-${color}-${backNumber}`;
-	}
-    
+    const backClass = gameKey ? " card-back" : "";
+
     return base + flip + colorClass + backClass;
+  };
+
+  // Картинка рубашки и её зеркальность — через CSS-переменные, см. game.css
+  const getBackVars = () => {
+    if (!gameKey) return {};
+    const { number, mirrored } = getCardBack(gameKey, position, color);
+    return {
+      "--card-back": `url('/images/card-${color}-back-${number}.webp')`,
+      "--card-back-flip": mirrored ? -1 : 1,
+    };
   };
 
   const startPress = (e) => {
@@ -133,7 +138,8 @@ const GameCard = ({
         className={getCardStyle()}
         onPointerDown={startPress}
         style={{
-          animationDelay: `${position * 0.03}s` // Задержка 30ms между карточками (25 карточек = 750ms всего)
+          animationDelay: `${position * 0.03}s`, // Задержка 30ms между карточками (25 карточек = 750ms всего)
+          ...getBackVars()
         }}
       >
         <div

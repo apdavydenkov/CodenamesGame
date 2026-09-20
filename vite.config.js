@@ -8,7 +8,7 @@ export default defineConfig({
     host: true,
     port: parseInt(process.env.VITE_DEV_PORT || '5175'),
     allowedHosts: [
-      'codenames-dev.local.wddt.ru',
+      'codenames-dev.vps.wddt.ru',
       'localhost',
       '127.0.0.1'
     ],
