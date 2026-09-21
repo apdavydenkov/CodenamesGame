@@ -1,4 +1,4 @@
-import { getAIGameByKey } from '../services/aiService';
+import { api } from '../services/api';
 
 // Функция для создания детерминированного рандома на основе сида
 function mulberry32(a) {
@@ -40,7 +40,7 @@ export async function generateAIGameFromKey(key) {
   }
 
   // Загружаем слова из файла
-  const aiGame = await getAIGameByKey(key);
+  const aiGame = await api.aiGame(key).catch(() => null);
   if (!aiGame) {
     return null;
   }

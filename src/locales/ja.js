@@ -1,7 +1,6 @@
 export default {
   "language": {
-    "name": "日本語",
-    "code": "ja"
+    "name": "日本語"
   },
   "meta": {
     "title": "Codenames Game - オンラインチームゲーム | コードネーム",
@@ -18,48 +17,32 @@ export default {
     "seoDescription": "人気のチームゲーム。2人のリーダーが各チームに連想のヒントを出し、すべての味方の単語を見つけ、暗殺者に触れないようにします。ブラウザで無料でプレイ、インストール不要。ゲームを作成し、リンクで友達を招待しよう。"
   },
   "menu": {
-    "title": "ゲームメニュー",
-    "captainMode": "リーダーモード",
-    "dictionary": "辞書：",
+    "gameName": "",
     "aiTopic": "テーマ（または複数）と希望言語（または複数...そう、複数の言語）：",
     "aiTopicPlaceholder": "例：英語の食べ物、韓国語のハリーポッター",
     "newGame": "新しいゲーム",
-    "gameKey": "ゲームキー",
     "shareGame": "このゲームを共有",
     "close": "閉じる",
-    "generating": "ゲーム生成中...",
-    "serverOnline": "Online",
-    "serverStarting": "Offline",
+    "generating": "",
+    "serverOnline": "",
+    "serverStarting": "",
     "information": "情報",
-    "teamSelection": "",
     "blueTeam": "",
     "redTeam": "",
-    "spectator": "",
-    "becomeCaptain": "",
-    "leaveCaptain": "",
     "yourTeam": "",
-    "yourRole": "",
-    "rolePlayer": "",
-    "roleCaptain": "",
-    "roleSpectator": "",
-    "noTeam": "",
     "ownerActions": "",
-    "lockTeams": "",
-    "unlockTeams": "",
-    "makePrivate": "",
-    "makePublic": "",
-    "notSelected": "",
+    "teamsToggle": "",
+    "privateToggle": "",
+    "teamsToggleHint": "",
+    "privateToggleHint": "",
+    "observer": "",
+    "joinRoom": "",
+    "advancedMode": "",
+    "advancedModeHint": "",
+    "roleCaptain": "",
+    "rolePlayer": "",
     "andCaptain": "",
-    "teamsStatus": "",
-    "gameStatus": "",
-    "teamsOpen": "",
-    "teamsClosed": "",
-    "gamePublic": "",
-    "gamePrivate": "",
-    "gameMode": "",
-    "simpleMode": "",
-    "simpleModeOn": "",
-    "simpleModeHint": ""
+    "startGame": ""
   },
   "share": {
     "copyLink": "リンクをコピー",
@@ -70,45 +53,28 @@ export default {
     "shareText": "Codenamesをプレイしよう！🎮\\n"
   },
   "keyDialog": {
-    "title": "ゲームキー",
-    "description": "キーを入力するか+ボタンで新しいキーを作成。メインメニューで選択した辞書に従ってゲームが作成されます。AIゲームを作成するには：メインメニューで「ニューラルネットワーク」辞書を選択し、テーマを指定して「新しいゲーム」をクリック。",
-    "currentKey": "現在のキー：",
-    "enterKey": "ゲームキーを入力：",
     "keyPlaceholder": "БАКОСУГ または БАКОСУН",
-    "join": "参加",
-    "back": "戻る",
     "invalidKey": "無効なゲームキー",
-    "aiGameNotFound": "AIゲームが見つかりません",
-    "aiKey": "AIキー（ニューラルネットワーク辞書）",
-    "newKey": "新しい通常キー",
-    "aiKeysInMenu": "AIキーはメインメニューで作成"
+    "join": "",
+    "aiGameNotFound": "AIゲームが見つかりません"
   },
   "captainDialog": {
     "title": "リーダーモード",
     "description": "リーダーモードでは、すべてのカードの色が見えます。チームにカードの色をヒントとして伝えることは禁止されています - ゲームの楽しみを損ないます。",
-    "warning": "注意！リーダーモードを有効にした後は、通常のプレイヤーとして単語を当てることはできません。",
     "confirm": "確認",
     "cancel": "キャンセル",
-    "currentTeam": "現在のチーム：",
-    "blueTeam": "青チーム",
-    "redTeam": "赤チーム",
     "remaining": "残り",
-    "cards": "枚",
-    "helperTitle": "リーダーヘルパー",
-    "helperTip": "ボタンを押し続けて",
-    "helperInstructions": "1秒間でゲームフィールドモードを切り替え。相手チームを折りたたみ、単語をドラッグでき、スイッチでチームを変更できます。",
+    "helperTitle": "",
     "enterPhrase": "確認フレーズを入力：",
     "phrasePlaceholder": "フレーズ",
     "assassinWord": "暗殺者の単語",
     "confirmationPhrase": "リーダー",
     "myWords": "",
     "opponentWords": "",
-    "myTeam": "",
-    "opponentTeam": ""
+    "helperHint": ""
   },
   "winDialog": {
     "title": "ゲーム終了！",
-    "winner": "勝利チーム：",
     "blueTeam": "青チーム",
     "redTeam": "赤チーム",
     "teamWon": "チームが勝利し、すべての味方カードを開きました！",
@@ -117,21 +83,15 @@ export default {
     "return": "フィールドに戻る"
   },
   "status": {
-    "blueTeam": "青チーム：",
-    "redTeam": "赤チーム：",
-    "cards": "枚",
-    "captainHelper": "リーダーヘルパー",
+    "captainHelper": "",
     "menu": "メニュー",
     "fullscreen": "フルスクリーン",
     "chat": "チャット",
-    "iosFullscreenInstructions": ""
+    "hint": ""
   },
   "notifications": {
     "linkCopied": "リンクをコピーしました！",
-    "keyCopied": "キーをコピーしました",
-    "pressAndHold": "カードを長押しして開く",
     "chooseTeam": "",
-    "spectatorsCannotPlay": "",
     "notYourTurn": "",
     "captainsCannotPlay": "",
     "captainsRequired": "",
@@ -141,26 +101,24 @@ export default {
     "gamePublic": "",
     "privateGameTitle": "",
     "privateGameMessage": "",
-    "waitingForHint": ""
+    "waitingForHint": "",
+    "seat_captain_blue": "",
+    "seat_captain_red": "",
+    "seat_player_blue": "",
+    "seat_player_red": "",
+    "seat_spectator": "",
+    "holdToReveal": ""
   },
   "errors": {
     "enterTopic": "AIゲームを作成するにはテーマを入力してください",
-    "aiGenerationError": "AIゲーム生成エラー",
-    "copyLinkFailed": "リンクのコピーに失敗しました"
+    "aiGenerationError": "AIゲーム生成エラー"
   },
-  "game": {
-    "confirmReveal": "カードを開きますか？",
-    "confirm": "開く",
-    "cancel": "キャンセル"
-  },
+  "game": {},
   "dictionaries": {
-    "aiDictionary": "ニューラルネットワーク（数百万語、任意の言語）",
-    "officialDictionary": "GaGa Games公式辞書"
+    "aiDictionary": "ニューラルネットワーク（数百万語、任意の言語）"
   },
   "languageDialog": {
-    "title": "言語選択",
-    "selectLanguage": "インターフェース言語を選択：",
-    "close": "閉じる"
+    "selectLanguage": "インターフェース言語を選択："
   },
   "info": {
     "title": "アプリについて",
@@ -178,39 +136,21 @@ export default {
     "step3": "リーダーがヒントを出し、プレイヤーが推測",
     "step4": "すべての味方カードを最初に開いたチームの勝利",
     "aiGames": "AIゲーム",
-    "aiDescription": "任意のテーマ（宇宙、映画、食べ物...）を入力して",
-    "aiWords": "ニューラルネットワークが生成した25の独特な単語を入手！"
+    "aiDescription": ""
   },
-  "teamSwitch": {
-    "myTeam": "私のチーム："
-  },
+  "teamSwitch": {},
   "common": {
     "loading": "読み込み中...",
-    "error": "エラー",
-    "retry": "再試行",
-    "ok": "OK",
-    "yes": "はい",
-    "no": "いいえ",
-    "copy": "コピー",
-    "paste": "貼り付け",
-    "clear": "クリア",
     "close": "閉じる"
   },
   "chat": {
-    "title": "チャット",
     "hello": "こんにちは",
-    "loggedInAs": "ログイン名",
     "logout": "ログアウト",
     "noMessages": "まだメッセージがありません",
     "typeMessage": "メッセージを入力...",
-    "enterName": "名前を入力してください",
-    "messageTooLong": "メッセージが長すぎます（最大500文字）",
     "tabGame": "ゲームチャット",
     "tabGlobal": "グローバル",
     "pinCopied": "PINコピーしました！",
-    "changeNamePrompt": "新しい名前を入力:",
-    "changeNameHint": "クリックして名前を変更",
-    "nameChanged": "名前を変更しました！",
     "nameChangeError": "名前の変更エラー",
     "changeName": "名前を変更",
     "settings": "設定",
@@ -225,8 +165,7 @@ export default {
     "winRate": "勝率",
     "favoriteRole": "お気に入りの役割",
     "inDevelopment": "開発中",
-    "backToChat": "チャットへ",
-    "backToGame": "ゲームへ"
+    "pinMissing": ""
   },
   "auth": {
     "title": "チャットログイン",
@@ -248,9 +187,7 @@ export default {
     "cancelBtn": "キャンセル",
     "loginBtn": "ログイン",
     "backBtn": "戻る",
-    "checkError": "名前の確認エラー",
-    "registerError": "登録エラー",
-    "verifyError": "PIN確認エラー"
+    "checkError": "名前の確認エラー"
   },
   "hintDialog": {
     "wordExpired": "",
@@ -260,10 +197,10 @@ export default {
     "giveHintLabel": "",
     "wordPlaceholder": "",
     "numberPlaceholder": "",
-    "numberHint": "",
     "giveHintButton": "",
     "titleBlue": "",
     "titleRed": "",
-    "wordVisibleCountdown": ""
+    "wordVisibleCountdown": "",
+    "giveHintHint": ""
   }
 };

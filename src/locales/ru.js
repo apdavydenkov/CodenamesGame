@@ -1,7 +1,6 @@
 export default {
   "language": {
-    "name": "Русский",
-    "code": "ru"
+    "name": "Русский"
   },
   "meta": {
     "title": "Codenames Game - Онлайн игра для компании | Кодовые имена",
@@ -18,48 +17,32 @@ export default {
     "seoDescription": "Популярная командная игра, в которой два капитана дают своим командам ассоциации, чтобы найти все свои слова и не наткнуться на убийцу. Играйте бесплатно в браузере без установки. Создайте игру и пригласите друзей по ссылке."
   },
   "menu": {
-    "title": "Меню игры",
-    "captainMode": "Режим капитана",
-    "dictionary": "Словарь:",
+    "gameName": "",
     "aiTopic": "Тема (или несколько) и желаемый язык (или несколько... да-да несколько языков). Генерация длится ~15 сек:",
     "aiTopicPlaceholder": "Например: еда на английском языке, Гарри Поттер на корейском",
     "newGame": "Новая игра",
-    "gameKey": "Ключ игры",
     "shareGame": "Поделиться этой игрой",
     "close": "Закрыть",
-    "generating": "Генерирую игру...",
-    "serverOnline": "Онлайн",
-    "serverStarting": "Офлайн",
+    "generating": "",
+    "serverOnline": "",
+    "serverStarting": "",
     "information": "Информация",
-    "teamSelection": "",
     "blueTeam": "",
     "redTeam": "",
-    "spectator": "",
-    "becomeCaptain": "",
-    "leaveCaptain": "",
     "yourTeam": "",
-    "yourRole": "",
-    "rolePlayer": "",
-    "roleCaptain": "",
-    "roleSpectator": "",
-    "noTeam": "",
     "ownerActions": "",
-    "lockTeams": "",
-    "unlockTeams": "",
-    "makePrivate": "",
-    "makePublic": "",
-    "notSelected": "",
+    "teamsToggle": "",
+    "privateToggle": "",
+    "teamsToggleHint": "",
+    "privateToggleHint": "",
+    "observer": "",
+    "joinRoom": "",
+    "advancedMode": "",
+    "advancedModeHint": "",
+    "roleCaptain": "",
+    "rolePlayer": "",
     "andCaptain": "",
-    "teamsStatus": "",
-    "gameStatus": "",
-    "teamsOpen": "",
-    "teamsClosed": "",
-    "gamePublic": "",
-    "gamePrivate": "",
-    "gameMode": "",
-    "simpleMode": "",
-    "simpleModeOn": "",
-    "simpleModeHint": ""
+    "startGame": ""
   },
   "share": {
     "copyLink": "Копировать ссылку",
@@ -70,45 +53,28 @@ export default {
     "shareText": "Давай сыграем в Codenames! 🎮\\n"
   },
   "keyDialog": {
-    "title": "Ключ игры",
-    "description": "Введите ключ или создайте новый кнопкой +. Будет создана игра согласно выбранному словарю в главном меню. Для создания нейросетевых игр: выберите словарь \"Нейросеть\" в главном меню, укажите тему и нажмите \"Новая игра\".",
-    "currentKey": "Текущий ключ:",
-    "enterKey": "Введите ключ игры:",
     "keyPlaceholder": "БАКОСУГ или БАКОСУН",
-    "join": "Присоединиться",
-    "back": "Назад",
     "invalidKey": "Неверный ключ игры",
-    "aiGameNotFound": "ИИ-игра не найдена",
-    "aiKey": "ИИ-ключ (нейросетевой словарь)",
-    "newKey": "Новый обычный ключ",
-    "aiKeysInMenu": "ИИ-ключи создаются в главном меню"
+    "join": "",
+    "aiGameNotFound": "ИИ-игра не найдена"
   },
   "captainDialog": {
     "title": "Режим капитана",
     "description": "В режиме капитана вы будете видеть цвета всех карточек. Помните, что подсказывать команде цвета карточек запрещено - это испортит удовольствие от игры.",
-    "warning": "Внимание! После активации режима капитана вы не сможете участвовать в отгадывании слов как обычный игрок.",
     "confirm": "Подтвердить",
     "cancel": "Отмена",
-    "currentTeam": "Текущая команда:",
-    "blueTeam": "Синие",
-    "redTeam": "Красные",
     "remaining": "Осталось",
-    "cards": "карт",
-    "helperTitle": "Помощник капитана",
-    "helperTip": "Удерживайте кнопку",
-    "helperInstructions": "в течение 1 секунды для переключения режима игрового поля. Команду противника можно свернуть, слова можно перетаскивать, переключатель может изменить команду.",
+    "helperTitle": "",
     "enterPhrase": "Введите фразу для подтверждения:",
     "phrasePlaceholder": "Фраза",
     "assassinWord": "Слово убийцы",
     "confirmationPhrase": "КАПИТАН",
     "myWords": "",
     "opponentWords": "",
-    "myTeam": "",
-    "opponentTeam": ""
+    "helperHint": ""
   },
   "winDialog": {
     "title": "Игра окончена!",
-    "winner": "Победила команда:",
     "blueTeam": "Синяя",
     "redTeam": "Красная",
     "teamWon": "команда победила, раскрыв все свои карты!",
@@ -117,21 +83,15 @@ export default {
     "return": "Вернуться к полю"
   },
   "status": {
-    "blueTeam": "Синяя команда:",
-    "redTeam": "Красная команда:",
-    "cards": "карт",
-    "captainHelper": "Помощник капитана",
+    "captainHelper": "",
     "menu": "Меню",
     "fullscreen": "Полный экран",
     "chat": "Чат",
-    "iosFullscreenInstructions": ""
+    "hint": ""
   },
   "notifications": {
     "linkCopied": "Ссылка скопирована!",
-    "keyCopied": "Ключ скопирован",
-    "pressAndHold": "Удерживайте карточку для открытия",
     "chooseTeam": "",
-    "spectatorsCannotPlay": "",
     "notYourTurn": "",
     "captainsCannotPlay": "",
     "captainsRequired": "",
@@ -141,21 +101,21 @@ export default {
     "gamePublic": "",
     "privateGameTitle": "",
     "privateGameMessage": "",
-    "waitingForHint": ""
+    "waitingForHint": "",
+    "seat_captain_blue": "",
+    "seat_captain_red": "",
+    "seat_player_blue": "",
+    "seat_player_red": "",
+    "seat_spectator": "",
+    "holdToReveal": ""
   },
   "errors": {
     "enterTopic": "Введите тему для создания ИИ-игры",
-    "aiGenerationError": "Ошибка при генерации ИИ-игры",
-    "copyLinkFailed": "Не удалось скопировать ссылку"
+    "aiGenerationError": "Ошибка при генерации ИИ-игры"
   },
-  "game": {
-    "confirmReveal": "Открыть карточку?",
-    "confirm": "Открыть",
-    "cancel": "Отмена"
-  },
+  "game": {},
   "dictionaries": {
-    "aiDictionary": "Нейросеть (миллионы слов, любой язык)",
-    "officialDictionary": "Официальный словарь GaGa Games"
+    "aiDictionary": "Нейросеть (миллионы слов, любой язык)"
   },
   "info": {
     "title": "О приложении",
@@ -173,44 +133,24 @@ export default {
     "step3": "Капитаны дают подсказки, игроки угадывают",
     "step4": "Побеждает команда, первая открывшая все свои карты",
     "aiGames": "ИИ-игры",
-    "aiDescription": "Введите любую тему (космос, фильмы, еда...) и получите",
-    "aiWords": "уникальный набор из 25 слов, сгенерированных нейросетью!"
+    "aiDescription": ""
   },
-  "teamSwitch": {
-    "myTeam": "Моя команда:"
-  },
+  "teamSwitch": {},
   "common": {
     "loading": "Загрузка...",
-    "error": "Ошибка",
-    "retry": "Повторить",
-    "ok": "OK",
-    "yes": "Да",
-    "no": "Нет",
-    "copy": "Копировать",
-    "paste": "Вставить",
-    "clear": "Очистить",
     "close": "Закрыть"
   },
   "languageDialog": {
-    "title": "Выбор языка",
-    "selectLanguage": "Выберите язык интерфейса:",
-    "close": "Закрыть"
+    "selectLanguage": "Выберите язык интерфейса:"
   },
   "chat": {
-    "title": "Чат",
     "noMessages": "Пока нет сообщений",
     "typeMessage": "Введите сообщение...",
-    "enterName": "Пожалуйста, введите ваше имя",
-    "messageTooLong": "Сообщение слишком длинное (максимум 500 символов)",
     "tabGame": "Чат игры",
     "tabGlobal": "Глобальный",
-    "loggedInAs": "Вы вошли как",
     "logout": "Выйти",
     "pinCopied": "PIN-код скопирован!",
     "hello": "Привет",
-    "changeNamePrompt": "Введите новое имя:",
-    "changeNameHint": "Нажмите чтобы изменить имя",
-    "nameChanged": "Имя успешно изменено!",
     "nameChangeError": "Ошибка при изменении имени",
     "changeName": "Изменить имя",
     "settings": "Настройки",
@@ -225,8 +165,7 @@ export default {
     "winRate": "Процент побед",
     "favoriteRole": "Любимая роль",
     "inDevelopment": "В разработке",
-    "backToChat": "К чату",
-    "backToGame": "К игре"
+    "pinMissing": ""
   },
   "auth": {
     "title": "Вход в игру",
@@ -246,8 +185,6 @@ export default {
     "loginBtn": "Войти",
     "backBtn": "Назад",
     "checkError": "Ошибка при проверке имени",
-    "registerError": "Ошибка при регистрации",
-    "verifyError": "Ошибка при проверке PIN-кода",
     "nameHint": "После регистрации вы получите PIN-код для восстановления доступа. К вашему профилю будет привязана вся игровая статистика и история сообщений.",
     "testWarning": "Это тестовый режим. Аккаунты могут быть удалены в процессе разработки.",
     "userExistsEnd": "уже зарегистрирован."
@@ -260,10 +197,10 @@ export default {
     "giveHintLabel": "",
     "wordPlaceholder": "",
     "numberPlaceholder": "",
-    "numberHint": "",
     "giveHintButton": "",
     "titleBlue": "",
     "titleRed": "",
-    "wordVisibleCountdown": ""
+    "wordVisibleCountdown": "",
+    "giveHintHint": ""
   }
 };

@@ -1,7 +1,6 @@
 export default {
   "language": {
-    "name": "English",
-    "code": "en"
+    "name": "English"
   },
   "meta": {
     "title": "Codenames Game - Online Team Game | Code Names",
@@ -18,48 +17,32 @@ export default {
     "seoDescription": "Popular team game where two captains give their teams associations to find all their words and avoid hitting the assassin. Play for free in your browser without installation. Create a game and invite friends via link."
   },
   "menu": {
-    "title": "Game Menu",
-    "captainMode": "Captain Mode",
-    "dictionary": "Dictionary:",
+    "gameName": "",
     "aiTopic": "Topic (or several) and desired language (or several... yes-yes several languages). Generation takes ~15 sec:",
     "aiTopicPlaceholder": "For example: food in English, Harry Potter in Korean",
     "newGame": "New Game",
-    "gameKey": "Game Key",
     "shareGame": "Share this game",
     "close": "Close",
-    "generating": "Generating game...",
-    "serverOnline": "Online",
-    "serverStarting": "Offline",
+    "generating": "",
+    "serverOnline": "",
+    "serverStarting": "",
     "information": "Information",
-    "teamSelection": "",
     "blueTeam": "",
     "redTeam": "",
-    "spectator": "",
-    "becomeCaptain": "",
-    "leaveCaptain": "",
     "yourTeam": "",
-    "yourRole": "",
-    "rolePlayer": "",
-    "roleCaptain": "",
-    "roleSpectator": "",
-    "noTeam": "",
     "ownerActions": "",
-    "lockTeams": "",
-    "unlockTeams": "",
-    "makePrivate": "",
-    "makePublic": "",
-    "notSelected": "",
+    "teamsToggle": "",
+    "privateToggle": "",
+    "teamsToggleHint": "",
+    "privateToggleHint": "",
+    "observer": "",
+    "joinRoom": "",
+    "advancedMode": "",
+    "advancedModeHint": "",
+    "roleCaptain": "",
+    "rolePlayer": "",
     "andCaptain": "",
-    "teamsStatus": "",
-    "gameStatus": "",
-    "teamsOpen": "",
-    "teamsClosed": "",
-    "gamePublic": "",
-    "gamePrivate": "",
-    "gameMode": "",
-    "simpleMode": "",
-    "simpleModeOn": "",
-    "simpleModeHint": ""
+    "startGame": ""
   },
   "share": {
     "copyLink": "Copy link",
@@ -70,45 +53,28 @@ export default {
     "shareText": "Let's play Codenames! 🎮\\n"
   },
   "keyDialog": {
-    "title": "Game Key",
-    "description": "Enter a key or create a new one with the + button. A game will be created according to the selected dictionary in the main menu. To create neural network games: select the \"Neural Network\" dictionary in the main menu, specify a topic and click \"New Game\".",
-    "currentKey": "Current key:",
-    "enterKey": "Enter game key:",
     "keyPlaceholder": "БАКОСУГ or БАКОСУН",
-    "join": "Join",
-    "back": "Back",
     "invalidKey": "Invalid game key",
-    "aiGameNotFound": "AI game not found",
-    "aiKey": "AI key (neural network dictionary)",
-    "newKey": "New regular key",
-    "aiKeysInMenu": "AI keys are created in the main menu"
+    "join": "",
+    "aiGameNotFound": "AI game not found"
   },
   "captainDialog": {
     "title": "Captain Mode",
     "description": "In captain mode you will see the colors of all cards. Remember that hinting card colors to your team is forbidden - it will ruin the game enjoyment.",
-    "warning": "Warning! After activating captain mode you will not be able to participate in guessing words as a regular player.",
     "confirm": "Confirm",
     "cancel": "Cancel",
-    "currentTeam": "Current team:",
-    "blueTeam": "Blues",
-    "redTeam": "Reds",
     "remaining": "Remaining",
-    "cards": "cards",
-    "helperTitle": "Captain Helper",
-    "helperTip": "Hold the button",
-    "helperInstructions": "for 1 second to switch game field mode. Opponent team can be collapsed, words can be dragged, switch can change the team.",
+    "helperTitle": "",
     "enterPhrase": "Enter phrase to confirm:",
     "phrasePlaceholder": "Phrase",
     "assassinWord": "Assassin Word",
     "confirmationPhrase": "CAPTAIN",
     "myWords": "",
     "opponentWords": "",
-    "myTeam": "",
-    "opponentTeam": ""
+    "helperHint": ""
   },
   "winDialog": {
     "title": "Game Over!",
-    "winner": "Winner team:",
     "blueTeam": "Blue",
     "redTeam": "Red",
     "teamWon": "team won by revealing all their cards!",
@@ -117,21 +83,15 @@ export default {
     "return": "Return to field"
   },
   "status": {
-    "blueTeam": "Blue team:",
-    "redTeam": "Red team:",
-    "cards": "cards",
-    "captainHelper": "Captain Helper",
+    "captainHelper": "",
     "menu": "Menu",
     "fullscreen": "Fullscreen",
     "chat": "Chat",
-    "iosFullscreenInstructions": ""
+    "hint": ""
   },
   "notifications": {
     "linkCopied": "Link copied!",
-    "keyCopied": "Key copied",
-    "pressAndHold": "Hold card to reveal",
     "chooseTeam": "",
-    "spectatorsCannotPlay": "",
     "notYourTurn": "",
     "captainsCannotPlay": "",
     "captainsRequired": "",
@@ -141,21 +101,21 @@ export default {
     "gamePublic": "",
     "privateGameTitle": "",
     "privateGameMessage": "",
-    "waitingForHint": ""
+    "waitingForHint": "",
+    "seat_captain_blue": "",
+    "seat_captain_red": "",
+    "seat_player_blue": "",
+    "seat_player_red": "",
+    "seat_spectator": "",
+    "holdToReveal": ""
   },
   "errors": {
     "enterTopic": "Enter topic to create AI game",
-    "aiGenerationError": "Error generating AI game",
-    "copyLinkFailed": "Failed to copy link"
+    "aiGenerationError": "Error generating AI game"
   },
-  "game": {
-    "confirmReveal": "Reveal card?",
-    "confirm": "Reveal",
-    "cancel": "Cancel"
-  },
+  "game": {},
   "dictionaries": {
-    "aiDictionary": "Neural Network (millions of words, any language)",
-    "officialDictionary": "Official GaGa Games Dictionary"
+    "aiDictionary": "Neural Network (millions of words, any language)"
   },
   "info": {
     "title": "About Application",
@@ -173,44 +133,24 @@ export default {
     "step3": "Captains give clues, players guess",
     "step4": "First team to reveal all their cards wins",
     "aiGames": "AI Games",
-    "aiDescription": "Enter any topic (space, movies, food...) and get",
-    "aiWords": "a unique set of 25 words generated by neural network!"
+    "aiDescription": ""
   },
-  "teamSwitch": {
-    "myTeam": "My team:"
-  },
+  "teamSwitch": {},
   "common": {
     "loading": "Loading...",
-    "error": "Error",
-    "retry": "Retry",
-    "ok": "OK",
-    "yes": "Yes",
-    "no": "No",
-    "copy": "Copy",
-    "paste": "Paste",
-    "clear": "Clear",
     "close": "Close"
   },
   "languageDialog": {
-    "title": "Language Selection",
-    "selectLanguage": "Select interface language:",
-    "close": "Close"
+    "selectLanguage": "Select interface language:"
   },
   "chat": {
-    "title": "Chat",
     "noMessages": "No messages yet",
     "typeMessage": "Type a message...",
-    "enterName": "Please enter your name",
-    "messageTooLong": "Message too long (max 500 characters)",
     "tabGame": "Game chat",
     "tabGlobal": "Global",
-    "loggedInAs": "Logged in as",
     "logout": "Logout",
     "pinCopied": "PIN copied!",
     "hello": "Hello",
-    "changeNamePrompt": "Enter new name:",
-    "changeNameHint": "Click to change name",
-    "nameChanged": "Name successfully changed!",
     "nameChangeError": "Error changing name",
     "changeName": "Change name",
     "settings": "Settings",
@@ -225,8 +165,7 @@ export default {
     "winRate": "Win rate",
     "favoriteRole": "Favorite role",
     "inDevelopment": "In development",
-    "backToChat": "To chat",
-    "backToGame": "To game"
+    "pinMissing": ""
   },
   "auth": {
     "title": "Chat login",
@@ -246,8 +185,6 @@ export default {
     "loginBtn": "Login",
     "backBtn": "Back",
     "checkError": "Error checking name",
-    "registerError": "Registration error",
-    "verifyError": "PIN verification error",
     "nameHint": "After registration you will receive a PIN code to restore access. All game statistics and message history will be linked to your profile.",
     "testWarning": "This is test mode. Accounts may be deleted during development.",
     "userExistsEnd": "is already registered."
@@ -260,10 +197,10 @@ export default {
     "giveHintLabel": "",
     "wordPlaceholder": "",
     "numberPlaceholder": "",
-    "numberHint": "",
     "giveHintButton": "",
     "titleBlue": "",
     "titleRed": "",
-    "wordVisibleCountdown": ""
+    "wordVisibleCountdown": "",
+    "giveHintHint": ""
   }
 };

@@ -1,7 +1,6 @@
 export default {
   "language": {
-    "name": "中文",
-    "code": "zh"
+    "name": "中文"
   },
   "meta": {
     "title": "Codenames Game - 在线团队游戏 | 代号",
@@ -18,48 +17,32 @@ export default {
     "seoDescription": "热门团队游戏，两位队长为各自团队提供联想线索，找出所有己方单词，避免触碰杀手。在浏览器中免费游玩，无需安装。创建游戏并通过链接邀请朋友。"
   },
   "menu": {
-    "title": "游戏菜单",
-    "captainMode": "队长模式",
-    "dictionary": "词典：",
+    "gameName": "",
     "aiTopic": "主题（或多个）和期望语言（或多个...是的，多种语言）：",
     "aiTopicPlaceholder": "例如：英语食物、韩语哈利波特",
     "newGame": "新游戏",
-    "gameKey": "游戏密钥",
     "shareGame": "分享此游戏",
     "close": "关闭",
-    "generating": "生成游戏中...",
-    "serverOnline": "Online",
-    "serverStarting": "Offline",
+    "generating": "",
+    "serverOnline": "",
+    "serverStarting": "",
     "information": "信息",
-    "teamSelection": "",
     "blueTeam": "",
     "redTeam": "",
-    "spectator": "",
-    "becomeCaptain": "",
-    "leaveCaptain": "",
     "yourTeam": "",
-    "yourRole": "",
-    "rolePlayer": "",
-    "roleCaptain": "",
-    "roleSpectator": "",
-    "noTeam": "",
     "ownerActions": "",
-    "lockTeams": "",
-    "unlockTeams": "",
-    "makePrivate": "",
-    "makePublic": "",
-    "notSelected": "",
+    "teamsToggle": "",
+    "privateToggle": "",
+    "teamsToggleHint": "",
+    "privateToggleHint": "",
+    "observer": "",
+    "joinRoom": "",
+    "advancedMode": "",
+    "advancedModeHint": "",
+    "roleCaptain": "",
+    "rolePlayer": "",
     "andCaptain": "",
-    "teamsStatus": "",
-    "gameStatus": "",
-    "teamsOpen": "",
-    "teamsClosed": "",
-    "gamePublic": "",
-    "gamePrivate": "",
-    "gameMode": "",
-    "simpleMode": "",
-    "simpleModeOn": "",
-    "simpleModeHint": ""
+    "startGame": ""
   },
   "share": {
     "copyLink": "复制链接",
@@ -70,45 +53,28 @@ export default {
     "shareText": "来玩Codenames吧！🎮\\n"
   },
   "keyDialog": {
-    "title": "游戏密钥",
-    "description": "输入密钥或点击+创建新密钥。将根据主菜单中选择的词典创建游戏。创建AI游戏：在主菜单中选择\"神经网络\"词典，指定主题并点击\"新游戏\"。",
-    "currentKey": "当前密钥：",
-    "enterKey": "输入游戏密钥：",
     "keyPlaceholder": "БАКОСУГ 或 БАКОСУН",
-    "join": "加入",
-    "back": "返回",
     "invalidKey": "无效的游戏密钥",
-    "aiGameNotFound": "未找到AI游戏",
-    "aiKey": "AI密钥（神经网络词典）",
-    "newKey": "新普通密钥",
-    "aiKeysInMenu": "AI密钥在主菜单中创建"
+    "join": "",
+    "aiGameNotFound": "未找到AI游戏"
   },
   "captainDialog": {
     "title": "队长模式",
     "description": "在队长模式下，您将看到所有卡片的颜色。请记住，向队伍透露卡片颜色是被禁止的 - 这会破坏游戏的乐趣。",
-    "warning": "注意！激活队长模式后，您将无法作为普通玩家参与猜词。",
     "confirm": "确认",
     "cancel": "取消",
-    "currentTeam": "当前队伍：",
-    "blueTeam": "蓝队",
-    "redTeam": "红队",
     "remaining": "剩余",
-    "cards": "张卡片",
-    "helperTitle": "队长助手",
-    "helperTip": "按住按钮",
-    "helperInstructions": "1秒钟切换游戏场地模式。可以折叠对方队伍，可以拖拽单词，开关可以改变队伍。",
+    "helperTitle": "",
     "enterPhrase": "输入确认短语：",
     "phrasePlaceholder": "短语",
     "assassinWord": "杀手单词",
     "confirmationPhrase": "队长",
     "myWords": "",
     "opponentWords": "",
-    "myTeam": "",
-    "opponentTeam": ""
+    "helperHint": ""
   },
   "winDialog": {
     "title": "游戏结束！",
-    "winner": "获胜队伍：",
     "blueTeam": "蓝队",
     "redTeam": "红队",
     "teamWon": "队伍获胜，揭开了所有己方卡片！",
@@ -117,21 +83,15 @@ export default {
     "return": "返回场地"
   },
   "status": {
-    "blueTeam": "蓝队：",
-    "redTeam": "红队：",
-    "cards": "张卡片",
-    "captainHelper": "队长助手",
+    "captainHelper": "",
     "menu": "菜单",
     "fullscreen": "全屏",
     "chat": "聊天",
-    "iosFullscreenInstructions": ""
+    "hint": ""
   },
   "notifications": {
     "linkCopied": "链接已复制！",
-    "keyCopied": "密钥已复制",
-    "pressAndHold": "长按卡片打开",
     "chooseTeam": "",
-    "spectatorsCannotPlay": "",
     "notYourTurn": "",
     "captainsCannotPlay": "",
     "captainsRequired": "",
@@ -141,26 +101,24 @@ export default {
     "gamePublic": "",
     "privateGameTitle": "",
     "privateGameMessage": "",
-    "waitingForHint": ""
+    "waitingForHint": "",
+    "seat_captain_blue": "",
+    "seat_captain_red": "",
+    "seat_player_blue": "",
+    "seat_player_red": "",
+    "seat_spectator": "",
+    "holdToReveal": ""
   },
   "errors": {
     "enterTopic": "请输入主题以创建AI游戏",
-    "aiGenerationError": "AI游戏生成错误",
-    "copyLinkFailed": "复制链接失败"
+    "aiGenerationError": "AI游戏生成错误"
   },
-  "game": {
-    "confirmReveal": "打开卡片？",
-    "confirm": "打开",
-    "cancel": "取消"
-  },
+  "game": {},
   "dictionaries": {
-    "aiDictionary": "神经网络（数百万单词，任何语言）",
-    "officialDictionary": "GaGa Games官方词典"
+    "aiDictionary": "神经网络（数百万单词，任何语言）"
   },
   "languageDialog": {
-    "title": "语言选择",
-    "selectLanguage": "选择界面语言：",
-    "close": "关闭"
+    "selectLanguage": "选择界面语言："
   },
   "info": {
     "title": "关于应用",
@@ -178,39 +136,21 @@ export default {
     "step3": "队长给出线索，玩家猜测",
     "step4": "首先打开所有己方卡片的队伍获胜",
     "aiGames": "AI游戏",
-    "aiDescription": "输入任何主题（太空、电影、食物...）并获得",
-    "aiWords": "由神经网络生成的25个独特单词！"
+    "aiDescription": ""
   },
-  "teamSwitch": {
-    "myTeam": "我的队伍："
-  },
+  "teamSwitch": {},
   "common": {
     "loading": "加载中...",
-    "error": "错误",
-    "retry": "重试",
-    "ok": "确定",
-    "yes": "是",
-    "no": "否",
-    "copy": "复制",
-    "paste": "粘贴",
-    "clear": "清除",
     "close": "关闭"
   },
   "chat": {
-    "title": "聊天",
     "hello": "你好",
-    "loggedInAs": "登录为",
     "logout": "登出",
     "noMessages": "还没有消息",
     "typeMessage": "输入消息...",
-    "enterName": "请输入您的姓名",
-    "messageTooLong": "消息太长（最多500个字符）",
     "tabGame": "游戏聊天",
     "tabGlobal": "全球",
     "pinCopied": "PIN已复制！",
-    "changeNamePrompt": "输入新名称:",
-    "changeNameHint": "点击更改名称",
-    "nameChanged": "名称已成功更改！",
     "nameChangeError": "更改名称时出错",
     "changeName": "更改名字",
     "settings": "设置",
@@ -225,8 +165,7 @@ export default {
     "winRate": "胜率",
     "favoriteRole": "最喜欢的角色",
     "inDevelopment": "开发中",
-    "backToChat": "到聊天",
-    "backToGame": "到游戏"
+    "pinMissing": ""
   },
   "auth": {
     "title": "聊天登录",
@@ -248,9 +187,7 @@ export default {
     "cancelBtn": "取消",
     "loginBtn": "登录",
     "backBtn": "返回",
-    "checkError": "检查名称时出错",
-    "registerError": "注册时出错",
-    "verifyError": "验证PIN时出错"
+    "checkError": "检查名称时出错"
   },
   "hintDialog": {
     "wordExpired": "",
@@ -260,10 +197,10 @@ export default {
     "giveHintLabel": "",
     "wordPlaceholder": "",
     "numberPlaceholder": "",
-    "numberHint": "",
     "giveHintButton": "",
     "titleBlue": "",
     "titleRed": "",
-    "wordVisibleCountdown": ""
+    "wordVisibleCountdown": "",
+    "giveHintHint": ""
   }
 };

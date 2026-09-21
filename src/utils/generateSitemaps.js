@@ -33,7 +33,7 @@ function getAvailableLocales() {
 
 // Функция для создания карты сайта для конкретной локали
 function generateLocaleSitemap(locale) {
-  const now = new Date().toISOString();
+  const now = new Date().toISOString().slice(0, 10);
   
   const urls = [
     {
@@ -75,7 +75,7 @@ function generateLocaleSitemap(locale) {
 // Функция для создания основной карты сайта (индекс карт сайта)
 function generateSitemapIndex() {
   const locales = getAvailableLocales();
-  const now = new Date().toISOString();
+  const now = new Date().toISOString().slice(0, 10);
   
   let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
   xml += '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';

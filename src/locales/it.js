@@ -1,7 +1,6 @@
 export default {
   "language": {
-    "name": "Italiano",
-    "code": "it"
+    "name": "Italiano"
   },
   "meta": {
     "title": "Codenames Game - Gioco di squadra online | Nomi in codice",
@@ -18,48 +17,32 @@ export default {
     "seoDescription": "Popolare gioco di squadra dove due capitani danno indizi di associazione alle proprie squadre per trovare tutte le parole alleate ed evitare l'assassino. Gioca gratis nel browser senza installazione. Crea un gioco e invita gli amici tramite link."
   },
   "menu": {
-    "title": "Menu di gioco",
-    "captainMode": "Modalità capitano",
-    "dictionary": "Dizionario:",
+    "gameName": "",
     "aiTopic": "Argomento (o più) e lingua desiderata (o più... sì, più lingue):",
     "aiTopicPlaceholder": "Esempio: cibo in inglese, Harry Potter in coreano",
     "newGame": "Nuovo gioco",
-    "gameKey": "Chiave gioco",
     "shareGame": "Condividi questo gioco",
     "close": "Chiudi",
-    "generating": "Generando gioco...",
-    "serverOnline": "Online",
-    "serverStarting": "Offline",
+    "generating": "",
+    "serverOnline": "",
+    "serverStarting": "",
     "information": "Informazioni",
-    "teamSelection": "",
     "blueTeam": "",
     "redTeam": "",
-    "spectator": "",
-    "becomeCaptain": "",
-    "leaveCaptain": "",
     "yourTeam": "",
-    "yourRole": "",
-    "rolePlayer": "",
-    "roleCaptain": "",
-    "roleSpectator": "",
-    "noTeam": "",
     "ownerActions": "",
-    "lockTeams": "",
-    "unlockTeams": "",
-    "makePrivate": "",
-    "makePublic": "",
-    "notSelected": "",
+    "teamsToggle": "",
+    "privateToggle": "",
+    "teamsToggleHint": "",
+    "privateToggleHint": "",
+    "observer": "",
+    "joinRoom": "",
+    "advancedMode": "",
+    "advancedModeHint": "",
+    "roleCaptain": "",
+    "rolePlayer": "",
     "andCaptain": "",
-    "teamsStatus": "",
-    "gameStatus": "",
-    "teamsOpen": "",
-    "teamsClosed": "",
-    "gamePublic": "",
-    "gamePrivate": "",
-    "gameMode": "",
-    "simpleMode": "",
-    "simpleModeOn": "",
-    "simpleModeHint": ""
+    "startGame": ""
   },
   "share": {
     "copyLink": "Copia link",
@@ -70,45 +53,28 @@ export default {
     "shareText": "Giochiamo a Codenames! 🎮\\n"
   },
   "keyDialog": {
-    "title": "Chiave gioco",
-    "description": "Inserisci una chiave o creane una nuova con il pulsante +. Verrà creato un gioco secondo il dizionario selezionato nel menu principale. Per creare giochi IA: seleziona il dizionario \"Rete Neurale\" nel menu principale, specifica l'argomento e clicca \"Nuovo gioco\".",
-    "currentKey": "Chiave attuale:",
-    "enterKey": "Inserisci chiave gioco:",
     "keyPlaceholder": "БАКОСУГ o БАКОСУН",
-    "join": "Entra",
-    "back": "Indietro",
     "invalidKey": "Chiave gioco non valida",
-    "aiGameNotFound": "Gioco IA non trovato",
-    "aiKey": "Chiave IA (dizionario rete neurale)",
-    "newKey": "Nuova chiave normale",
-    "aiKeysInMenu": "Le chiavi IA si creano nel menu principale"
+    "join": "",
+    "aiGameNotFound": "Gioco IA non trovato"
   },
   "captainDialog": {
     "title": "Modalità capitano",
     "description": "In modalità capitano vedrai i colori di tutte le carte. Ricorda che suggerire i colori delle carte alla squadra è vietato - rovinerebbe il divertimento del gioco.",
-    "warning": "Attenzione! Dopo aver attivato la modalità capitano non potrai partecipare come giocatore normale nell'indovinare le parole.",
     "confirm": "Conferma",
     "cancel": "Annulla",
-    "currentTeam": "Squadra attuale:",
-    "blueTeam": "Squadra Blu",
-    "redTeam": "Squadra Rossa",
     "remaining": "Rimangono",
-    "cards": "carte",
-    "helperTitle": "Assistente capitano",
-    "helperTip": "Tieni premuto il pulsante",
-    "helperInstructions": "per 1 secondo per cambiare modalità campo di gioco. La squadra avversaria può essere nascosta, le parole possono essere trascinate, l'interruttore può cambiare squadra.",
+    "helperTitle": "",
     "enterPhrase": "Inserisci la frase di conferma:",
     "phrasePlaceholder": "Frase",
     "assassinWord": "Parola assassino",
     "confirmationPhrase": "CAPITANO",
     "myWords": "",
     "opponentWords": "",
-    "myTeam": "",
-    "opponentTeam": ""
+    "helperHint": ""
   },
   "winDialog": {
     "title": "Gioco finito!",
-    "winner": "Squadra vincitrice:",
     "blueTeam": "Blu",
     "redTeam": "Rossa",
     "teamWon": "la squadra ha vinto rivelando tutte le sue carte!",
@@ -117,21 +83,15 @@ export default {
     "return": "Torna al campo"
   },
   "status": {
-    "blueTeam": "Squadra Blu:",
-    "redTeam": "Squadra Rossa:",
-    "cards": "carte",
-    "captainHelper": "Assistente capitano",
+    "captainHelper": "",
     "menu": "Menu",
     "fullscreen": "Schermo intero",
     "chat": "Chat",
-    "iosFullscreenInstructions": ""
+    "hint": ""
   },
   "notifications": {
     "linkCopied": "Link copiato!",
-    "keyCopied": "Chiave copiata",
-    "pressAndHold": "Tieni premuta la carta per aprire",
     "chooseTeam": "",
-    "spectatorsCannotPlay": "",
     "notYourTurn": "",
     "captainsCannotPlay": "",
     "captainsRequired": "",
@@ -141,26 +101,24 @@ export default {
     "gamePublic": "",
     "privateGameTitle": "",
     "privateGameMessage": "",
-    "waitingForHint": ""
+    "waitingForHint": "",
+    "seat_captain_blue": "",
+    "seat_captain_red": "",
+    "seat_player_blue": "",
+    "seat_player_red": "",
+    "seat_spectator": "",
+    "holdToReveal": ""
   },
   "errors": {
     "enterTopic": "Inserisci un argomento per creare un gioco IA",
-    "aiGenerationError": "Errore nella generazione del gioco IA",
-    "copyLinkFailed": "Impossibile copiare il link"
+    "aiGenerationError": "Errore nella generazione del gioco IA"
   },
-  "game": {
-    "confirmReveal": "Aprire la carta?",
-    "confirm": "Apri",
-    "cancel": "Annulla"
-  },
+  "game": {},
   "dictionaries": {
-    "aiDictionary": "Rete Neurale (milioni di parole, qualsiasi lingua)",
-    "officialDictionary": "Dizionario ufficiale GaGa Games"
+    "aiDictionary": "Rete Neurale (milioni di parole, qualsiasi lingua)"
   },
   "languageDialog": {
-    "title": "Selezione lingua",
-    "selectLanguage": "Seleziona lingua interfaccia:",
-    "close": "Chiudi"
+    "selectLanguage": "Seleziona lingua interfaccia:"
   },
   "info": {
     "title": "Informazioni app",
@@ -178,39 +136,21 @@ export default {
     "step3": "I capitani danno indizi, i giocatori indovinano",
     "step4": "Vince la squadra che per prima rivela tutte le sue carte",
     "aiGames": "Giochi IA",
-    "aiDescription": "Inserisci qualsiasi argomento (spazio, film, cibo...) e ottieni",
-    "aiWords": "un set unico di 25 parole generate dalla rete neurale!"
+    "aiDescription": ""
   },
-  "teamSwitch": {
-    "myTeam": "La mia squadra:"
-  },
+  "teamSwitch": {},
   "common": {
     "loading": "Caricamento...",
-    "error": "Errore",
-    "retry": "Riprova",
-    "ok": "OK",
-    "yes": "Sì",
-    "no": "No",
-    "copy": "Copia",
-    "paste": "Incolla",
-    "clear": "Pulisci",
     "close": "Chiudi"
   },
   "chat": {
-    "title": "Chat",
     "hello": "Ciao",
-    "loggedInAs": "Connesso come",
     "logout": "Disconnetti",
     "noMessages": "Ancora nessun messaggio",
     "typeMessage": "Scrivi un messaggio...",
-    "enterName": "Inserisci il tuo nome",
-    "messageTooLong": "Messaggio troppo lungo (max 500 caratteri)",
     "tabGame": "Chat di gioco",
     "tabGlobal": "Globale",
     "pinCopied": "PIN copiato!",
-    "changeNamePrompt": "Inserisci nuovo nome:",
-    "changeNameHint": "Clicca per cambiare nome",
-    "nameChanged": "Nome cambiato con successo!",
     "nameChangeError": "Errore nel cambiare nome",
     "changeName": "Cambia nome",
     "settings": "Impostazioni",
@@ -225,8 +165,7 @@ export default {
     "winRate": "Percentuale di vittorie",
     "favoriteRole": "Ruolo preferito",
     "inDevelopment": "In sviluppo",
-    "backToChat": "Alla chat",
-    "backToGame": "Al gioco"
+    "pinMissing": ""
   },
   "auth": {
     "title": "Accesso alla chat",
@@ -248,9 +187,7 @@ export default {
     "cancelBtn": "Annulla",
     "loginBtn": "Accedi",
     "backBtn": "Indietro",
-    "checkError": "Errore nella verifica del nome",
-    "registerError": "Errore durante la registrazione",
-    "verifyError": "Errore nella verifica del PIN"
+    "checkError": "Errore nella verifica del nome"
   },
   "hintDialog": {
     "wordExpired": "",
@@ -260,10 +197,10 @@ export default {
     "giveHintLabel": "",
     "wordPlaceholder": "",
     "numberPlaceholder": "",
-    "numberHint": "",
     "giveHintButton": "",
     "titleBlue": "",
     "titleRed": "",
-    "wordVisibleCountdown": ""
+    "wordVisibleCountdown": "",
+    "giveHintHint": ""
   }
 };

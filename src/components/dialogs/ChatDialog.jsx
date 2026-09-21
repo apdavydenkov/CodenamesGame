@@ -1,7 +1,19 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
-import { FiSend, FiX, FiSettings, FiStar } from "react-icons/fi";
+import { Fragment, useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { FiArrowRight, FiSettings, FiStar } from "react-icons/fi";
 import { useTranslation } from "../../hooks/useTranslation";
+import { useNotify } from "../../contexts/NotificationContext";
+import Dialog, { DialogBody, ICON_BUTTON, TAB, TAB_ACTIVE, TAB_IDLE } from "./Dialog";
 import SettingsDialog from "./SettingsDialog";
+
+const MESSAGE_LIMIT = 500;
+
+const BUBBLE = "mb-2 sm:mb-3 w-fit max-w-[75%] sm:max-w-[70%] rounded-xl px-3 py-2 pb-6 relative chat-bubble";
+const OWN_BUBBLE = "chat-bubble-own ml-auto bg-[var(--chat-own)] text-ui-panel";
+const TEAM_BUBBLE = {
+  blue: "bg-[var(--blue-accent)] text-ui-panel",
+  red: "bg-[var(--red-accent)] text-ui-panel",
+};
+const PLAIN_BUBBLE = "bg-ui-panel text-ui-on-panel";
 
 const ChatDialog = ({
   isOpen,
@@ -10,28 +22,22 @@ const ChatDialog = ({
   socket,
   userId,
   username,
+  messages: chatMessages,
   unreadCounts,
-  lastReadMessageIds,
-  onMarkAsRead,
-  onUpdateUnreadCount,
+  onMarkRead,
+  onLoadOlder,
   activeTab,
   onTabChange,
   onLogout,
   canAccessGame = true
 }) => {
   const { t } = useTranslation();
-  const [messagesCache, setMessagesCache] = useState({});
+  const notify = useNotify();
   const [inputText, setInputText] = useState("");
-  const [isSending, setIsSending] = useState(false);
   const [showSettingsDialog, setShowSettingsDialog] = useState(false);
 
-  const currentChatKey = useMemo(() => {
-    return activeTab === 'global' ? 'GLOBAL_CHAT' : gameKey;
-  }, [activeTab, gameKey]);
-
-  const messages = Array.isArray(messagesCache[currentChatKey])
-    ? messagesCache[currentChatKey]
-    : [];
+  const currentChatKey = activeTab === 'global' ? 'GLOBAL_CHAT' : gameKey;
+  const messages = activeTab === 'global' ? chatMessages.global : chatMessages.game;
 
   // Принудительное переключение на глобальную вкладку если нет доступа к игре
   useEffect(() => {
@@ -40,332 +46,194 @@ const ChatDialog = ({
     }
   }, [canAccessGame, activeTab, onTabChange]);
 
-  // Обновление lastReadMessageId при открытии или переключении вкладки
+  // Открытый чат считается прочитанным, в том числе по приходу новых сообщений
   useEffect(() => {
-    if (isOpen && onMarkAsRead && messages.length > 0) {
-      const chatKey = activeTab === 'global' ? 'global' : 'game';
-      const lastMessage = messages[messages.length - 1];
-      onMarkAsRead(chatKey, lastMessage.id);
+    if (isOpen && messages.length) {
+      onMarkRead(currentChatKey, messages.at(-1).id);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, activeTab, messages.length]);
+  }, [isOpen, currentChatKey, messages, onMarkRead]);
 
-  // Подключение к чату и обработка сообщений
+  const listRef = useRef(null);
+  const atBottom = useRef(true);
+  const lastHeight = useRef(0);
+  const firstMessage = useRef(null);
+  const requestedOlder = useRef(null);
+
+  const handleScroll = useCallback((event) => {
+    const { scrollTop, scrollHeight, clientHeight } = event.currentTarget;
+
+    atBottom.current = scrollHeight - clientHeight - scrollTop < 40;
+
+    // Долистали до начала — просим порцию постарее, по разу на сообщение; события партии в БД нет
+    const oldest = messages.find((message) => !message.system)?.id;
+    if (oldest && requestedOlder.current !== oldest && scrollTop < 80) {
+      requestedOlder.current = oldest;
+      onLoadOlder(currentChatKey, oldest);
+    }
+  }, [messages, currentChatKey, onLoadOlder]);
+
+  // При переключении вкладки смотрим на последние сообщения
   useEffect(() => {
-    if (!socket) return;
+    atBottom.current = true;
+  }, [currentChatKey, isOpen]);
 
-    const handleChatHistory = ({ gameKey: historyGameKey, messages: historyMessages }) => {
-      if (!Array.isArray(historyMessages)) {
-        return;
-      }
+  // Новое сообщение подматываем к низу, как в мессенджерах; догруженную историю — нет
+  useEffect(() => {
+    const list = listRef.current;
+    if (!list) return;
 
-      const chatKey = historyGameKey === 'GLOBAL_CHAT' ? 'global' : 'game';
-      const lastReadId = lastReadMessageIds?.[chatKey];
-      const cachedMessages = messagesCache[historyGameKey] || [];
-      const cachedCount = cachedMessages.length;
+    const grew = list.scrollHeight - lastHeight.current;
+    const prepended = messages[0]?.id !== firstMessage.current;
 
-      let unreadCountToSet = null;
+    lastHeight.current = list.scrollHeight;
+    firstMessage.current = messages[0]?.id;
 
-      if (cachedCount === 0) {
-        if (lastReadId && historyMessages.length > 0) {
-          const lastReadIndex = historyMessages.findIndex(m => m.id === lastReadId);
+    if (prepended && grew > 0 && !atBottom.current) list.scrollTop += grew;
+    else if (atBottom.current) list.scrollTop = list.scrollHeight;
+  }, [messages, isOpen, currentChatKey]);
 
-          if (lastReadIndex !== -1) {
-            unreadCountToSet = historyMessages.length - lastReadIndex - 1;
-          } else {
-            unreadCountToSet = historyMessages.length;
-          }
-        } else if (!lastReadId && historyMessages.length > 0) {
-          unreadCountToSet = historyMessages.length;
-        }
-      }
+  const handleSendMessage = useCallback((event) => {
+    event.preventDefault();
 
-      setMessagesCache(prev => {
-        const cachedMessages = prev[historyGameKey] || [];
-
-        if (cachedMessages.length === 0) {
-          return {
-            ...prev,
-            [historyGameKey]: historyMessages
-          };
-        }
-
-        const cachedIds = new Set(cachedMessages.map(m => m.id));
-        const newMessages = historyMessages.filter(m => !cachedIds.has(m.id));
-
-        if (newMessages.length > 0) {
-          newMessages.forEach(message => {
-            const callbacks = socket._callbacks?.$NEW_MESSAGE || [];
-            callbacks.forEach(cb => cb(message));
-          });
-
-          return {
-            ...prev,
-            [historyGameKey]: [...cachedMessages, ...newMessages]
-          };
-        } else {
-          return prev;
-        }
-      });
-
-      if (unreadCountToSet !== null && unreadCountToSet > 0) {
-        onUpdateUnreadCount(prevCounts => ({
-          ...prevCounts,
-          [chatKey]: unreadCountToSet
-        }));
-      }
-    };
-
-    const handleNewMessage = (message) => {
-      const targetChatKey = message.gameKey;
-
-      setMessagesCache(prev => {
-        const chatMessages = prev[targetChatKey] || [];
-
-        if (chatMessages.some((m) => m.id === message.id)) {
-          return prev;
-        }
-
-        return {
-          ...prev,
-          [targetChatKey]: [...chatMessages, message]
-        };
-      });
-    };
-
-    const handleChatError = ({ message: errorMessage }) => {
-      alert(errorMessage);
-    };
-
-    socket.on("CHAT_HISTORY", handleChatHistory);
-    socket.on("NEW_MESSAGE", handleNewMessage);
-    socket.on("CHAT_ERROR", handleChatError);
-
-    return () => {
-      socket.off("CHAT_HISTORY", handleChatHistory);
-      socket.off("NEW_MESSAGE", handleNewMessage);
-      socket.off("CHAT_ERROR", handleChatError);
-    };
-  }, [socket, lastReadMessageIds, onUpdateUnreadCount]);
-
-  const handleSendMessage = useCallback((e) => {
-    e.preventDefault();
-
-    if (!inputText.trim()) return;
-
-    if (inputText.length > 500) {
-      alert(t('chat.messageTooLong'));
-      return;
-    }
-
-    setIsSending(true);
+    const text = inputText.trim();
+    if (!text) return;
 
     const pin = localStorage.getItem('codenames-pin');
     if (!pin) {
-      alert('Ошибка: PIN-код не найден. Перезайдите в чат.');
-      setIsSending(false);
+      notify(t('chat.pinMissing'));
       return;
     }
 
-    const messageData = {
-      gameKey: currentChatKey,
-      userId: userId,
-      author: username,
-      text: inputText.trim(),
-      pin: pin,
-    };
-
-    socket.emit("SEND_MESSAGE", messageData);
-
+    socket.emit("SEND_MESSAGE", { gameKey: currentChatKey, userId, author: username, text, pin });
     setInputText("");
-    setIsSending(false);
-  }, [currentChatKey, userId, username, inputText, socket, t]);
+  }, [currentChatKey, userId, username, inputText, socket, notify, t]);
+
+  // Сообщения разбиты по дням: у каждого дня свой разделитель, у сообщения — только время
+  const dayGroups = useMemo(
+    () => Object.entries(Object.groupBy(messages, (message) => new Date(message.created).toDateString())),
+    [messages]
+  );
+
+  const formatDay = useCallback((day) => {
+    const date = new Date(day);
+    const sameYear = date.getFullYear() === new Date().getFullYear();
+    return date.toLocaleDateString([], { day: 'numeric', month: 'long', year: sameYear ? undefined : 'numeric' });
+  }, []);
 
   const formatTime = useCallback((timestamp) => {
     const date = new Date(timestamp);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }, []);
 
-  if (!isOpen) return null;
+  const tabs = [
+    ...(canAccessGame ? [['game', t('chat.tabGame'), unreadCounts?.game]] : []),
+    ['global', t('chat.tabGlobal'), unreadCounts?.global],
+  ];
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-0 sm:p-4">
-        <div className="flex flex-col h-full sm:h-[calc(100vh-2rem)] w-full max-w-2xl bg-white sm:rounded-lg">
-
-          {/* HEADER */}
-          <div className="chat-dialog-header flex-shrink-0 flex items-center justify-between border-b border-gray-200 px-3 sm:px-4">
-            <h2 className="text-base font-semibold text-gray-900 flex items-center gap-2">
-              {t('chat.hello')}, <span className="font-semibold">{username}</span>
-              <button
-                onClick={() => setShowSettingsDialog(true)}
-                className="rounded-lg p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer"
-                aria-label="Settings"
-              >
-                <FiSettings size={18} />
-              </button>
-            </h2>
+      <Dialog
+        isOpen={isOpen}
+        onClose={onClose}
+        panelClass="sm:h-[calc(100vh-2rem)] max-w-2xl"
+        title={`${t('chat.hello')}, ${username}`}
+        actions={
+          <button
+            onClick={() => setShowSettingsDialog(true)}
+            className={ICON_BUTTON}
+            aria-label={t('chat.settings')}
+          >
+            <FiSettings size={18} />
+          </button>
+        }
+      >
+        <div className="flex-shrink-0 flex gap-2 border-b-2 border-ui-surface-line px-3 sm:px-4">
+          {tabs.map(([tab, label, unread]) => (
             <button
-              onClick={onClose}
-              className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer"
-              aria-label="Close"
+              key={tab}
+              onClick={() => onTabChange(tab)}
+              className={`${TAB} ${activeTab === tab ? TAB_ACTIVE : TAB_IDLE}`}
             >
-              <FiX size={20} />
+              {label}
+              {unread > 0 && <span className="ml-2 text-xs font-bold text-ui-accent">+{unread}</span>}
             </button>
-          </div>
-
-          {/* TABS */}
-          <div className="flex-shrink-0 flex gap-2 border-b-2 border-gray-200 px-3 sm:px-4 -mb-[2px] relative z-20 bg-white">
-            {canAccessGame && (
-              <button
-                className={`relative px-3 py-2 text-sm font-medium border-b-2 transition-colors cursor-pointer -mb-[2px] ${
-                  activeTab === 'game'
-                    ? 'text-purple-600 border-purple-600'
-                    : 'text-gray-600 border-transparent hover:text-purple-600'
-                }`}
-                onClick={() => onTabChange('game')}
-              >
-                {t('chat.tabGame')}
-                {unreadCounts && unreadCounts.game > 0 && (
-                  <span className="ml-2 text-xs font-bold text-purple-600">+{unreadCounts.game}</span>
-                )}
-              </button>
-            )}
-            <button
-              className={`relative px-3 py-2 text-sm font-medium border-b-2 transition-colors cursor-pointer -mb-[2px] ${
-                activeTab === 'global'
-                  ? 'text-purple-600 border-purple-600'
-                  : 'text-gray-600 border-transparent hover:text-purple-600'
-              }`}
-              onClick={() => onTabChange('global')}
-            >
-              {t('chat.tabGlobal')}
-              {unreadCounts && unreadCounts.global > 0 && (
-                <span className="ml-2 text-xs font-bold text-purple-600">+{unreadCounts.global}</span>
-              )}
-            </button>
-          </div>
-
-          {/* BODY */}
-          <div className="chat-dialog-content flex-1 overflow-y-auto px-3 sm:px-4 py-4 flex flex-col-reverse bg-gray-50 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-gray-400">
-            {messages.length === 0 ? (
-              <div className="text-center text-gray-500 py-8">{t('chat.noMessages')}</div>
-            ) : (
-              [...messages].reverse().map((message) => {
-                const isOwnMessage = message.userId === userId;
-                const teamColorClass = message.team === 'blue' ? 'bg-blue-600' :
-                                      message.team === 'red' ? 'bg-red-600' :
-                                      message.team === 'spectator' ? 'bg-[#e4d6c5]' :
-                                      '';
-                const teamClass = message.team ? `chat-message-team-${message.team}` : '';
-
-                return (
-                  <div
-                    key={message.id}
-                    className={`mb-2 sm:mb-3 px-3 py-2 pb-6 rounded-xl relative w-fit max-w-[75%] sm:max-w-[70%] ${
-                      isOwnMessage
-                        ? 'chat-message-own bg-purple-600 text-white ml-auto'
-                        : `chat-message-other ${teamClass} ${teamColorClass || 'bg-gray-200 text-gray-900'}`
-                    }`}
-                  >
-                    <div className="leading-relaxed break-words">
-                      {!isOwnMessage && (
-                        <span className={`font-bold ${
-                          message.team === 'spectator' && !isOwnMessage ? 'text-gray-900' :
-                          message.team ? 'text-white' : 'text-purple-600'
-                        }`}>
-                          {message.role === 'captain' && (
-                            <FiStar className="inline mr-1 mb-0.5" size={14} />
-                          )}
-                          {message.author}:
-                        </span>
-                      )}
-                      {!isOwnMessage && ' '}
-                      <span className={
-                        isOwnMessage ? 'text-white' :
-                        message.team === 'spectator' ? 'text-gray-900' :
-                        message.team ? 'text-white' : ''
-                      }>
-                        {message.text}
-                      </span>
-                    </div>
-                    <div className={`absolute bottom-1 right-2 text-[11px] ${
-                      isOwnMessage ? 'text-white/70' :
-                      message.team === 'spectator' ? 'text-gray-600' :
-                      message.team ? 'text-white/70' : 'text-gray-500'
-                    }`}>
-                      {formatTime(message.timestamp)}
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
-
-          {/* FOOTER */}
-          <div className="chat-dialog-footer flex-shrink-0 bg-white border-t border-gray-200 sm:rounded-b-lg overflow-hidden relative z-10">
-            <form onSubmit={handleSendMessage} className="flex">
-              <input
-                type="search"
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                placeholder={t('chat.typeMessage')}
-                maxLength={500}
-                disabled={isSending}
-                className="flex-1 border border-gray-300 border-r-0 bg-white px-4 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-gray-900 focus:outline-none"
-              />
-              <button
-                type="submit"
-                disabled={!inputText.trim() || isSending}
-                className="px-4 py-2 bg-gray-900 text-white hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center"
-                onMouseDown={(e) => e.preventDefault()}
-              >
-                <FiSend size={20} />
-              </button>
-            </form>
-          </div>
-
+          ))}
         </div>
-      </div>
 
-      <style>{`
-        /* Треугольники для сообщений */
-        .chat-message-own::after {
-          content: '';
-          position: absolute;
-          bottom: 10px;
-          right: -8px;
-          width: 0;
-          height: 0;
-          border-style: solid;
-          border-width: 6px 0 6px 8px;
-          border-color: transparent transparent transparent #9333ea;
-        }
+        <DialogBody ref={listRef} onScroll={handleScroll} className="flex flex-col">
+          {messages.length === 0 ? (
+            <p className="py-8 text-center opacity-60">{t('chat.noMessages')}</p>
+          ) : (
+            dayGroups.map(([day, dayMessages]) => (
+              <Fragment key={day}>
+                <div className="mb-2 text-center text-[11px] opacity-60">{formatDay(day)}</div>
+                {dayMessages.map((message) => {
+                  if (message.system) {
+                    const text = Object.entries(message.params ?? {}).reduce(
+                      (result, [name, value]) => result.replace(`{${name}}`, value),
+                      t(`notifications.${message.key}`)
+                    );
 
-        .chat-message-other::before {
-          content: '';
-          position: absolute;
-          bottom: 10px;
-          left: -8px;
-          width: 0;
-          height: 0;
-          border-style: solid;
-          border-width: 7px 9px 7px 0;
-          border-color: transparent #e5e7eb transparent transparent;
-        }
+                    return (
+                      <p key={message.id} className="mb-2 text-center text-sm opacity-70">{text}</p>
+                    );
+                  }
 
-        .chat-message-other.chat-message-team-blue::before {
-          border-color: transparent #2563eb transparent transparent;
-        }
+                  const isOwn = message.userId === userId;
 
-        .chat-message-other.chat-message-team-red::before {
-          border-color: transparent #dc2626 transparent transparent;
-        }
+                  return (
+                    <div
+                      key={message.id}
+                      className={`${BUBBLE} ${isOwn ? OWN_BUBBLE : TEAM_BUBBLE[message.team] ?? PLAIN_BUBBLE}`}
+                    >
+                      <div className="leading-relaxed break-words">
+                        {!isOwn && (
+                          <span className="font-bold">
+                            {message.role === 'captain' && <FiStar className="inline mr-1 mb-0.5" size={14} />}
+                            {message.author}:{' '}
+                          </span>
+                        )}
+                        {message.text}
+                      </div>
+                      <div className="absolute bottom-1 right-2 text-[11px] opacity-70">
+                        {formatTime(message.created)}
+                      </div>
+                    </div>
+                  );
+                })}
+              </Fragment>
+            ))
+          )}
+        </DialogBody>
 
-        .chat-message-other.chat-message-team-spectator::before {
-          border-color: transparent #e4d6c5 transparent transparent;
-        }
-      `}</style>
+        <div className="flex-shrink-0 border-t border-ui-surface-line p-2 sm:rounded-b-lg">
+          <form onSubmit={handleSendMessage} className="relative">
+            <textarea
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSendMessage(e);
+                }
+              }}
+              placeholder={t('chat.typeMessage')}
+              maxLength={MESSAGE_LIMIT}
+              rows={1}
+              className="block w-full resize-none field-sizing-content max-h-[88px] rounded-3xl bg-ui-panel py-2.5 pl-4 pr-14 text-sm leading-relaxed text-ui-on-panel placeholder-ui-on-panel/40 outline-none [scrollbar-width:none]"
+            />
+            <button
+              type="submit"
+              disabled={!inputText.trim()}
+              onMouseDown={(e) => e.preventDefault()}
+              className="absolute bottom-1.5 right-2 flex h-8 w-8 items-center justify-center rounded-full bg-ui-accent text-ui-panel hover:bg-ui-accent-hover disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            >
+              <FiArrowRight size={16} />
+            </button>
+          </form>
+        </div>
+
+      </Dialog>
 
       <SettingsDialog
         isOpen={showSettingsDialog}
@@ -373,10 +241,6 @@ const ChatDialog = ({
         userId={userId}
         username={username}
         onLogout={onLogout}
-        onBackToGame={() => {
-          setShowSettingsDialog(false);
-          onClose();
-        }}
       />
     </>
   );

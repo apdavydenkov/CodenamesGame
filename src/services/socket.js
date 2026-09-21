@@ -173,7 +173,7 @@ class GameSocket {
     };
   }
 
-  startNewGame(gameKey, words, colors, startingTeam = 'blue', userId = null, makeOwner = false) {
+  startNewGame(gameKey, words, colors, startingTeam = 'blue', userId = null) {
     if (!words || !colors || words.length !== 25 || colors.length !== 25) {
       console.error('Invalid game setup');
       return;
@@ -197,8 +197,7 @@ class GameSocket {
         words: this.words,
         colors: this.colors,
         startingTeam,
-        userId,
-        makeOwner
+        userId
       });
     } else {
       console.warn('[Socket] Cannot emit NEW_GAME - not connected');

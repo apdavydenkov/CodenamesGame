@@ -1,6 +1,9 @@
 // Сколько рубашек лежит в public/images для каждого цвета
 const BACKS = { blue: 40, red: 40, neutral: 40, black: 12 };
 
+// Сколько фонов стола лежит в public/backgrounds
+const BACKGROUNDS = 14;
+
 const hash = (seed) => {
   let h = 2166136261;
   for (let i = 0; i < seed.length; i++) {
@@ -45,3 +48,5 @@ export function getCardBack(gameKey, position, color) {
     mirrored: (hash(`${gameKey}:${position}:${color}`) & 1) === 1,
   };
 }
+
+export const getBackground = (gameKey) => `/backgrounds/${(hash(gameKey) % BACKGROUNDS) + 1}.webp`;

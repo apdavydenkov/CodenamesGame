@@ -1,7 +1,6 @@
 export default {
   "language": {
-    "name": "Čeština",
-    "code": "cs"
+    "name": "Čeština"
   },
   "meta": {
     "title": "Codenames Game - Online hra pro party | Kódová jména",
@@ -18,48 +17,32 @@ export default {
     "seoDescription": "Populární týmová hra, ve které dva kapitáni dávají svým týmům asociace, aby našli všechna svá slova a nevybočili z řady. Hrajte zdarma v prohlížeči bez instalace. Vytvořte hru a pozvěte přátele přes odkaz."
   },
   "menu": {
-    "title": "Herní menu",
-    "captainMode": "Režim kapitána",
-    "dictionary": "Slovník:",
+    "gameName": "",
     "aiTopic": "Téma (nebo několik) a požadovaný jazyk (nebo několik... ano-ano několik jazyků):",
     "aiTopicPlaceholder": "Například: jídlo v angličtině, Harry Potter v korejštině",
     "newGame": "Nová hra",
-    "gameKey": "Klíč hry",
     "shareGame": "Sdílet tuto hru",
     "close": "Zavřít",
-    "generating": "Generuji hru...",
-    "serverOnline": "Online",
-    "serverStarting": "Offline",
+    "generating": "",
+    "serverOnline": "",
+    "serverStarting": "",
     "information": "Informace",
-    "teamSelection": "",
     "blueTeam": "",
     "redTeam": "",
-    "spectator": "",
-    "becomeCaptain": "",
-    "leaveCaptain": "",
     "yourTeam": "",
-    "yourRole": "",
-    "rolePlayer": "",
-    "roleCaptain": "",
-    "roleSpectator": "",
-    "noTeam": "",
     "ownerActions": "",
-    "lockTeams": "",
-    "unlockTeams": "",
-    "makePrivate": "",
-    "makePublic": "",
-    "notSelected": "",
+    "teamsToggle": "",
+    "privateToggle": "",
+    "teamsToggleHint": "",
+    "privateToggleHint": "",
+    "observer": "",
+    "joinRoom": "",
+    "advancedMode": "",
+    "advancedModeHint": "",
+    "roleCaptain": "",
+    "rolePlayer": "",
     "andCaptain": "",
-    "teamsStatus": "",
-    "gameStatus": "",
-    "teamsOpen": "",
-    "teamsClosed": "",
-    "gamePublic": "",
-    "gamePrivate": "",
-    "gameMode": "",
-    "simpleMode": "",
-    "simpleModeOn": "",
-    "simpleModeHint": ""
+    "startGame": ""
   },
   "share": {
     "copyLink": "Kopírovat odkaz",
@@ -70,45 +53,28 @@ export default {
     "shareText": "Pojďme hrát Codenames! 🎮\\n"
   },
   "keyDialog": {
-    "title": "Klíč hry",
-    "description": "Zadejte klíč nebo vytvořte nový tlačítkem +. Bude vytvořena hra podle vybraného slovníku v hlavním menu. Pro vytvoření AI her: vyberte slovník \"Neuronová síť\" v hlavním menu, zadejte téma a klikněte na \"Nová hra\".",
-    "currentKey": "Současný klíč:",
-    "enterKey": "Zadejte klíč hry:",
     "keyPlaceholder": "БАКОСУГ nebo БАКОСУН",
-    "join": "Připojit",
-    "back": "Zpět",
     "invalidKey": "Neplatný klíč hry",
-    "aiGameNotFound": "AI hra nenalezena",
-    "aiKey": "AI klíč (neuronová síť slovník)",
-    "newKey": "Nový běžný klíč",
-    "aiKeysInMenu": "AI klíče se vytvářejí v hlavním menu"
+    "join": "",
+    "aiGameNotFound": "AI hra nenalezena"
   },
   "captainDialog": {
     "title": "Režim kapitána",
     "description": "V režimu kapitána uvidíte barvy všech karet. Pamatujte, že napovídání barev karet vašemu týmu je zakázáno - pokazí to radost ze hry.",
-    "warning": "Varování! Po aktivaci režimu kapitána nebudete moci jako běžný hráč participovat na hádání slov.",
     "confirm": "Potvrdit",
     "cancel": "Zrušit",
-    "currentTeam": "Současný tým:",
-    "blueTeam": "Modří",
-    "redTeam": "Červení",
     "remaining": "Zbývá",
-    "cards": "karet",
-    "helperTitle": "Pomocník kapitána",
-    "helperTip": "Podržte tlačítko",
-    "helperInstructions": "na 1 sekundu pro přepnutí režimu herního pole. Protivnický tým lze sbalit, slova lze přetahovat, přepínač může změnit tým.",
+    "helperTitle": "",
     "enterPhrase": "Zadejte frázi pro potvrzení:",
     "phrasePlaceholder": "Fráze",
     "assassinWord": "Slovo vraha",
     "confirmationPhrase": "KAPITÁN",
     "myWords": "",
     "opponentWords": "",
-    "myTeam": "",
-    "opponentTeam": ""
+    "helperHint": ""
   },
   "winDialog": {
     "title": "Hra skončila!",
-    "winner": "Vítězný tým:",
     "blueTeam": "Modrý",
     "redTeam": "Červený",
     "teamWon": "tým vyhrál odhalením všech svých karet!",
@@ -117,21 +83,15 @@ export default {
     "return": "Návrat na pole"
   },
   "status": {
-    "blueTeam": "Modrý tým:",
-    "redTeam": "Červený tým:",
-    "cards": "karet",
-    "captainHelper": "Pomocník kapitána",
+    "captainHelper": "",
     "menu": "Menu",
     "fullscreen": "Celá obrazovka",
     "chat": "Chat",
-    "iosFullscreenInstructions": ""
+    "hint": ""
   },
   "notifications": {
     "linkCopied": "Odkaz zkopírován!",
-    "keyCopied": "Klíč zkopírován",
-    "pressAndHold": "Podržte kartu pro odhalení",
     "chooseTeam": "",
-    "spectatorsCannotPlay": "",
     "notYourTurn": "",
     "captainsCannotPlay": "",
     "captainsRequired": "",
@@ -141,21 +101,21 @@ export default {
     "gamePublic": "",
     "privateGameTitle": "",
     "privateGameMessage": "",
-    "waitingForHint": ""
+    "waitingForHint": "",
+    "seat_captain_blue": "",
+    "seat_captain_red": "",
+    "seat_player_blue": "",
+    "seat_player_red": "",
+    "seat_spectator": "",
+    "holdToReveal": ""
   },
   "errors": {
     "enterTopic": "Zadejte téma pro vytvoření AI hry",
-    "aiGenerationError": "Chyba při generování AI hry",
-    "copyLinkFailed": "Nepodařilo se zkopírovat odkaz"
+    "aiGenerationError": "Chyba při generování AI hry"
   },
-  "game": {
-    "confirmReveal": "Odhalit kartu?",
-    "confirm": "Odhalit",
-    "cancel": "Zrušit"
-  },
+  "game": {},
   "dictionaries": {
-    "aiDictionary": "Neuronová síť (miliony slov, jakýkoli jazyk)",
-    "officialDictionary": "Oficiální slovník GaGa Games"
+    "aiDictionary": "Neuronová síť (miliony slov, jakýkoli jazyk)"
   },
   "info": {
     "title": "O aplikaci",
@@ -173,44 +133,24 @@ export default {
     "step3": "Kapitáni dávají nápovědy, hráči hádají",
     "step4": "První tým, který odhalí všechny své karty, vyhrává",
     "aiGames": "AI hry",
-    "aiDescription": "Zadejte jakékoli téma (vesmír, filmy, jídlo...) a získejte",
-    "aiWords": "jedinečnou sadu 25 slov generovaných neuronovou sítí!"
+    "aiDescription": ""
   },
-  "teamSwitch": {
-    "myTeam": "Můj tým:"
-  },
+  "teamSwitch": {},
   "common": {
     "loading": "Načítání...",
-    "error": "Chyba",
-    "retry": "Opakovat",
-    "ok": "OK",
-    "yes": "Ano",
-    "no": "Ne",
-    "copy": "Kopírovat",
-    "paste": "Vložit",
-    "clear": "Vymazat",
     "close": "Zavřít"
   },
   "languageDialog": {
-    "title": "Výběr jazyka",
-    "selectLanguage": "Vyberte jazyk rozhraní:",
-    "close": "Zavřít"
+    "selectLanguage": "Vyberte jazyk rozhraní:"
   },
   "chat": {
-    "title": "Chat",
     "hello": "Ahoj",
-    "loggedInAs": "Přihlášen jako",
     "logout": "Odhlásit se",
     "noMessages": "Zatím žádné zprávy",
     "typeMessage": "Napište zprávu...",
-    "enterName": "Zadejte prosím své jméno",
-    "messageTooLong": "Zpráva příliš dlouhá (max 500 znaků)",
     "tabGame": "Herní chat",
     "tabGlobal": "Globální",
     "pinCopied": "PIN zkopírován!",
-    "changeNamePrompt": "Zadejte nové jméno:",
-    "changeNameHint": "Klikněte pro změnu jména",
-    "nameChanged": "Jméno úspěšně změněno!",
     "nameChangeError": "Chyba při změně jména",
     "changeName": "Změnit jméno",
     "settings": "Nastavení",
@@ -225,8 +165,7 @@ export default {
     "winRate": "Procento výher",
     "favoriteRole": "Oblíbená role",
     "inDevelopment": "Ve vývoji",
-    "backToChat": "Do chatu",
-    "backToGame": "Do hry"
+    "pinMissing": ""
   },
   "auth": {
     "title": "Přihlášení do chatu",
@@ -248,9 +187,7 @@ export default {
     "cancelBtn": "Zrušit",
     "loginBtn": "Přihlásit",
     "backBtn": "Zpět",
-    "checkError": "Chyba při kontrole jména",
-    "registerError": "Chyba při registraci",
-    "verifyError": "Chyba při ověřování PIN"
+    "checkError": "Chyba při kontrole jména"
   },
   "hintDialog": {
     "wordExpired": "",
@@ -260,10 +197,10 @@ export default {
     "giveHintLabel": "",
     "wordPlaceholder": "",
     "numberPlaceholder": "",
-    "numberHint": "",
     "giveHintButton": "",
     "titleBlue": "",
     "titleRed": "",
-    "wordVisibleCountdown": ""
+    "wordVisibleCountdown": "",
+    "giveHintHint": ""
   }
 };

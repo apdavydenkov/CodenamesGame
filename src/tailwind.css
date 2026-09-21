@@ -1,5 +1,76 @@
 @import "tailwindcss";
 
+/* Палитра интерфейса. surface — фон модалки, panel — светлая поверхность внутри неё,
+   on-surface / on-panel — что лежит поверх них. Значения подставляет тема команды */
+@theme {
+  --color-ui-surface: #efe9dd;
+  --color-ui-surface-line: rgb(0 0 0 / 0.1);
+  --color-ui-on-surface: #1c1917;
+  --color-ui-on-surface-muted: #6b7280;
+  --color-ui-on-surface-hover: rgb(0 0 0 / 0.06);
+  --color-ui-panel: #fffbeb;
+  --color-ui-panel-line: #ded5c3;
+  --color-ui-on-panel: #1c1917;
+  --color-ui-accent: #57534e;
+  --color-ui-accent-hover: #44403c;
+}
+
+/* Цвета команд — один набор на всё приложение: из него берёт и тема меню,
+   и кнопки мест. data-team ставит элемент, который живёт в цвете команды */
+:root {
+  --blue-surface: #35538f;
+  --blue-panel-line: #506fab;
+  --blue-on-panel: #2a4275;
+  --blue-on-surface-muted: #cfdcf3;
+  --blue-accent: #3d64a6;
+  --blue-accent-hover: #335489;
+
+  --red-surface: #8f3833;
+  --red-panel-line: #b0514c;
+  --red-on-panel: #752b27;
+  --red-on-surface-muted: #f7cbc7;
+  --red-accent: #a8443f;
+  --red-accent-hover: #8b3733;
+
+  --assassin: #1c1917;
+  --chat-own: #6d54b8;
+}
+
+[data-team="blue"] {
+  --color-ui-surface: var(--blue-surface);
+  --color-ui-surface-line: rgb(255 255 255 / 0.18);
+  --color-ui-on-surface: #fffbeb;
+  --color-ui-on-surface-muted: var(--blue-on-surface-muted);
+  --color-ui-on-surface-hover: rgb(255 255 255 / 0.12);
+  --color-ui-panel-line: var(--blue-panel-line);
+  --color-ui-on-panel: var(--blue-on-panel);
+  --color-ui-accent: var(--blue-accent);
+  --color-ui-accent-hover: var(--blue-accent-hover);
+}
+
+[data-team="red"] {
+  --color-ui-surface: var(--red-surface);
+  --color-ui-surface-line: rgb(255 255 255 / 0.18);
+  --color-ui-on-surface: #fffbeb;
+  --color-ui-on-surface-muted: var(--red-on-surface-muted);
+  --color-ui-on-surface-hover: rgb(255 255 255 / 0.12);
+  --color-ui-panel-line: var(--red-panel-line);
+  --color-ui-on-panel: var(--red-on-panel);
+  --color-ui-accent: var(--red-accent);
+  --color-ui-accent-hover: var(--red-accent-hover);
+}
+
+body {
+  color: var(--color-ui-on-surface);
+  background-color: var(--color-ui-surface);
+}
+
+.chat-bubble::before {
+  content: ''; position: absolute; bottom: 10px; left: -8px; width: 9px; height: 14px;
+  background: inherit; clip-path: polygon(100% 0, 0 50%, 100% 100%);
+}
+.chat-bubble-own::before { left: auto; right: -8px; scale: -1 1; }
+
 /* Отключаем брейкпоинты и ограничения ширины для всего приложения */
 html, body, #root {
   width: 100%;
@@ -11,3 +82,6 @@ html, body, #root {
 #root {
   display: contents;
 }
+
+.menu-steps { counter-reset: step; }
+.menu-step::before { counter-increment: step; content: counter(step) ". "; }

@@ -5,7 +5,7 @@
 export function validateCardReveal({
   revealed,
   isAuthenticated,
-  simpleMode,
+  advancedMode,
   isCaptain,
   myRole,
   teams,
@@ -13,22 +13,6 @@ export function validateCardReveal({
   currentTeam,
   currentHint,
 }) {
-  const logData = {
-    timestamp: new Date().toISOString(),
-    revealed,
-    isAuthenticated,
-    simpleMode,
-    isCaptain,
-    myRole,
-    myTeam,
-    currentTeam,
-    teams: teams ? {
-      blueCaptain: teams?.blue?.captain,
-      redCaptain: teams?.red?.captain,
-    } : null,
-    currentHint: currentHint ? 'exists' : null,
-  };
-
   // Проверка 1: Карточка уже открыта
   if (revealed) {
     return null; // Просто игнорируем, не ошибка
@@ -43,12 +27,12 @@ export function validateCardReveal({
     };
   }
 
-  // В простом режиме - все остальные проверки пропускаем
-  if (simpleMode) {
-    return null; // Можно открывать
+  // Вне продвинутого режима остальные проверки не нужны: карточки открывают все
+  if (!advancedMode) {
+    return null;
   }
 
-  // === ПРОВЕРКИ ДЛЯ ОБЫЧНОГО РЕЖИМА ===
+  // === ПРОВЕРКИ ПРОДВИНУТОГО РЕЖИМА ===
 
   // Проверка 3: Капитаны не могут открывать
   if (isCaptain || myRole === 'captain') {
@@ -71,8 +55,8 @@ export function validateCardReveal({
     };
   }
 
-  // Проверка 5: Выбрана команда
-  if (!myTeam) {
+  // Проверка 5: Играют только участники команд, остальные наблюдают
+  if (myTeam !== 'blue' && myTeam !== 'red') {
     return {
       code: 'NO_TEAM',
       message: 'notifications.chooseTeam',
@@ -80,16 +64,7 @@ export function validateCardReveal({
     };
   }
 
-  // Проверка 6: Зрители не могут играть
-  if (myTeam === 'spectator') {
-    return {
-      code: 'SPECTATOR_CANNOT_PLAY',
-      message: 'notifications.spectatorsCannotPlay',
-      highlight: 'menu',
-    };
-  }
-
-  // Проверка 7: Сейчас ход команды игрока
+  // Проверка 6: Сейчас ход команды игрока
   if (myTeam !== currentTeam) {
     return {
       code: 'NOT_YOUR_TURN',
@@ -97,7 +72,7 @@ export function validateCardReveal({
     };
   }
 
-  // Проверка 8: Капитан дал шифровку
+  // Проверка 7: Капитан дал шифровку
   if (!currentHint) {
     return {
       code: 'WAITING_FOR_HINT',

@@ -1,7 +1,6 @@
 export default {
   "language": {
-    "name": "Tiếng Việt",
-    "code": "vi"
+    "name": "Tiếng Việt"
   },
   "meta": {
     "title": "Codenames Game - Trò chơi đội nhóm trực tuyến | Tên mã",
@@ -18,48 +17,32 @@ export default {
     "seoDescription": "Trò chơi nhóm phổ biến nơi hai đội trưởng đưa ra gợi ý liên tưởng cho đội của mình để tìm tất cả từ đồng minh và tránh sát thủ. Chơi miễn phí trong trình duyệt không cần cài đặt. Tạo trò chơi và mời bạn bè qua liên kết."
   },
   "menu": {
-    "title": "Menu trò chơi",
-    "captainMode": "Chế độ đội trưởng",
-    "dictionary": "Từ điển:",
+    "gameName": "",
     "aiTopic": "Chủ đề (hoặc nhiều chủ đề) và ngôn ngữ mong muốn (hoặc nhiều ngôn ngữ... đúng, nhiều ngôn ngữ):",
     "aiTopicPlaceholder": "Ví dụ: đồ ăn tiếng Anh, Harry Potter tiếng Hàn",
     "newGame": "Trò chơi mới",
-    "gameKey": "Khóa trò chơi",
     "shareGame": "Chia sẻ trò chơi này",
     "close": "Đóng",
-    "generating": "Đang tạo trò chơi...",
-    "serverOnline": "Online",
-    "serverStarting": "Offline",
+    "generating": "",
+    "serverOnline": "",
+    "serverStarting": "",
     "information": "Thông tin",
-    "teamSelection": "",
     "blueTeam": "",
     "redTeam": "",
-    "spectator": "",
-    "becomeCaptain": "",
-    "leaveCaptain": "",
     "yourTeam": "",
-    "yourRole": "",
-    "rolePlayer": "",
-    "roleCaptain": "",
-    "roleSpectator": "",
-    "noTeam": "",
     "ownerActions": "",
-    "lockTeams": "",
-    "unlockTeams": "",
-    "makePrivate": "",
-    "makePublic": "",
-    "notSelected": "",
+    "teamsToggle": "",
+    "privateToggle": "",
+    "teamsToggleHint": "",
+    "privateToggleHint": "",
+    "observer": "",
+    "joinRoom": "",
+    "advancedMode": "",
+    "advancedModeHint": "",
+    "roleCaptain": "",
+    "rolePlayer": "",
     "andCaptain": "",
-    "teamsStatus": "",
-    "gameStatus": "",
-    "teamsOpen": "",
-    "teamsClosed": "",
-    "gamePublic": "",
-    "gamePrivate": "",
-    "gameMode": "",
-    "simpleMode": "",
-    "simpleModeOn": "",
-    "simpleModeHint": ""
+    "startGame": ""
   },
   "share": {
     "copyLink": "Sao chép liên kết",
@@ -70,45 +53,28 @@ export default {
     "shareText": "Hãy chơi Codenames! 🎮\\n"
   },
   "keyDialog": {
-    "title": "Khóa trò chơi",
-    "description": "Nhập khóa hoặc tạo khóa mới bằng nút +. Trò chơi sẽ được tạo theo từ điển đã chọn trong menu chính. Để tạo trò chơi AI: chọn từ điển \"Mạng Neural\" trong menu chính, chỉ định chủ đề và nhấp \"Trò chơi mới\".",
-    "currentKey": "Khóa hiện tại:",
-    "enterKey": "Nhập khóa trò chơi:",
     "keyPlaceholder": "БАКОСУГ hoặc БАКОСУН",
-    "join": "Tham gia",
-    "back": "Quay lại",
     "invalidKey": "Khóa trò chơi không hợp lệ",
-    "aiGameNotFound": "Không tìm thấy trò chơi AI",
-    "aiKey": "Khóa AI (từ điển mạng neural)",
-    "newKey": "Khóa thường mới",
-    "aiKeysInMenu": "Khóa AI được tạo trong menu chính"
+    "join": "",
+    "aiGameNotFound": "Không tìm thấy trò chơi AI"
   },
   "captainDialog": {
     "title": "Chế độ đội trưởng",
     "description": "Trong chế độ đội trưởng, bạn sẽ thấy màu sắc của tất cả các thẻ. Hãy nhớ rằng việc gợi ý màu sắc thẻ cho đội là bị cấm - điều này sẽ làm hỏng niềm vui của trò chơi.",
-    "warning": "Chú ý! Sau khi kích hoạt chế độ đội trưởng, bạn sẽ không thể tham gia đoán từ như một người chơi bình thường.",
     "confirm": "Xác nhận",
     "cancel": "Hủy",
-    "currentTeam": "Đội hiện tại:",
-    "blueTeam": "Đội Xanh",
-    "redTeam": "Đội Đỏ",
     "remaining": "Còn lại",
-    "cards": "thẻ",
-    "helperTitle": "Trợ lý đội trưởng",
-    "helperTip": "Giữ nút",
-    "helperInstructions": "trong 1 giây để chuyển đổi chế độ sân chơi. Có thể thu gọn đội đối thủ, kéo thả từ, công tắc có thể thay đổi đội.",
+    "helperTitle": "",
     "enterPhrase": "Nhập cụm từ xác nhận:",
     "phrasePlaceholder": "Cụm từ",
     "assassinWord": "Từ sát thủ",
     "confirmationPhrase": "ĐỘI TRƯỞNG",
     "myWords": "",
     "opponentWords": "",
-    "myTeam": "",
-    "opponentTeam": ""
+    "helperHint": ""
   },
   "winDialog": {
     "title": "Trò chơi kết thúc!",
-    "winner": "Đội thắng cuộc:",
     "blueTeam": "Xanh",
     "redTeam": "Đỏ",
     "teamWon": "đội đã thắng bằng cách mở tất cả thẻ của mình!",
@@ -117,21 +83,15 @@ export default {
     "return": "Quay lại sân"
   },
   "status": {
-    "blueTeam": "Đội Xanh:",
-    "redTeam": "Đội Đỏ:",
-    "cards": "thẻ",
-    "captainHelper": "Trợ lý đội trưởng",
+    "captainHelper": "",
     "menu": "Menu",
     "fullscreen": "Toàn màn hình",
     "chat": "Trò chuyện",
-    "iosFullscreenInstructions": ""
+    "hint": ""
   },
   "notifications": {
     "linkCopied": "Đã sao chép liên kết!",
-    "keyCopied": "Đã sao chép khóa",
-    "pressAndHold": "Giữ thẻ để mở",
     "chooseTeam": "",
-    "spectatorsCannotPlay": "",
     "notYourTurn": "",
     "captainsCannotPlay": "",
     "captainsRequired": "",
@@ -141,26 +101,24 @@ export default {
     "gamePublic": "",
     "privateGameTitle": "",
     "privateGameMessage": "",
-    "waitingForHint": ""
+    "waitingForHint": "",
+    "seat_captain_blue": "",
+    "seat_captain_red": "",
+    "seat_player_blue": "",
+    "seat_player_red": "",
+    "seat_spectator": "",
+    "holdToReveal": ""
   },
   "errors": {
     "enterTopic": "Nhập chủ đề để tạo trò chơi AI",
-    "aiGenerationError": "Lỗi tạo trò chơi AI",
-    "copyLinkFailed": "Không thể sao chép liên kết"
+    "aiGenerationError": "Lỗi tạo trò chơi AI"
   },
-  "game": {
-    "confirmReveal": "Mở thẻ?",
-    "confirm": "Mở",
-    "cancel": "Hủy"
-  },
+  "game": {},
   "dictionaries": {
-    "aiDictionary": "Mạng Neural (hàng triệu từ, mọi ngôn ngữ)",
-    "officialDictionary": "Từ điển chính thức GaGa Games"
+    "aiDictionary": "Mạng Neural (hàng triệu từ, mọi ngôn ngữ)"
   },
   "languageDialog": {
-    "title": "Chọn ngôn ngữ",
-    "selectLanguage": "Chọn ngôn ngữ giao diện:",
-    "close": "Đóng"
+    "selectLanguage": "Chọn ngôn ngữ giao diện:"
   },
   "info": {
     "title": "Về ứng dụng",
@@ -178,39 +136,21 @@ export default {
     "step3": "Đội trưởng đưa ra gợi ý, người chơi đoán",
     "step4": "Đội đầu tiên mở tất cả thẻ của mình sẽ thắng",
     "aiGames": "Trò chơi AI",
-    "aiDescription": "Nhập bất kỳ chủ đề nào (không gian, phim, đồ ăn...) và nhận",
-    "aiWords": "bộ 25 từ độc đáo được tạo bởi mạng neural!"
+    "aiDescription": ""
   },
-  "teamSwitch": {
-    "myTeam": "Đội của tôi:"
-  },
+  "teamSwitch": {},
   "common": {
     "loading": "Đang tải...",
-    "error": "Lỗi",
-    "retry": "Thử lại",
-    "ok": "OK",
-    "yes": "Có",
-    "no": "Không",
-    "copy": "Sao chép",
-    "paste": "Dán",
-    "clear": "Xóa",
     "close": "Đóng"
   },
   "chat": {
-    "title": "Trò chuyện",
     "hello": "Xin chào",
-    "loggedInAs": "Đăng nhập với tên",
     "logout": "Đăng xuất",
     "noMessages": "Chưa có tin nhắn",
     "typeMessage": "Nhập tin nhắn...",
-    "enterName": "Vui lòng nhập tên của bạn",
-    "messageTooLong": "Tin nhắn quá dài (tối đa 500 ký tự)",
     "tabGame": "Chat trò chơi",
     "tabGlobal": "Toàn cầu",
     "pinCopied": "Đã sao chép PIN!",
-    "changeNamePrompt": "Nhập tên mới:",
-    "changeNameHint": "Nhấp để đổi tên",
-    "nameChanged": "Đã đổi tên thành công!",
     "nameChangeError": "Lỗi khi đổi tên",
     "changeName": "Đổi tên",
     "settings": "Cài đặt",
@@ -225,8 +165,7 @@ export default {
     "winRate": "Tỷ lệ thắng",
     "favoriteRole": "Vai trò yêu thích",
     "inDevelopment": "Đang phát triển",
-    "backToChat": "Đến chat",
-    "backToGame": "Đến trò chơi"
+    "pinMissing": ""
   },
   "auth": {
     "title": "Đăng nhập chat",
@@ -248,9 +187,7 @@ export default {
     "cancelBtn": "Hủy",
     "loginBtn": "Đăng nhập",
     "backBtn": "Quay lại",
-    "checkError": "Lỗi kiểm tra tên",
-    "registerError": "Lỗi khi đăng ký",
-    "verifyError": "Lỗi xác minh PIN"
+    "checkError": "Lỗi kiểm tra tên"
   },
   "hintDialog": {
     "wordExpired": "",
@@ -260,10 +197,10 @@ export default {
     "giveHintLabel": "",
     "wordPlaceholder": "",
     "numberPlaceholder": "",
-    "numberHint": "",
     "giveHintButton": "",
     "titleBlue": "",
     "titleRed": "",
-    "wordVisibleCountdown": ""
+    "wordVisibleCountdown": "",
+    "giveHintHint": ""
   }
 };

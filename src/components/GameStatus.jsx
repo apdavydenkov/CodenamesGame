@@ -1,20 +1,41 @@
 import { useState, useEffect, useRef, memo } from "react";
-import { FiMenu, FiUserPlus, FiStar, FiFileText, FiUser, FiEye, FiMessageSquare } from "react-icons/fi";
+import { FiMenu, FiUserPlus, FiStar, FiFileText, FiUser, FiMessageSquare } from "react-icons/fi";
 import { useTranslation } from "../hooks/useTranslation";
-import ReferenceDialog from "./dialogs/ReferenceDialog";
 
 const PRESS_DURATION = 1000;
 const PROGRESS_INTERVAL = 50;
+const CONFIRMATION_PERIOD = 7 * 24 * 60 * 60 * 1000;
+const HINT_GLOW = 30000;
 
-// Проверка подтверждения капитана (1 раз в неделю)
+const ICON_BUTTON = "inline-flex items-center justify-center overflow-hidden rounded-lg border border-ui-accent/20 bg-ui-panel w-10 h-10 min-w-[40px] text-ui-on-panel hover:bg-ui-panel-line cursor-pointer transition-colors [-webkit-tap-highlight-color:transparent]";
+
+const TEAM_BG = { blue: 'bg-[var(--blue-accent)]', red: 'bg-[var(--red-accent)]' };
+const TEAM_BADGE = { blue: 'bg-[var(--blue-accent-hover)]', red: 'bg-[var(--red-accent-hover)]' };
+
 const needsCaptainConfirmation = () => {
   const lastConfirmed = localStorage.getItem('codenames-captain-confirmed');
-  if (!lastConfirmed) return true;
-
-  const weekInMs = 7 * 24 * 60 * 60 * 1000;
-  const timeSinceConfirmation = Date.now() - parseInt(lastConfirmed, 10);
-  return timeSinceConfirmation > weekInMs;
+  return !lastConfirmed || Date.now() - parseInt(lastConfirmed, 10) > CONFIRMATION_PERIOD;
 };
+
+const TeamScore = ({ team, count, roster, advanced, active }) => (
+  <div
+    className={`h-10 flex items-center rounded-md px-1 ${TEAM_BG[team]} ${advanced ? 'justify-between' : 'justify-center'} ${
+      team === 'red' ? 'flex-row-reverse' : ''
+    } ${advanced && !active ? 'opacity-40' : ''}`}
+  >
+    <span className="min-w-[2rem] text-center text-2xl font-bold text-ui-panel">{count}</span>
+
+    {advanced && roster && (
+      <div className={`flex flex-col items-center justify-center gap-0.5 rounded px-1.5 h-[calc(100%-0.5rem)] min-w-[2.5rem] text-xs text-ui-panel ${TEAM_BADGE[team]}`}>
+        {roster.captain && <FiStar size={12} />}
+        <div className="flex items-center gap-0.5">
+          <FiUser size={12} />
+          <span className="font-semibold leading-none">{roster.players.length}</span>
+        </div>
+      </div>
+    )}
+  </div>
+);
 
 const GameStatus = ({
   remainingCards,
@@ -34,254 +55,126 @@ const GameStatus = ({
   onHintClick,
   teams = null,
   gameSettings = {},
+  myTeam = null,
 }) => {
   const { t } = useTranslation();
   const [pressing, setPressing] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [hintGlowing, setHintGlowing] = useState(false);
   const pressTimer = useRef(null);
   const progressTimer = useRef(null);
   const wasLongPress = useRef(false);
 
-  const [isHintGlowing, setIsHintGlowing] = useState(false);
-  const [showReferenceDialog, setShowReferenceDialog] = useState(false);
+  const advanced = Boolean(gameSettings.advancedMode);
 
   useEffect(() => {
-    if (!currentHint) {
-      setIsHintGlowing(false);
-      return;
-    }
+    document.body.toggleAttribute('data-peeking', pressing);
+  }, [pressing]);
 
-    const elapsed = Date.now() - currentHint.timestamp;
-    const remaining = 30000 - elapsed;
+  const hintTimestamp = currentHint?.timestamp;
 
-    if (remaining <= 0) {
-      setIsHintGlowing(false);
-    } else {
-      setIsHintGlowing(true);
-      const timer = setTimeout(() => {
-        setIsHintGlowing(false);
-      }, remaining);
+  useEffect(() => {
+    const remaining = hintTimestamp ? HINT_GLOW - (Date.now() - hintTimestamp) : 0;
 
-      return () => clearTimeout(timer);
-    }
-  }, [currentHint?.timestamp]);
+    setHintGlowing(remaining > 0);
+    if (remaining <= 0) return;
 
-  const startCaptainPress = (e) => {
-    e.preventDefault();
+    const timer = setTimeout(() => setHintGlowing(false), remaining);
+    return () => clearTimeout(timer);
+  }, [hintTimestamp]);
+
+  const stopPress = () => {
+    clearTimeout(pressTimer.current);
+    clearInterval(progressTimer.current);
+    setPressing(false);
+    setProgress(0);
+  };
+
+  useEffect(() => stopPress, []);
+
+  const startCaptainPress = (event) => {
+    event.preventDefault();
     wasLongPress.current = false;
     setPressing(true);
     setProgress(0);
 
     pressTimer.current = setTimeout(() => {
       wasLongPress.current = true;
-      setPressing(false);
-      setProgress(0);
+      stopPress();
 
-      // Проверяем подтверждение перед переключением режима
-      if (needsCaptainConfirmation()) {
-        // Если не подтверждено или прошла неделя - открываем диалог
-        onCaptainHelperClick();
-        return;
-      }
-
-      // Подтверждение актуально - переключаем режим
-      onCaptainModeToggle();
+      if (needsCaptainConfirmation()) onCaptainHelperClick();
+      else onCaptainModeToggle();
     }, PRESS_DURATION);
 
-    let currentProgress = 0;
+    let current = 0;
     progressTimer.current = setInterval(() => {
-      currentProgress += (100 * PROGRESS_INTERVAL) / PRESS_DURATION;
-      if (currentProgress >= 100) {
-        clearInterval(progressTimer.current);
-      } else {
-        setProgress(currentProgress);
-      }
+      current += (100 * PROGRESS_INTERVAL) / PRESS_DURATION;
+      if (current >= 100) clearInterval(progressTimer.current);
+      else setProgress(current);
     }, PROGRESS_INTERVAL);
   };
 
-  const endCaptainPress = () => {
-    if (pressTimer.current) {
-      clearTimeout(pressTimer.current);
-      clearInterval(progressTimer.current);
-      setPressing(false);
-      setProgress(0);
-    }
-  };
-
   const handleCaptainClick = () => {
-    if (!pressing && !wasLongPress.current) {
-      // Короткий клик - всегда открываем диалог
-      // Диалог сам решит показывать форму или хелпер
-      onCaptainHelperClick();
-    }
+    if (!pressing && !wasLongPress.current) onCaptainHelperClick();
     wasLongPress.current = false;
   };
 
-  useEffect(() => {
-    return () => {
-      if (pressTimer.current) clearTimeout(pressTimer.current);
-      if (progressTimer.current) clearInterval(progressTimer.current);
-    };
-  }, []);
-
   return (
-    <div className="bg-white w-full flex-shrink-0 select-none mt-1.5 portrait:bg-transparent portrait:relative portrait:z-[2]">
-      <div className="w-full">
-        <div className="grid grid-cols-[1fr_auto_1fr] gap-1 w-full">
-          {/* Blue Team */}
-          <div
-            className={`h-10 flex items-center rounded-md bg-blue-600 px-1 ${
-              gameSettings?.simpleMode ? 'justify-center' : 'justify-between'
-            }`}
-            style={{ opacity: !gameSettings?.simpleMode && currentTeam === "blue" ? 1 : !gameSettings?.simpleMode ? 0.4 : 1 }}
-          >
-            <div className="flex items-center justify-center text-white min-w-[2rem]">
-              <span className="text-2xl font-bold">{remainingCards.blue}</span>
-            </div>
-            {!gameSettings?.simpleMode && teams?.blue && (
-              <div className="flex flex-col items-center justify-center gap-0.5 text-white text-xs bg-blue-700 rounded h-[calc(100%-0.5rem)] px-1.5 min-w-[2.5rem]">
-                {teams.blue.captain ? (
-                  <>
-                    <div className="flex items-center gap-0.5">
-                      <FiStar size={12} />
-                    </div>
-                    <div className="flex items-center gap-0.5">
-                      <FiUser size={12} />
-                      <span className="font-semibold leading-none">{teams.blue.players.length}</span>
-                    </div>
-                  </>
-                ) : (
-                  <div className="flex items-center gap-0.5">
-                    <FiUser size={12} />
-                    <span className="font-semibold leading-none">{teams.blue.players.length}</span>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+    <div data-team={myTeam} className="w-full flex-shrink-0 select-none mt-1.5 portrait:relative portrait:z-[2]">
+      <div className="grid grid-cols-[1fr_auto_1fr] gap-1 w-full">
+        <TeamScore team="blue" count={remainingCards.blue} roster={teams?.blue} advanced={advanced} active={currentTeam === 'blue'} />
 
-          {/* Menu Buttons */}
-          <div className="flex items-center justify-center">
-            <div className="flex gap-1">
-              {myRole === 'captain' && (
-                <button
-                  className={`inline-flex items-center justify-center rounded-lg border border-gray-300 bg-transparent w-10 h-10 min-w-[40px] text-gray-900 hover:bg-gray-50 cursor-pointer transition-colors [-webkit-tap-highlight-color:transparent] ${
-                    isCaptain ? "bg-gray-100 text-blue-600" : ""
-                  } ${highlightCaptainIcon ? "[animation:buttonHighlight_3s_ease-in-out]" : ""}`}
-                  onClick={handleCaptainClick}
-                  onPointerDown={startCaptainPress}
-                  onPointerUp={endCaptainPress}
-                  onPointerLeave={endCaptainPress}
-                  title={t('status.captainHelper')}
-                >
-                  <div className="relative w-full h-full flex items-center justify-center">
-                    <FiStar size={20} />
-                    {pressing && (
-                      <div
-                        className="absolute bottom-0 left-0 h-1 bg-blue-600 transition-all"
-                        style={{ width: `${progress}%` }}
-                      />
-                    )}
-                  </div>
-                </button>
+        <div className="flex items-center justify-center gap-1">
+          {myRole === 'captain' && (
+            <button
+              className={`${ICON_BUTTON} relative ${isCaptain ? 'bg-ui-accent! text-ui-panel!' : ''}`}
+              onClick={handleCaptainClick}
+              onPointerDown={startCaptainPress}
+              onPointerUp={stopPress}
+              onPointerLeave={stopPress}
+              title={t('status.captainHelper')}
+            >
+              <FiStar size={20} />
+              {(pressing || highlightCaptainIcon) && (
+                <div
+                  className={`absolute inset-x-0 bottom-0 h-1 bg-ui-accent progress-fill ${pressing ? '' : 'progress-flash'}`}
+                  style={{ '--fill': `${progress}%` }}
+                />
               )}
-              <button
-                className={`inline-flex items-center justify-center rounded-lg border border-gray-300 bg-transparent w-10 h-10 min-w-[40px] text-gray-900 hover:bg-gray-50 cursor-pointer transition-colors [-webkit-tap-highlight-color:transparent] ${
-                  highlightMenuIcon ? "[animation:buttonHighlight_3s_ease-in-out]" : ""
-                }`}
-                onClick={onMenuClick}
-                title={t('status.menu')}
-              >
-                <FiMenu size={20} />
-              </button>
-              <button
-                className="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-transparent w-10 h-10 min-w-[40px] text-gray-900 hover:bg-gray-50 cursor-pointer transition-colors [-webkit-tap-highlight-color:transparent] relative"
-                onClick={onChatClick}
-                title={t('status.chat')}
-              >
-                {isUserAuthorized ? (
-                  <FiMessageSquare size={20} />
-                ) : (
-                  <FiUserPlus size={20} />
-                )}
-                {unreadCount > 0 && (
-                  <span
-                    className="absolute bottom-0 left-1/2 -translate-x-1/2 text-black font-bold pointer-events-none"
-                    style={{
-                      fontSize: '10px'
-                    }}
-                  >
-                    {unreadCount > 99 ? 99 : unreadCount}
-                  </span>
-                )}
-              </button>
-              {!gameSettings?.simpleMode && currentHint && onHintClick && (
-                <button
-                  className={`inline-flex items-center justify-center rounded-lg border border-gray-300 bg-transparent w-10 h-10 min-w-[40px] text-gray-900 hover:bg-gray-50 cursor-pointer transition-colors [-webkit-tap-highlight-color:transparent] hint-button hint-${hintTeam} ${
-                    isHintGlowing ? 'glowing' : ''
-                  }`}
-                  onClick={onHintClick}
-                  title="Шифровка"
-                >
-                  <FiFileText size={20} />
-                </button>
-              )}
-            </div>
-          </div>
+            </button>
+          )}
 
-          {/* Red Team */}
-          <div
-            className={`h-10 flex items-center rounded-md bg-red-600 px-1 ${
-              gameSettings?.simpleMode ? 'justify-center' : 'justify-between'
-            }`}
-            style={{ opacity: !gameSettings?.simpleMode && currentTeam === "red" ? 1 : !gameSettings?.simpleMode ? 0.4 : 1 }}
+          <button
+            className={`${ICON_BUTTON} ${highlightMenuIcon ? 'icon-flash-border' : ''}`}
+            onClick={onMenuClick}
+            title={t('status.menu')}
           >
-            {!gameSettings?.simpleMode && teams?.red && (
-              <div className="flex flex-col items-center justify-center gap-0.5 text-white text-xs bg-red-700 rounded h-[calc(100%-0.5rem)] px-1.5 min-w-[2.5rem]">
-                {teams.red.captain ? (
-                  <>
-                    <div className="flex items-center gap-0.5">
-                      <FiStar size={12} />
-                    </div>
-                    <div className="flex items-center gap-0.5">
-                      <FiUser size={12} />
-                      <span className="font-semibold leading-none">{teams.red.players.length}</span>
-                    </div>
-                  </>
-                ) : (
-                  <div className="flex items-center gap-0.5">
-                    <FiUser size={12} />
-                    <span className="font-semibold leading-none">{teams.red.players.length}</span>
-                  </div>
-                )}
-              </div>
+            <FiMenu size={20} />
+          </button>
+
+          <button className={`${ICON_BUTTON} relative`} onClick={onChatClick} title={t('status.chat')}>
+            {isUserAuthorized ? <FiMessageSquare size={20} /> : <FiUserPlus size={20} />}
+            {unreadCount > 0 && (
+              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 text-[10px] font-bold pointer-events-none">
+                {Math.min(unreadCount, 99)}
+              </span>
             )}
-            <div className="flex items-center justify-center text-white min-w-[2rem]">
-              <span className="text-2xl font-bold">{remainingCards.red}</span>
-            </div>
-          </div>
+          </button>
+
+          {advanced && currentHint && onHintClick && (
+            <button
+              data-team={hintTeam}
+              className={`${ICON_BUTTON} border-ui-accent! text-ui-accent! ${hintGlowing ? 'hint-glowing' : ''}`}
+              onClick={onHintClick}
+              title={t('status.hint')}
+            >
+              <FiFileText size={20} />
+            </button>
+          )}
         </div>
+
+        <TeamScore team="red" count={remainingCards.red} roster={teams?.red} advanced={advanced} active={currentTeam === 'red'} />
       </div>
-
-      <ReferenceDialog
-        isOpen={showReferenceDialog}
-        onClose={() => setShowReferenceDialog(false)}
-      />
-
-      <style>{`
-        @keyframes buttonHighlight {
-          0%, 100% {
-            box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
-          }
-          10%, 30%, 50%, 70%, 90% {
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.4);
-            background-color: rgba(37, 99, 235, 0.1);
-          }
-          20%, 40%, 60%, 80% {
-            box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
-          }
-        }
-      `}</style>
     </div>
   );
 };

@@ -1,12 +1,7 @@
-/* Mobile Background (portrait orientation only) */
-@media screen and (orientation: portrait) {
-  body {
-    background-image: url('/bg.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-  }
+body {
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
 }
 
 /* Анимация появления карточек */
@@ -21,47 +16,80 @@
   }
 }
 
-/* Base Card Styles */
 .game-card {
   position: relative;
   cursor: pointer;
-  border-radius: 2vmin;
-  overflow: hidden;
   width: 100%;
   height: 100%;
   min-height: 0;
   user-select: none;
   touch-action: none;
   -webkit-tap-highlight-color: transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transform-style: preserve-3d;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  transition: background-color 0.3s ease-in-out;
-
-  /* Оптимизация рендеринга */
-  content-visibility: auto;
-  contain: layout style paint;
-
-  /* Анимация появления */
+  perspective: 60vmin;
   animation: cardDeal 0.3s ease-out backwards;
 }
 
-/* Background Image Animation */
-.game-card::before {
+.card-inner {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transition: transform 0.6s ease-in-out, translate 0.2s ease-out;
+}
+
+.card-turned {
+  transform: rotateY(180deg);
+}
+
+.card-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 2vmin;
+  backface-visibility: hidden;
+  box-shadow: 0 0.3vmin 0.6vmin rgb(0 0 0 / 0.25), 0 1vmin 2vmin rgb(0 0 0 / 0.15), inset 0 0.25vmin 0 rgb(255 255 255 / 0.45);
+  transition: box-shadow 0.2s ease-out;
+}
+
+@media (hover: hover) {
+  .game-card:hover .card-inner:not(.card-turned) {
+    translate: 0 -0.6vmin;
+  }
+
+  .game-card:hover .card-inner:not(.card-turned) .card-face {
+    box-shadow: 0 0.8vmin 1.2vmin rgb(0 0 0 / 0.25), 0 2vmin 3.5vmin rgb(0 0 0 / 0.2), inset 0 0.25vmin 0 rgb(255 255 255 / 0.45);
+  }
+}
+
+.card-back {
+  transform: rotateY(180deg);
+}
+
+.card-back::before,
+.card-back::after {
   content: '';
   position: absolute;
   inset: 0;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  border-radius: 2vmin;
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
-  z-index: 1;
+}
+
+.card-back::after {
+  background: linear-gradient(105deg, transparent 40%, rgb(255 255 255 / 0.35) 50%, transparent 60%) 0 0 / 250% 100% no-repeat;
+}
+
+.card-turned .card-back::after {
+  animation: card-sheen 0.9s ease-out 0.35s;
+}
+
+@keyframes card-sheen {
+  from { background-position: 100% 0; }
+  to { background-position: 0 0; }
+}
+
+.card-back::before {
+  background: var(--card-back) center / cover no-repeat;
+  transform: scaleX(var(--card-back-flip, 1));
 }
 
 .card-content {
@@ -69,60 +97,51 @@
   height: calc(100% - 3vmin);
   border: 0.4vmin solid #2d231926;
   border-radius: 2vmin;
-  background: transparent;
-  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0.25rem;
-  pointer-events: none;
-  z-index: 10;
-}
-
-.card-word {
-  font-weight: bold;
-  text-align: center;
-  line-height: 1.2;
-  font-size: 3vmin;
-  z-index: 20;
   position: relative;
-  padding: 1vmin;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  max-width: 100%;
-  pointer-events: none;
-  color: white;
-}
-
-/* Color Overlay */
-.game-card::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 2vmin;
-  z-index: 5;
-  opacity: 0;
+  z-index: 10;
   transition: opacity 0.3s ease-in-out;
 }
 
-/* Card Flip Animation */
-.card-flipped {
-  transform: rotateY(180deg);
-  transition: transform 1s ease-in-out;
-}
-
-.card-flipped .card-content {
+.card-quiet .card-content {
   opacity: 0;
-  transition: opacity 0.1s ease-in-out 0.4s;
 }
 
-/* Glass Effect for Unrevealed Cards */
-.card-unrevealed .card-content::after {
+.card-word {
+  font-family: "Oswald", sans-serif;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-shadow: 0 0.2vmin 0.4vmin rgb(0 0 0 / 0.35);
+  text-align: center;
+  line-height: 1.2;
+  font-size: 3vmin;
+  padding: 1vmin;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  color: white;
+}
+
+.card-front {
+  background-color: #E4D6C5;
+}
+
+.card-front .card-word,
+.card-neutral .card-word {
+  text-shadow: 0 0.15vmin 0 rgb(255 255 255 / 0.5);
+}
+
+.card-front .card-word {
+  color: #39241C;
+}
+
+.card-front .card-content::after {
   content: '';
   position: absolute;
   inset: 0;
-  pointer-events: none;
-  z-index: 5;
   border-radius: 2vmin;
   background-image: 
     linear-gradient(-45deg, transparent 0%, transparent calc(12% - 0.6vmin), rgba(255, 255, 255, 0.216) calc(12% - 0.6vmin), rgba(255, 255, 255, 0.216) calc(12% + 0.6vmin), transparent calc(12% + 0.6vmin), transparent 100%),
@@ -132,54 +151,14 @@
   background-position: -35% 0, -15% 0, -40% 0, -20% 0;
 }
 
-/* Card Color Variants */
-.card-unrevealed {
-  background-color: #E4D6C5;
-}
+.card-blue { --tint: var(--blue-accent); }
+.card-red { --tint: var(--red-accent); }
+.card-black { --tint: var(--assassin); }
+.card-neutral { --tint: #d1d5db; }
 
-.card-unrevealed .card-word {
-  color: #39241C;
-}
-
-.card-blue {
-  background-color: #2563eb;
-}
-
-.card-blue::after {
-  background-color: rgba(37, 99, 235, 0.6);
-  opacity: 1;
-}
-
-.card-red {
-  background-color: #dc2626;
-}
-
-.card-red::after {
-  background-color: rgba(220, 38, 38, 0.6);
-  opacity: 1;
-}
-
-.card-black {
-  background-color: #111827;
-}
-
-.card-black::after {
-  background-color: rgba(17, 24, 39, 0.6);
-  opacity: 1;
-}
-
-.card-neutral {
-  background-color: #d1d5db;
-}
-
-.card-neutral::after {
-  background-color: rgba(209, 213, 219, 0.6);
-  opacity: 1;
-}
-
-.card-neutral .card-word {
-  color: #111827;
-}
+.card-back { background-color: var(--tint); }
+.card-back::after { background-color: color-mix(in srgb, var(--tint) 60%, transparent); }
+.card-neutral .card-word { color: #111827; }
 
 /* Private Game Message - fadeInUp animation */
 @keyframes fadeInUp {
@@ -193,23 +172,7 @@
   }
 }
 
-/* Hint button styles */
-.hint-button {
-  transition: all 0.3s ease;
-  font-size: 1.5rem;
-}
-
-.hint-button.hint-blue {
-  border-color: #2563eb !important;
-  color: #2563eb !important;
-}
-
-.hint-button.hint-red {
-  border-color: #dc2626 !important;
-  color: #dc2626 !important;
-}
-
-.hint-button.glowing {
+.hint-glowing {
   animation: glow-pulse 2s ease-in-out infinite;
   box-shadow: 0 0 10px currentColor;
 }
@@ -225,11 +188,40 @@
   }
 }
 
-/* Рубашки для карточек */
-/* Изображения загружаются только когда карточка раскрывается (не блокируют начальный рендер) */
+@keyframes card-shake {
+  25% { transform: rotate(-1deg); }
+  75% { transform: rotate(1deg); }
+}
 
-.card-back:not(.card-unrevealed)::before {
-  background-image: var(--card-back);
-  transform: scaleX(var(--card-back-flip, 1));
-  opacity: 1;
+[data-peeking] .card-content {
+  animation: card-shake 0.18s linear infinite;
+}
+
+/* Полоса удержания: --fill ведёт её при нажатии, progress-flash показывает, как держать */
+.progress-fill {
+  clip-path: inset(0 calc(100% - var(--fill, 0%)) 0 0);
+}
+
+.progress-flash {
+  animation: progress-fill var(--flash, 1s) linear 3;
+}
+
+@keyframes progress-fill {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0); }
+}
+
+.card-fill {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  pointer-events: none;
+  border-radius: 2vmin;
+  background: rgb(0 0 0 / 0.1);
+  --flash: 1.5s;
+}
+
+.icon-flash-border {
+  background-color: var(--color-ui-accent);
+  color: #fff;
 }

@@ -1,7 +1,6 @@
 export default {
   "language": {
-    "name": "Deutsch",
-    "code": "de"
+    "name": "Deutsch"
   },
   "meta": {
     "title": "Codenames Spiel - Online Party-Spiel | Code Names",
@@ -18,48 +17,32 @@ export default {
     "seoDescription": "Beliebtes Teamspiel, bei dem zwei Kapitäne ihren Teams Assoziationen geben, um alle ihre Wörter zu finden und dem Attentäter auszuweichen. Spielen Sie kostenlos im Browser ohne Installation. Erstellen Sie ein Spiel und laden Sie Freunde über Link ein."
   },
   "menu": {
-    "title": "Spielmenü",
-    "captainMode": "Kapitänsmodus",
-    "dictionary": "Wörterbuch:",
+    "gameName": "",
     "aiTopic": "Thema (oder mehrere) und gewünschte Sprache (oder mehrere... ja-ja mehrere Sprachen):",
     "aiTopicPlaceholder": "Zum Beispiel: Essen auf Englisch, Harry Potter auf Koreanisch",
     "newGame": "Neues Spiel",
-    "gameKey": "Spielschlüssel",
     "shareGame": "Dieses Spiel teilen",
     "close": "Schließen",
-    "generating": "Generiere Spiel...",
-    "serverOnline": "Online",
-    "serverStarting": "Offline",
+    "generating": "",
+    "serverOnline": "",
+    "serverStarting": "",
     "information": "Information",
-    "teamSelection": "",
     "blueTeam": "",
     "redTeam": "",
-    "spectator": "",
-    "becomeCaptain": "",
-    "leaveCaptain": "",
     "yourTeam": "",
-    "yourRole": "",
-    "rolePlayer": "",
-    "roleCaptain": "",
-    "roleSpectator": "",
-    "noTeam": "",
     "ownerActions": "",
-    "lockTeams": "",
-    "unlockTeams": "",
-    "makePrivate": "",
-    "makePublic": "",
-    "notSelected": "",
+    "teamsToggle": "",
+    "privateToggle": "",
+    "teamsToggleHint": "",
+    "privateToggleHint": "",
+    "observer": "",
+    "joinRoom": "",
+    "advancedMode": "",
+    "advancedModeHint": "",
+    "roleCaptain": "",
+    "rolePlayer": "",
     "andCaptain": "",
-    "teamsStatus": "",
-    "gameStatus": "",
-    "teamsOpen": "",
-    "teamsClosed": "",
-    "gamePublic": "",
-    "gamePrivate": "",
-    "gameMode": "",
-    "simpleMode": "",
-    "simpleModeOn": "",
-    "simpleModeHint": ""
+    "startGame": ""
   },
   "share": {
     "copyLink": "Link kopieren",
@@ -70,45 +53,28 @@ export default {
     "shareText": "Lass uns Codenames spielen! 🎮\\n"
   },
   "keyDialog": {
-    "title": "Spielschlüssel",
-    "description": "Geben Sie einen Schlüssel ein oder erstellen Sie einen neuen mit der +-Taste. Ein Spiel wird entsprechend dem gewählten Wörterbuch im Hauptmenü erstellt. Für KI-Spiele: Wählen Sie das \"Neuronales Netz\"-Wörterbuch im Hauptmenü, geben Sie ein Thema an und klicken Sie auf \"Neues Spiel\".",
-    "currentKey": "Aktueller Schlüssel:",
-    "enterKey": "Spielschlüssel eingeben:",
     "keyPlaceholder": "БАКОСУГ oder БАКОСУН",
-    "join": "Beitreten",
-    "back": "Zurück",
     "invalidKey": "Ungültiger Spielschlüssel",
-    "aiGameNotFound": "KI-Spiel nicht gefunden",
-    "aiKey": "KI-Schlüssel (neuronales Netz Wörterbuch)",
-    "newKey": "Neuer normaler Schlüssel",
-    "aiKeysInMenu": "KI-Schlüssel werden im Hauptmenü erstellt"
+    "join": "",
+    "aiGameNotFound": "KI-Spiel nicht gefunden"
   },
   "captainDialog": {
     "title": "Kapitänsmodus",
     "description": "Im Kapitänsmodus sehen Sie die Farben aller Karten. Denken Sie daran, dass das Hinweisen auf Kartenfarben für Ihr Team verboten ist - es wird den Spielspaß ruinieren.",
-    "warning": "Warnung! Nach Aktivierung des Kapitänsmodus können Sie nicht mehr als normaler Spieler am Wörterraten teilnehmen.",
     "confirm": "Bestätigen",
     "cancel": "Abbrechen",
-    "currentTeam": "Aktuelles Team:",
-    "blueTeam": "Blaue",
-    "redTeam": "Rote",
     "remaining": "Verbleibend",
-    "cards": "Karten",
-    "helperTitle": "Kapitänshelfer",
-    "helperTip": "Taste gedrückt halten",
-    "helperInstructions": "für 1 Sekunde, um den Spielfeldmodus zu wechseln. Gegnerteam kann eingeklappt werden, Wörter können gezogen werden, Schalter kann das Team ändern.",
+    "helperTitle": "",
     "enterPhrase": "Phrase zur Bestätigung eingeben:",
     "phrasePlaceholder": "Phrase",
     "assassinWord": "Attentäterwort",
     "confirmationPhrase": "KAPITÄN",
     "myWords": "",
     "opponentWords": "",
-    "myTeam": "",
-    "opponentTeam": ""
+    "helperHint": ""
   },
   "winDialog": {
     "title": "Spiel beendet!",
-    "winner": "Siegerteam:",
     "blueTeam": "Blau",
     "redTeam": "Rot",
     "teamWon": "Team hat gewonnen, indem es alle seine Karten aufgedeckt hat!",
@@ -117,21 +83,15 @@ export default {
     "return": "Zurück zum Feld"
   },
   "status": {
-    "blueTeam": "Blaues Team:",
-    "redTeam": "Rotes Team:",
-    "cards": "Karten",
-    "captainHelper": "Kapitänshelfer",
+    "captainHelper": "",
     "menu": "Menü",
     "fullscreen": "Vollbild",
     "chat": "Chat",
-    "iosFullscreenInstructions": ""
+    "hint": ""
   },
   "notifications": {
     "linkCopied": "Link kopiert!",
-    "keyCopied": "Schlüssel kopiert",
-    "pressAndHold": "Karte gedrückt halten zum Aufdecken",
     "chooseTeam": "",
-    "spectatorsCannotPlay": "",
     "notYourTurn": "",
     "captainsCannotPlay": "",
     "captainsRequired": "",
@@ -141,21 +101,21 @@ export default {
     "gamePublic": "",
     "privateGameTitle": "",
     "privateGameMessage": "",
-    "waitingForHint": ""
+    "waitingForHint": "",
+    "seat_captain_blue": "",
+    "seat_captain_red": "",
+    "seat_player_blue": "",
+    "seat_player_red": "",
+    "seat_spectator": "",
+    "holdToReveal": ""
   },
   "errors": {
     "enterTopic": "Thema für KI-Spiel eingeben",
-    "aiGenerationError": "Fehler beim Generieren des KI-Spiels",
-    "copyLinkFailed": "Link konnte nicht kopiert werden"
+    "aiGenerationError": "Fehler beim Generieren des KI-Spiels"
   },
-  "game": {
-    "confirmReveal": "Karte aufdecken?",
-    "confirm": "Aufdecken",
-    "cancel": "Abbrechen"
-  },
+  "game": {},
   "dictionaries": {
-    "aiDictionary": "Neuronales Netz (Millionen Wörter, jede Sprache)",
-    "officialDictionary": "Offizielles GaGa Games Wörterbuch"
+    "aiDictionary": "Neuronales Netz (Millionen Wörter, jede Sprache)"
   },
   "info": {
     "title": "Über die Anwendung",
@@ -173,44 +133,24 @@ export default {
     "step3": "Kapitäne geben Hinweise, Spieler raten",
     "step4": "Erstes Team, das alle seine Karten aufdeckt, gewinnt",
     "aiGames": "KI-Spiele",
-    "aiDescription": "Geben Sie ein beliebiges Thema ein (Weltraum, Filme, Essen...) und erhalten Sie",
-    "aiWords": "ein einzigartiges Set von 25 Wörtern, generiert von neuronalem Netz!"
+    "aiDescription": ""
   },
-  "teamSwitch": {
-    "myTeam": "Mein Team:"
-  },
+  "teamSwitch": {},
   "common": {
     "loading": "Laden...",
-    "error": "Fehler",
-    "retry": "Wiederholen",
-    "ok": "OK",
-    "yes": "Ja",
-    "no": "Nein",
-    "copy": "Kopieren",
-    "paste": "Einfügen",
-    "clear": "Löschen",
     "close": "Schließen"
   },
   "languageDialog": {
-    "title": "Sprachauswahl",
-    "selectLanguage": "Sprache der Benutzeroberfläche auswählen:",
-    "close": "Schließen"
+    "selectLanguage": "Sprache der Benutzeroberfläche auswählen:"
   },
   "chat": {
-    "title": "Chat",
     "hello": "Hallo",
-    "loggedInAs": "Angemeldet als",
     "logout": "Abmelden",
     "noMessages": "Noch keine Nachrichten",
     "typeMessage": "Nachricht eingeben...",
-    "enterName": "Bitte geben Sie Ihren Namen ein",
-    "messageTooLong": "Nachricht zu lang (max 500 Zeichen)",
     "tabGame": "Spiel-Chat",
     "tabGlobal": "Global",
     "pinCopied": "PIN kopiert!",
-    "changeNamePrompt": "Neuen Namen eingeben:",
-    "changeNameHint": "Klicken zum Ändern des Namens",
-    "nameChanged": "Name erfolgreich geändert!",
     "nameChangeError": "Fehler beim Ändern des Namens",
     "changeName": "Name ändern",
     "settings": "Einstellungen",
@@ -225,8 +165,7 @@ export default {
     "winRate": "Siegrate",
     "favoriteRole": "Lieblingsrolle",
     "inDevelopment": "In Entwicklung",
-    "backToChat": "Zum Chat",
-    "backToGame": "Zum Spiel"
+    "pinMissing": ""
   },
   "auth": {
     "title": "Chat-Anmeldung",
@@ -248,9 +187,7 @@ export default {
     "cancelBtn": "Abbrechen",
     "loginBtn": "Anmelden",
     "backBtn": "Zurück",
-    "checkError": "Fehler beim Überprüfen des Namens",
-    "registerError": "Fehler bei der Registrierung",
-    "verifyError": "Fehler beim Überprüfen des PIN"
+    "checkError": "Fehler beim Überprüfen des Namens"
   },
   "hintDialog": {
     "wordExpired": "",
@@ -260,10 +197,10 @@ export default {
     "giveHintLabel": "",
     "wordPlaceholder": "",
     "numberPlaceholder": "",
-    "numberHint": "",
     "giveHintButton": "",
     "titleBlue": "",
     "titleRed": "",
-    "wordVisibleCountdown": ""
+    "wordVisibleCountdown": "",
+    "giveHintHint": ""
   }
 };

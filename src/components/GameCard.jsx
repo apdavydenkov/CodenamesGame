@@ -1,12 +1,12 @@
 import { useState, useEffect, memo } from "react";
-import Notification from "./Notification";
 import { useTranslation } from "../hooks/useTranslation";
+import { useNotify } from "../contexts/NotificationContext";
 import { getCardBack } from "../utils/cardBacks";
 import { validateCardReveal } from "../utils/cardValidation";
 
 const PRESS_DURATION = 1500;
 const PROGRESS_INTERVAL = 50;
-const FLIP_DELAY = 2000;
+const WORD_LINGER = 2000;
 
 const GameCard = ({
   word,
@@ -27,32 +27,17 @@ const GameCard = ({
   gameSettings = {}
 }) => {
   const { t } = useTranslation();
-  const [pressing, setPressing] = useState(false);
+  const notify = useNotify();
   const [progress, setProgress] = useState(0);
-  const [showNotification, setShowNotification] = useState(false);
-  const [notificationMessage, setNotificationMessage] = useState('');
-  const [flipped, setFlipped] = useState(false);
+  const [holdHint, setHoldHint] = useState(false);
+  const [wordFaded, setWordFaded] = useState(false);
 
-  // flip при загрузке/смене состояния
   useEffect(() => {
-    let timer;
-    if (revealed || isCaptain) {
-      timer = setTimeout(() => setFlipped(true), FLIP_DELAY);
-    } else {
-      setFlipped(false);
-    }
+    if (!revealed) return setWordFaded(false);
+
+    const timer = setTimeout(() => setWordFaded(true), WORD_LINGER);
     return () => clearTimeout(timer);
-  }, [revealed, isCaptain]);
-
-  const getCardStyle = () => {
-    const base = "game-card";
-    const flip = flipped && !isCaptain ? " card-flipped" : "";
-    const colorClass = revealed || isCaptain ? ` card-${color}` : " card-unrevealed";
-
-    const backClass = gameKey ? " card-back" : "";
-
-    return base + flip + colorClass + backClass;
-  };
+  }, [revealed]);
 
   // Картинка рубашки и её зеркальность — через CSS-переменные, см. game.css
   const getBackVars = () => {
@@ -69,7 +54,7 @@ const GameCard = ({
     const error = validateCardReveal({
       revealed,
       isAuthenticated,
-      simpleMode: gameSettings?.simpleMode,
+      advancedMode: gameSettings?.advancedMode,
       isCaptain,
       myRole,
       teams,
@@ -89,8 +74,7 @@ const GameCard = ({
       }
 
       // Показываем уведомление
-      setNotificationMessage(t(error.message));
-      setShowNotification(true);
+      notify(t(error.message));
 
       // Подсвечиваем иконку если нужно
       if (error.highlight) {
@@ -101,14 +85,24 @@ const GameCard = ({
     }
 
     e.preventDefault();
-    setPressing(true);
-    setProgress(0);
+    const target = e.target;
+
+    const release = (event) => {
+      target.onpointerup = target.onpointerleave = null;
+      clearTimeout(pressTimeout);
+      clearInterval(progressInterval);
+      setProgress(0);
+
+      // Отпустили раньше срока — показываем, что карточку надо держать
+      if (event?.type === 'pointerup') {
+        setHoldHint(true);
+        notify(t('notifications.holdToReveal'));
+      }
+    };
 
     const pressTimeout = setTimeout(() => {
-      setPressing(false);
-      setProgress(0);
+      release();
       onConfirm(position);
-      setTimeout(() => setFlipped(true), FLIP_DELAY);
     }, PRESS_DURATION);
 
     let currentProgress = 0;
@@ -121,49 +115,34 @@ const GameCard = ({
       }
     }, PROGRESS_INTERVAL);
 
-    const stop = () => {
-      clearTimeout(pressTimeout);
-      clearInterval(progressInterval);
-      setPressing(false);
-      setProgress(0);
-    };
-
-    e.target.onpointerup = stop;
-    e.target.onpointerleave = stop;
+    target.onpointerup = release;
+    target.onpointerleave = release;
   };
 
   return (
     <>
       <div
-        className={getCardStyle()}
-        onPointerDown={startPress}
+        className="game-card"
+        onPointerDown={revealed ? undefined : startPress}
         style={{
           animationDelay: `${position * 0.03}s`, // Задержка 30ms между карточками (25 карточек = 750ms всего)
           ...getBackVars()
         }}
       >
-        <div
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            width: `${progress}%`,
-            height: "100%",
-            backgroundColor: pressing ? "rgba(0, 0, 0, 0.1)" : "transparent",
-            transition: "width 50ms linear",
-            pointerEvents: "none",
-            zIndex: 15,
-          }}
-        />
-        <div className="card-content">
-          <span className="card-word">{word}</span>
+        <div className={`card-inner${revealed || isCaptain ? " card-turned" : ""}`}>
+          <div className="card-face card-front">
+            <div className="card-content"><span className="card-word">{word}</span></div>
+          </div>
+          <div className={`card-face card-back card-${color}${wordFaded && !isCaptain ? " card-quiet" : ""}`}>
+            <div className="card-content"><span className="card-word">{word}</span></div>
+          </div>
         </div>
+        <div
+          className={`card-fill progress-fill${holdHint ? " progress-flash" : ""}`}
+          style={{ "--fill": `${progress}%` }}
+          onAnimationEnd={() => setHoldHint(false)}
+        />
       </div>
-      <Notification
-        message={notificationMessage}
-        isVisible={showNotification}
-        onClose={() => setShowNotification(false)}
-      />
     </>
   );
 };
@@ -182,6 +161,6 @@ export default memo(GameCard, (prevProps, nextProps) => {
     prevProps.currentTeam === nextProps.currentTeam &&
     prevProps.teams === nextProps.teams &&
     prevProps.currentHint === nextProps.currentHint &&
-    prevProps.gameSettings?.simpleMode === nextProps.gameSettings?.simpleMode
+    prevProps.gameSettings?.advancedMode === nextProps.gameSettings?.advancedMode
   );
 });

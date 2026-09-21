@@ -1,7 +1,6 @@
 export default {
   "language": {
-    "name": "Português",
-    "code": "pt"
+    "name": "Português"
   },
   "meta": {
     "title": "Codenames Game - Jogo de equipe online | Nomes de código",
@@ -18,48 +17,32 @@ export default {
     "seoDescription": "Popular jogo de equipe onde dois capitães dão pistas de associação para suas equipes encontrarem todas as palavras aliadas e evitarem o assassino. Jogue grátis no navegador sem instalação. Crie um jogo e convide amigos pelo link."
   },
   "menu": {
-    "title": "Menu do jogo",
-    "captainMode": "Modo capitão",
-    "dictionary": "Dicionário:",
+    "gameName": "",
     "aiTopic": "Tópico (ou vários) e idioma desejado (ou vários... sim, vários idiomas):",
     "aiTopicPlaceholder": "Exemplo: comida em inglês, Harry Potter em coreano",
     "newGame": "Novo jogo",
-    "gameKey": "Chave do jogo",
     "shareGame": "Compartilhar este jogo",
     "close": "Fechar",
-    "generating": "Gerando jogo...",
-    "serverOnline": "Online",
-    "serverStarting": "Offline",
+    "generating": "",
+    "serverOnline": "",
+    "serverStarting": "",
     "information": "Informações",
-    "teamSelection": "",
     "blueTeam": "",
     "redTeam": "",
-    "spectator": "",
-    "becomeCaptain": "",
-    "leaveCaptain": "",
     "yourTeam": "",
-    "yourRole": "",
-    "rolePlayer": "",
-    "roleCaptain": "",
-    "roleSpectator": "",
-    "noTeam": "",
     "ownerActions": "",
-    "lockTeams": "",
-    "unlockTeams": "",
-    "makePrivate": "",
-    "makePublic": "",
-    "notSelected": "",
+    "teamsToggle": "",
+    "privateToggle": "",
+    "teamsToggleHint": "",
+    "privateToggleHint": "",
+    "observer": "",
+    "joinRoom": "",
+    "advancedMode": "",
+    "advancedModeHint": "",
+    "roleCaptain": "",
+    "rolePlayer": "",
     "andCaptain": "",
-    "teamsStatus": "",
-    "gameStatus": "",
-    "teamsOpen": "",
-    "teamsClosed": "",
-    "gamePublic": "",
-    "gamePrivate": "",
-    "gameMode": "",
-    "simpleMode": "",
-    "simpleModeOn": "",
-    "simpleModeHint": ""
+    "startGame": ""
   },
   "share": {
     "copyLink": "Copiar link",
@@ -70,45 +53,28 @@ export default {
     "shareText": "Vamos jogar Codenames! 🎮\\n"
   },
   "keyDialog": {
-    "title": "Chave do jogo",
-    "description": "Digite uma chave ou crie uma nova com o botão +. Será criado um jogo de acordo com o dicionário selecionado no menu principal. Para criar jogos IA: selecione o dicionário \"Rede Neural\" no menu principal, especifique o tópico e clique em \"Novo jogo\".",
-    "currentKey": "Chave atual:",
-    "enterKey": "Digite a chave do jogo:",
     "keyPlaceholder": "БАКОСУГ ou БАКОСУН",
-    "join": "Entrar",
-    "back": "Voltar",
     "invalidKey": "Chave de jogo inválida",
-    "aiGameNotFound": "Jogo IA não encontrado",
-    "aiKey": "Chave IA (dicionário rede neural)",
-    "newKey": "Nova chave normal",
-    "aiKeysInMenu": "Chaves IA são criadas no menu principal"
+    "join": "",
+    "aiGameNotFound": "Jogo IA não encontrado"
   },
   "captainDialog": {
     "title": "Modo capitão",
     "description": "No modo capitão você verá as cores de todas as cartas. Lembre-se que sugerir as cores das cartas para a equipe é proibido - isso estraga a diversão do jogo.",
-    "warning": "Atenção! Após ativar o modo capitão você não poderá participar como jogador normal na adivinhação de palavras.",
     "confirm": "Confirmar",
     "cancel": "Cancelar",
-    "currentTeam": "Equipe atual:",
-    "blueTeam": "Equipe Azul",
-    "redTeam": "Equipe Vermelha",
     "remaining": "Restam",
-    "cards": "cartas",
-    "helperTitle": "Assistente do capitão",
-    "helperTip": "Mantenha o botão pressionado",
-    "helperInstructions": "por 1 segundo para alternar o modo do campo de jogo. A equipe adversária pode ser recolhida, palavras podem ser arrastadas, o interruptor pode mudar a equipe.",
+    "helperTitle": "",
     "enterPhrase": "Digite a frase de confirmação:",
     "phrasePlaceholder": "Frase",
     "assassinWord": "Palavra do assassino",
     "confirmationPhrase": "CAPITÃO",
     "myWords": "",
     "opponentWords": "",
-    "myTeam": "",
-    "opponentTeam": ""
+    "helperHint": ""
   },
   "winDialog": {
     "title": "Jogo terminado!",
-    "winner": "Equipe vencedora:",
     "blueTeam": "Azul",
     "redTeam": "Vermelha",
     "teamWon": "a equipe venceu revelando todas as suas cartas!",
@@ -117,21 +83,15 @@ export default {
     "return": "Voltar ao campo"
   },
   "status": {
-    "blueTeam": "Equipe Azul:",
-    "redTeam": "Equipe Vermelha:",
-    "cards": "cartas",
-    "captainHelper": "Assistente do capitão",
+    "captainHelper": "",
     "menu": "Menu",
     "fullscreen": "Tela cheia",
     "chat": "Chat",
-    "iosFullscreenInstructions": ""
+    "hint": ""
   },
   "notifications": {
     "linkCopied": "Link copiado!",
-    "keyCopied": "Chave copiada",
-    "pressAndHold": "Mantenha pressionada a carta para abrir",
     "chooseTeam": "",
-    "spectatorsCannotPlay": "",
     "notYourTurn": "",
     "captainsCannotPlay": "",
     "captainsRequired": "",
@@ -141,26 +101,24 @@ export default {
     "gamePublic": "",
     "privateGameTitle": "",
     "privateGameMessage": "",
-    "waitingForHint": ""
+    "waitingForHint": "",
+    "seat_captain_blue": "",
+    "seat_captain_red": "",
+    "seat_player_blue": "",
+    "seat_player_red": "",
+    "seat_spectator": "",
+    "holdToReveal": ""
   },
   "errors": {
     "enterTopic": "Digite um tópico para criar um jogo IA",
-    "aiGenerationError": "Erro na geração do jogo IA",
-    "copyLinkFailed": "Falha ao copiar o link"
+    "aiGenerationError": "Erro na geração do jogo IA"
   },
-  "game": {
-    "confirmReveal": "Abrir carta?",
-    "confirm": "Abrir",
-    "cancel": "Cancelar"
-  },
+  "game": {},
   "dictionaries": {
-    "aiDictionary": "Rede Neural (milhões de palavras, qualquer idioma)",
-    "officialDictionary": "Dicionário oficial GaGa Games"
+    "aiDictionary": "Rede Neural (milhões de palavras, qualquer idioma)"
   },
   "languageDialog": {
-    "title": "Seleção de idioma",
-    "selectLanguage": "Selecionar idioma da interface:",
-    "close": "Fechar"
+    "selectLanguage": "Selecionar idioma da interface:"
   },
   "info": {
     "title": "Sobre o app",
@@ -178,39 +136,21 @@ export default {
     "step3": "Capitães dão pistas, jogadores adivinham",
     "step4": "Vence a equipe que primeiro revelar todas as suas cartas",
     "aiGames": "Jogos IA",
-    "aiDescription": "Digite qualquer tópico (espaço, filmes, comida...) e obtenha",
-    "aiWords": "um conjunto único de 25 palavras geradas pela rede neural!"
+    "aiDescription": ""
   },
-  "teamSwitch": {
-    "myTeam": "Minha equipe:"
-  },
+  "teamSwitch": {},
   "common": {
     "loading": "Carregando...",
-    "error": "Erro",
-    "retry": "Tentar novamente",
-    "ok": "OK",
-    "yes": "Sim",
-    "no": "Não",
-    "copy": "Copiar",
-    "paste": "Colar",
-    "clear": "Limpar",
     "close": "Fechar"
   },
   "chat": {
-    "title": "Chat",
     "hello": "Olá",
-    "loggedInAs": "Conectado como",
     "logout": "Sair",
     "noMessages": "Ainda não há mensagens",
     "typeMessage": "Digite uma mensagem...",
-    "enterName": "Por favor, insira seu nome",
-    "messageTooLong": "Mensagem muito longa (máx 500 caracteres)",
     "tabGame": "Chat do jogo",
     "tabGlobal": "Global",
     "pinCopied": "PIN copiado!",
-    "changeNamePrompt": "Insira novo nome:",
-    "changeNameHint": "Clique para alterar o nome",
-    "nameChanged": "Nome alterado com sucesso!",
     "nameChangeError": "Erro ao alterar nome",
     "changeName": "Alterar nome",
     "settings": "Configurações",
@@ -225,8 +165,7 @@ export default {
     "winRate": "Taxa de vitória",
     "favoriteRole": "Papel favorito",
     "inDevelopment": "Em desenvolvimento",
-    "backToChat": "Ao chat",
-    "backToGame": "Para o jogo"
+    "pinMissing": ""
   },
   "auth": {
     "title": "Login no chat",
@@ -248,9 +187,7 @@ export default {
     "cancelBtn": "Cancelar",
     "loginBtn": "Entrar",
     "backBtn": "Voltar",
-    "checkError": "Erro ao verificar nome",
-    "registerError": "Erro durante o registro",
-    "verifyError": "Erro ao verificar PIN"
+    "checkError": "Erro ao verificar nome"
   },
   "hintDialog": {
     "wordExpired": "",
@@ -260,10 +197,10 @@ export default {
     "giveHintLabel": "",
     "wordPlaceholder": "",
     "numberPlaceholder": "",
-    "numberHint": "",
     "giveHintButton": "",
     "titleBlue": "",
     "titleRed": "",
-    "wordVisibleCountdown": ""
+    "wordVisibleCountdown": "",
+    "giveHintHint": ""
   }
 };

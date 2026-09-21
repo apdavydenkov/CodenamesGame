@@ -12,8 +12,8 @@ from pathlib import Path
 
 def process_txt_files():
     """Обрабатывает все txt файлы и создает соответствующие JSON словари"""
-    script_dir = Path(__file__).parent
-    txt_files = glob.glob(str(script_dir / "*.txt"))
+    dict_dir = Path(__file__).parent.parent / "public" / "dictionaries"
+    txt_files = glob.glob(str(dict_dir / "*.txt"))
     
     if not txt_files:
         print("ERROR: Не найдено ни одного txt файла в папке dictionaries")
@@ -24,7 +24,7 @@ def process_txt_files():
     for txt_file_path in txt_files:
         txt_file = Path(txt_file_path)
         locale = txt_file.stem  # Получаем имя файла без расширения (например, "cs" из "cs.txt")
-        json_file = script_dir / f"dictionaries_{locale}.json"
+        json_file = dict_dir / f"dictionaries_{locale}.json"
         
         print(f"PROCESSING: {locale}.txt -> dictionaries_{locale}.json")
         

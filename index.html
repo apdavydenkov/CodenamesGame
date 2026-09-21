@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="{{lang}}">
 
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no, viewport-fit=cover, interactive-widget=resizes-content" />
 
   <!-- Базовые мета-теги генерируются из локалей -->
-  <title></title>
-  <meta name="description" content="" />
-  <meta name="keywords" content="" />
+  <title>{{title}}</title>
+  <meta name="description" content="{{description}}" />
+  <meta name="keywords" content="{{keywords}}" />
 
   <!-- Yandex-specific -->
   <meta name="yandex-verification" content="verification_token" />
@@ -23,14 +23,14 @@
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="" />
-  <meta property="og:description" content="" />
-  <meta property="og:url" content="" />
-  <meta property="og:image" content="/og-image.jpg" />
+  <meta property="og:title" content="{{ogTitle}}" />
+  <meta property="og:description" content="{{ogDescription}}" />
+  <meta property="og:url" content="{{url}}" />
+  <meta property="og:image" content="{{siteUrl}}/og-image.jpg" />
 
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image" />
-  <meta property="twitter:image" content="/og-image.jpg" />
+  <meta property="twitter:image" content="{{siteUrl}}/og-image.jpg" />
 
   <!-- Theme Color for Browsers -->
   <meta name="theme-color" content="#2563eb" />
@@ -44,14 +44,15 @@
   <!-- Web App Manifest -->
   <link rel="manifest" href="/manifest.json" />
 
-  <!-- Canonical URL -->
-  <link rel="canonical" href="" />
+  <!-- Canonical URL и языковые версии -->
+  <link rel="canonical" href="{{url}}" />
+{{alternates}}
 
   <!-- Fonts Preload and Preconnect -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" /></noscript>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@500&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@500&display=swap" rel="stylesheet" /></noscript>
 
   <!-- Robots -->
   <meta name="robots" content="index, follow" />
@@ -98,8 +99,8 @@
   <!-- SEO Text -->
   <div aria-hidden="true" id="seo-content"
     style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;">
-    <h1>Codenames (Кодовые имена) - онлайн версия настольной игры</h1>
-    <p>Популярная командная игра, в которой два капитана дают своим командам ассоциации, чтобы найти все свои слова и не наткнуться на убийцу. Играйте бесплатно в браузере без установки. Создайте игру и пригласите друзей по ссылке.</p>
+    <h1>{{seoH1}}</h1>
+    <p>{{seoDescription}}</p>
   </div>
 
   <div id="root"></div>
